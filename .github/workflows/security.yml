@@ -54,7 +54,7 @@ jobs:
         continue-on-error: true
 
       - name: 运行 Trivy 漏洞扫描
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.30.0  # 锁定版本，防止供应链攻击
         with:
           scan-type: 'fs'
           scan-ref: '.'

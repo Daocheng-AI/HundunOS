@@ -1,10 +1,10 @@
-﻿# 渚濊禆
+# 依赖
 node_modules/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# 鏋勫缓浜х墿
+# 构建产物
 dist/
 build/
 *.log
@@ -19,27 +19,28 @@ build/
 .DS_Store
 Thumbs.db
 
-# 瀹夊叏鎵弿浜х墿
+# 安全扫描产物
 semgrep-results.json
+semgrep-sast.json
 trivy-results.json
 security-report.md
 
-# 娴嬭瘯瑕嗙洊
+# 测试覆盖
 coverage/
 .nyc_output/
 
-# 鐜鍙橀噺
+# 环境变量
 .env
 .env.local
 .env.*.local
 
-# 涓存椂鏂囦欢
+# 临时文件
 *.tmp
 *.temp
 tmp/
 temp/
 
-# FIX-gitignore: 杩愯鏃舵暟鎹紙浣撶Н宸ㄥぇ锛屼笉搴斿叆搴擄級
+# 运行时数据（体积巨大，不应入库）
 data/snapshots/
 data/*.jsonl
 data/*.json
@@ -49,31 +50,31 @@ logs/
 __pycache__/
 .pytest_cache/
 
-# FIX-gitignore: 瀛愰」鐩嫭绔?node_modules锛坋lectron 绛夊法鍨嬪寘锛?
+# 项目独立 node_modules（electron 等子工程）
 shell/client/node_modules/
 
-# FIX-gitignore: 娴嬭瘯杈撳嚭鏂囦欢
+# 测试输出文件
 tests/*.txt
 tests/results/
 tests/*.json
 !tests/package.json
 
-# FIX-gitignore: benchmarks
+# benchmarks
 .benchmarks/
 
-# FIX-P0: 澶囦唤鍜屾鏌ユ枃浠讹紙浠ｇ爜鍐椾綑锛?
+# 复核和校验文件（代码写作）
 *_check.txt
 *_check.js
 *.bak
 *.backup
 
-# FIX-P0: 鏁忔劅淇℃伅鏂囦欢
+# 敏感信息文件
 *.pem
 *.key
 secrets/
 credentials/
 
-# 璋冭瘯/璇婃柇涓存椂鏂囦欢
+# 调试/诊断临时文件
 debug-*.mjs
 test-*.mjs
 verify_*.py
@@ -84,19 +85,30 @@ final-test.txt
 mr_direct.txt
 integration-out.txt
 
-# Rust 缂栬瘧浜х墿
+# Rust 编译产物
 target/
 
-# Snapshots & 涓存椂鐩綍
+# Snapshots & 临时目录
 .snapshots/
 .arts/
 .claude/
 .codeartsdoer/
 
-# vendor 涓€鑸笉鍏ュ簱锛堝お澶т簡锛屾寜闇€鍐冲畾锛?
+# vendor 暂不入库（太大，按需决定）
 # vendor/
 
 # Runtime data
 data/
 review/reports/
 
+# Agent 工作记忆（内部日志，绝对不入库）
+vendor/**/agent-*/
+**/agent-*/memory/
+
+# 生产配置（使用 .example 模板）
+# 复制 system.production.example.json 为 system.production.json 并填写真实配置
+config/system.production.json
+
+# 测试临时输出
+test_mr_out.txt
+scripts/test-out.txt
