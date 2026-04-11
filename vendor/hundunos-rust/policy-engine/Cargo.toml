@@ -1,0 +1,20 @@
+[package]
+name = "hundunos-policy"
+version = "0.2.0"
+edition = "2021"
+description = "HundunOS Policy Engine v2.0 - Security policy enforcement with edict-inspired state machine integration"
+
+[[bin]]
+name = "hundunos-policy"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+glob = { workspace = true }
+regex = { workspace = true }

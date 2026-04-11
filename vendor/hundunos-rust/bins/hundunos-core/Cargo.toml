@@ -1,0 +1,19 @@
+[package]
+name = "hundunos-core"
+version = "0.2.0"
+edition = "2021"
+description = "HundunOS Core - Unified Rust daemon with Unix Socket JSON-RPC 2.0 interface"
+authors = ["HundunOS Team"]
+
+[[bin]]
+name = "hundunos-core"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["full"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dashmap = { workspace = true }

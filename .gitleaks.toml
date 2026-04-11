@@ -1,0 +1,70 @@
+# Gitleaks 配置 - 密钥检测规则
+
+[printer]
+printFindings = true
+printReport = false
+
+[rules]
+  # AWS 密钥
+  [[rules.basic]]
+    description = "AWS Access Key"
+    regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+    tags = ["key", "AWS"]
+
+  # GitHub Token
+  [[rules.basic]]
+    description = "GitHub Token"
+    regex = '''gh[pousr]_[A-Za-z0-9_]{36,251}'''
+    tags = ["key", "GitHub"]
+
+  # 通用 API 密钥
+  [[rules.basic]]
+    description = "Generic API Key"
+    regex = '''(?i)(api[_-]?key|apikey|secret[_-]?key|access[_-]?token|auth[_-]?token)['"]?\s*[:=]\s*['"][A-Za-z0-9_]{16,}['"]'''
+    tags = ["key", "API"]
+
+  # 私钥
+  [[rules.basic]]
+    description = "Private Key"
+    regex = '''-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'''
+    tags = ["key", "private"]
+
+  # JWT Token
+  [[rules.basic]]
+    description = "JWT Token"
+    regex = '''eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+'''
+    tags = ["token", "JWT"]
+
+  # 数据库连接字符串
+  [[rules.basic]]
+    description = "Database Connection String"
+    regex = '''(?i)(mongodb|mysql|postgresql|redis)://[^\\s]+'''
+    tags = ["key", "database"]
+
+  # Slack Token
+  [[rules.basic]]
+    description = "Slack Token"
+    regex = '''xox[baprs]-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*'''
+    tags = ["key", "Slack"]
+
+  # OpenAI API Key
+  [[rules.basic]]
+    description = "OpenAI API Key"
+    regex = '''sk-[A-Za-z0-9]{32,}'''
+    tags = ["key", "OpenAI"]
+
+[allowlist]
+  description = "Allowlisted files and patterns"
+  files = [
+    "(.*?)\\.(jpg|jpeg|png|gif|svg|ico|ttf|woff|woff2|map)$",
+    "package-lock\\.json$",
+    "yarn\\.lock$",
+    "pnpm-lock\\.yaml$"
+  ]
+  regexes = [
+    "-----BEGIN CERTIFICATE-----",
+    "Example API Key",
+    "YOUR_API_KEY_HERE",
+    "TODO",
+    "test[_-]?key"
+  ]

@@ -1,0 +1,179 @@
+# kernel/skills/skills/pptx-generator.yaml
+# HundunOS v4.1 — PPTX 演示文稿生成 Skill
+# 移植自 MiniMax-AI/skills (MIT License)
+# PptxGenJS 驱动 · 5种幻灯片类型 · 设计系统 · 4种样式配方
+
+name: pptx-generator
+version: 1.0.0
+description: >
+  专业级 PowerPoint/PPTX 演示文稿生成引擎。支持 Cover（封面）、TOC（目录）、
+  Section Divider（章节分隔页）、Content（内容页）、Summary（总结页）
+  五种幻灯片类型，4 种视觉风格配方（Sharp/Soft/Rounded/Pill），
+  完整的设计系统（18 套配色方案）。
+author: minimax-ai / hundunos-port
+license: MIT
+tags:
+  - pptx
+  - powerpoint
+  - presentation
+  - slides
+  - demo
+
+trigger:
+  patterns:
+    - create PPTX
+    - make presentation
+    - generate slides
+    - PowerPoint
+    - 演示文稿
+    - 制作 PPT
+    - 幻灯片
+    - PPTX
+  semantic: true
+
+tools:
+  # ── CREATE: 生成完整演示文稿 ──────────────────────────
+  - id: pptx_create
+    type: shell
+    command: node "{{skill_dir}}scripts/generate.js" --input "{{input}}" --out "{{out | default 'presentation.pptx'}}"
+    description: >
+      从 slides JSON 文件生成 PPTX。输入为包含 slide 对象数组的 JSON，
+      每个 slide 有 type(cover/toc/section/content/summary) 和对应字段。
+    isolation: process
+    timeout: 60000
+
+  # ── READ: 提取现有 PPTX 文本 ───────────────────────────
+  - id: pptx_read
+    type: shell
+    command: node -e "const JSZip=require('jszip');const fs=require('fs');async()=>{const d=await fs.promises.readFile('{{input}}');const z=await JSZip.loadAsync(d);const s=z.file('ppt/slides/slide1.xml');if(s){console.log(await s.async('text'))}else{console.log('No slides found')}}()"
+    description: 使用 markitdown 思路读取现有 PPTX 内容
+    isolation: process
+    timeout: 15000
+
+  # ── CHECK: 环境检查 ─────────────────────────────────────
+  - id: pptx_check_deps
+    type: shell
+    command: node -e "try{require('pptxgenjs');console.log('OK: pptxgenjs')}catch(e){console.log('MISSING: pptxgenjs')}" 2>&1
+    description: 检查 pptxgenjs 是否已安装
+    isolation: process
+    timeout: 10000
+
+execution:
+  isolation: process
+  timeout: 60000
+  retry: 1
+  skill_dir: extension-modules/pptx-generator/
+
+system_prompt: |
+  ## pptx-generator 专业演示文稿生成模式（v1.0）
+
+  你是一个**专业演示文稿设计师**，使用 PptxGenJS 引擎创建高质量的 PPTX。
+
+  ### 工作流程
+
+  1. **理解需求** → 确定 PPT 类型、受众、场景
+  2. **设计结构** → 规划幻灯片序列（Cover → TOC → Content × N → Summary）
+  3. **构建 JSON** → 创建 slides.json 输入文件
+  4. **调用工具** → 使用 `pptx_create` 生成 .pptx 文件
+
+  ### 幻灯片类型（5种）
+
+  **Cover（封面）**
+  ```json
+  { "type": "cover", "title": "标题", "subtitle": "副标题", "author": "作者", "date": "2026-04-10" }
+  ```
+
+  **TOC（目录）**
+  ```json
+  {
+    "type": "toc",
+    "items": [
+      { "text": "第一章 背景介绍" },
+      { "text": "第二章 核心分析" },
+      { "text": "第三章 结论与建议" }
+    ]
+  }
+  ```
+
+  **SectionDivider（章节分隔页）**
+  ```json
+  { "type": "section", "number": "01", "title": "核心分析" }
+  ```
+
+  **Content（内容页）**
+  ```json
+  {
+    "type": "content",
+    "header": "页面标题",
+    "body": [
+      "第一段正文内容...",
+      { "text": "加粗要点", "bold": true, "size": 16 },
+      "继续正文..."
+    ],
+    "bullets": ["要点一", "要点二", "要点三"]
+  }
+  ```
+
+  **Summary（总结页）**
+  ```json
+  {
+    "type": "summary",
+    "title": "总结",
+    "points": ["结论一", "结论二", "结论三"],
+    "closing": "感谢观看"
+  }
+  ```
+
+  ### 输入格式（完整示例）
+
+  ```json
+  {
+    "theme": {
+      "primary": "#1a1a2e",
+      "accent": "#c9a96e",
+      "light": "#f5f5f5",
+      "bg": "#ffffff"
+    },
+    "layout": "LAYOUT_WIDE",
+    "author": "HundunOS",
+    "title": "项目报告",
+    "slides": [
+      { "type": "cover", "title": "Q3 战略回顾", "subtitle": "季度业务分析报告", "author": "战略团队", "date": "2026 Q3" },
+      { "type": "toc", "items": [{ "text": "执行摘要" }, { "text": "财务表现" }, { "text": "市场分析" }, { "text": "下一步计划" }] },
+      { "type": "section", "number": "01", "title": "执行摘要" },
+      { "type": "content", "header": "关键数据", "body": ["Q3 营收同比增长 23%"], "bullets": ["新客户 +45%", "留存率 92%"] },
+      { "type": "summary", "points": ["营收超预期", "市场份额扩大", "产品线扩展成功"], "closing": "Thank you" }
+    ]
+  }
+  ```
+
+  ### 设计系统 — 配色方案
+
+  | 场景 | Primary | Accent | Light |
+  |------|---------|--------|-------|
+  | 商务正式 | `#1a1a2e` | `#c9a96e` | `#f0f0f0` |
+  | 科技创新 | `#0d1117` | `#58a6ff` | `#f5f5f5` |
+  | 医疗健康 | `#0a3d2b` | `#39d98a` | `#f0faf5` |
+  | 教育培训 | `#1e3a5f` | `#4da6ff` | `#e8f4fc` |
+  | 创意艺术 | `#2d1b4e` | `#e040fb` | `#fce4ec` |
+
+  ### 样式配方（Style Recipes）
+
+  | 配方 | rectRadius | 特征 |
+  |------|-----------|------|
+  | Sharp | 0 | 直角、锐利、现代科技感 |
+  | Soft | 0.05 | 微圆角、友好、柔和 |
+  | Rounded | 0.15 | 中等圆角、平衡、通用 |
+  | Pill | 0.5 | 大圆角/胶囊形、活泼、年轻 |
+
+  ### 注意事项
+
+  - 页码标记位置：标准 x=9.3", y=5.1"（右下角小字）
+  - 封面装饰元素：底部 accent 色条作为视觉锚点
+  - TOC 使用编号+文字双列布局
+  - Content 页 header 下有 accent 色下划线
+  - 所有文本使用 Arial 作为默认字体以确保跨平台兼容性
+
+  ### 参考文档
+
+  详细设计规范见 `extension-modules/pptx-generator/references/design-system.md`

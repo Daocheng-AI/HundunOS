@@ -1,0 +1,50 @@
+# Grafana HundunOS 系统仪表盘
+apiVersion: interfaces.grafana.com/v1alpha1
+kind: Dashboard
+metadata:
+  name: hundunos-overview
+  labels:
+    app: hundunos
+spec:
+  title: "HundunOS 系统总览"
+  tags:
+    - hundunos
+    - system
+  timezone: browser
+  refresh: 30s
+  panels:
+    - title: "请求量 / 秒"
+      type: graph
+      datasource: Prometheus
+      targets:
+        - expr: rate(hundunos_requests_total[1m])
+          legendFormat: "{{ method }} {{ path }}"
+    - title: "错误率"
+      type: gauge
+      datasource: Prometheus
+      targets:
+        - expr: rate(hundunos_requests_total{status=~"5.."}[5m]) / rate(hundunos_requests_total[5m])
+          unit: percentunit
+    - title: "P95 响应时间"
+      type: graph
+      datasource: Prometheus
+      targets:
+        - expr: histogram_quantile(0.95, rate(hundunos_request_duration_seconds_bucket[5m]))
+          legendFormat: "P95"
+    - title: "活跃会话数"
+      type: stat
+      datasource: Prometheus
+      targets:
+        - expr: hundunos_active_sessions
+    - title: "内存使用"
+      type: gauge
+      datasource: Prometheus
+      targets:
+        - expr: hundunos_process_resident_memory_bytes / hundunos_process_max_memory_bytes
+          unit: percentunit
+    - title: "模型推理队列"
+      type: timeseries
+      datasource: Prometheus
+      targets:
+        - expr: hundunos_model_queue_length
+          legendFormat: "队列长度"

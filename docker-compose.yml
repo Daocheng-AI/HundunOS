@@ -1,0 +1,164 @@
+version: '3.8'
+
+services:
+  # HundunOS 主服务
+  hundunos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hundunos-app
+    restart: unless-stopped
+    ports:
+      - "38080:38080"
+    environment:
+      - NODE_ENV=production
+      - HUNDUNOS_WS=/app/workspace
+      - HUNDUNOS_DATA=/app/data
+      - HUNDUNOS_LOGS=/app/logs
+      - OLLAMA_ENDPOINT=http://ollama:11434
+    volumes:
+      - hundunos-data:/app/data
+      - hundunos-logs:/app/logs
+      - hundunos-workspace:/app/workspace
+    depends_on:
+      - ollama
+    networks:
+      - hundunos-network
+    healthcheck:
+      test: ["CMD-SHELL", "node --input-type=module -e \"import('http').then(m => m.get('http://localhost:38080/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).catch(() => process.exit(1)))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Ollama 本地模型服务
+  ollama:
+    image: ollama/ollama:latest
+    container_name: hundunos-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - hundunos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis (可选，用于缓存)
+  redis:
+    image: redis:7-alpine
+    container_name: hundunos-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - hundunos-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL (可选，用于生产数据库)
+  postgres:
+    image: postgres:16-alpine
+    container_name: hundunos-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=hundunos
+      - POSTGRES_USER=hundunos
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?请设置强密码: 导出 POSTGRES_PASSWORD 再启动}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - hundunos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hundunos"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx 反向代理 (可选)
+  nginx:
+    image: nginx:alpine
+    container_name: hundunos-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - hundunos
+    networks:
+      - hundunos-network
+
+  # Prometheus 监控 (可选)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hundunos-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infrastructure/monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    networks:
+      - hundunos-network
+
+  # Grafana 监控面板 (可选)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: hundunos-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - hundunos-network
+
+networks:
+  hundunos-network:
+    driver: bridge
+
+volumes:
+  hundunos-data:
+    driver: local
+  hundunos-logs:
+    driver: local
+  hundunos-workspace:
+    driver: local
+  ollama-data:
+    driver: local
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

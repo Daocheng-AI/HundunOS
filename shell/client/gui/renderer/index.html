@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HundunOS v3.0</title>
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.dot.offline{background:var(--red)}
+.dot.loading{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-actions{display:flex;gap:8px}
+.topbar-actions button{padding:4px 12px;font-size:12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer}
+.topbar-actions button:hover{background:var(--border);color:var(--text)}
+.nav-tabs{display:flex;padding:0 16px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.nav-tab{padding:8px 16px;font-size:13px;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+#chat-view{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#chat-view.hidden,#status-view.hidden,#modules-view.hidden{display:none!important}
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.message{max-width:80%;padding:10px 14px;border-radius:8px;line-height:1.5;font-size:14px}
+.message.user{align-self:flex-end;background:var(--accent);color:#fff}
+.message.assistant{align-self:flex-start;background:var(--bg2);border:1px solid var(--border);white-space:pre-wrap}
+.message.error{background:#2d1117;border-color:var(--red);color:var(--red)}
+.meta{font-size:11px;color:var(--dim);margin-top:4px}
+.input-area{display:flex;gap:8px;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border)}
+.input-area textarea{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;font-size:14px;resize:none;outline:none;font-family:inherit;min-height:40px;max-height:120px}
+.input-area textarea:focus{border-color:var(--accent)}
+.input-area button{padding:8px 20px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer;font-weight:500}
+.input-area button:disabled{opacity:.4;cursor:not-allowed}
+.panel{padding:20px;overflow-y:auto;height:100%}
+.panel h2{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;padding:3px 0}
+.row .k{color:var(--dim);font-size:13px}
+.row .v{font-size:13px;font-weight:500}
+.row .v.g{color:var(--green)}
+.row .v.y{color:var(--yellow)}
+.row .v.r{color:var(--red)}
+.bar{width:100%;height:6px;background:var(--border);border-radius:3px;margin-top:8px}
+.bar-fill{height:100%;border-radius:3px;background:var(--green)}
+.bar-fill.medium{background:var(--yellow)}
+.bar-fill.bad{background:var(--red)}
+.mod-item{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:6px}
+.badge{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.badge.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+.badge.off{background:var(--dim)}
+.mi{flex:1}
+.mi .n{font-size:14px;font-weight:500}
+.mi .i{font-size:11px;color:var(--dim);font-family:monospace}
+.mi .t{font-size:11px;color:var(--accent)}
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200}
+#loading.hidden{display:none}
+.logo{font-size:24px;font-weight:700;margin-bottom:16px;color:var(--accent)}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="logo">HundunOS v3.0</div>
+  <div class="spinner"></div>
+  <div id="loading-text" style="color:var(--dim);font-size:14px">Connecting to kernel...</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-title">
+    <span class="dot" id="dot"></span>
+    <span>HundunOS</span>
+    <span id="status-label" style="font-size:12px;color:var(--dim)">—</span>
+  </div>
+  <div class="topbar-actions">
+    <button onclick="restartKernel()">Restart</button>
+    <button onclick="show('chat')">Chat</button>
+    <button onclick="show('status')">Status</button>
+    <button onclick="show('modules')">Modules</button>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" data-v="chat" onclick="show('chat')">会话</div>
+  <div class="nav-tab" data-v="status" onclick="show('status')">状态</div>
+  <div class="nav-tab" data-v="modules" onclick="show('modules')">模块</div>
+</div>
+
+<div class="main">
+  <div id="chat-view">
+    <div class="messages" id="msgs">
+      <div class="message assistant">HundunOS v3.0 已就绪。有什么可以帮你的？<div class="meta">System</div></div>
+    </div>
+    <div class="input-area">
+      <textarea id="inp" rows="1" placeholder="输入消息，按 Enter 发送..."></textarea>
+      <button id="snd" onclick="send()">Send</button>
+    </div>
+  </div>
+  <div id="status-view" class="hidden">
+    <div class="panel">
+      <h2>系统状态</h2>
+      <div class="card">
+        <div class="row"><span class="k">版本</span><span class="v" id="s-ver">—</span></div>
+        <div class="row"><span class="k">运行状态</span><span class="v" id="s-run">—</span></div>
+        <div class="row"><span class="k">运行时长</span><span class="v" id="s-up">—</span></div>
+        <div class="row"><span class="k">会话</span><span class="v" id="s-sess">—</span></div>
+        <div class="row"><span class="k">平台</span><span class="v" id="s-plat">—</span></div>
+      </div>
+      <h2 style="margin-top:20px">健康评分</h2>
+      <div class="card">
+        <div class="row"><span class="k">Overall</span><span class="v" id="h-score">—</span></div>
+        <div class="bar"><div class="bar-fill" id="h-bar" style="width:0%"></div></div>
+      </div>
+      <h2 style="margin-top:20px">守护进程</h2>
+      <div class="card">
+        <div class="row"><span class="k">IPC 端口</span><span class="v">38081</span></div>
+        <div class="row"><span class="k">API 端口</span><span class="v">38082</span></div>
+        <div class="row"><span class="k">内核端口</span><span class="v">38080</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="modules-view" class="hidden">
+    <div class="panel"><div id="mod-list"></div></div>
+  </div>
+</div>
+
+<script>
+let sid = 'g' + Date.now(), busy = false;
+
+async function send() {
+  const txt = inp.value.trim();
+  if (!txt || busy) return;
+  add('user', txt); inp.value = '';
+  busy = true; snd.disabled = true;
+  try {
+    const r = await window.hundunos.process({ content: txt, sessionId: sid });
+    const c = r?.data?.content || JSON.stringify(r?.data, null, 2) || '处理完成';
+    add(r?.success !== false ? 'assistant' : 'error', c, r?.latency ? r.latency + 'ms' : '');
+  } catch { add('error', '无法连接 HundunOS 内核，请确保守护进程正在运行。'); }
+  busy = false; snd.disabled = false;
+}
+
+function add(role, content, meta) {
+  const d = document.createElement('div');
+  d.className = 'message ' + role;
+  d.innerHTML = content + (meta ? `<div class="meta">${meta}</div>` : '');
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function show(v) {
+  ['chat','status','modules'].forEach(x => {
+    const el = document.getElementById(x + '-view');
+    el.style.display = x === v ? 'flex' : 'none';
+    el.classList.toggle('hidden', x !== v);
+    document.querySelector(`[data-v="${x}"]`).classList.toggle('active', x === v);
+  });
+  if (v === 'status') refreshStatus();
+  if (v === 'modules') refreshMods();
+}
+
+async function refreshStatus() {
+  try {
+    const s = await window.hundunos.getStatus();
+    setDot(s.running ? 'online' : 'offline');
+    lb(s.running ? 'Online' : 'Offline');
+    document.getElementById('s-ver').textContent = s.version || '3.0.0';
+    document.getElementById('s-run').textContent = s.running ? 'Running' : 'Stopped';
+    document.getElementById('s-run').className = 'v ' + (s.running ? 'g' : 'r');
+    document.getElementById('s-up').textContent = s.uptime ? (s.uptime/60).toFixed(1)+'m' : '—';
+    document.getElementById('s-sess').textContent = s.sessions?.active || 0;
+    document.getElementById('s-plat').textContent = s.platform || 'unknown';
+  } catch { setDot('offline'); lb('Offline'); }
+  try {
+    const h = await window.hundunos.getHealth();
+    const sc = h?.overall?.score || (h?.healthy ? 80 : 0);
+    document.getElementById('h-score').textContent = sc + '/100';
+    const b = document.getElementById('h-bar');
+    b.style.width = sc + '%';
+    b.className = 'bar-fill ' + (sc >= 80 ? '' : sc >= 60 ? 'medium' : 'bad');
+  } catch {}
+}
+
+async function refreshMods() {
+  try {
+    const m = await window.hundunos.getModules();
+    const list = m?.modules || [];
+    modList.innerHTML = list.length ? list.map(x => `
+      <div class="mod-item">
+        <div class="badge ${x.status==='active'?'on':'off'}"></div>
+        <div class="mi">
+          <div class="n">${x.name||x.id}</div>
+          <div class="i">${x.id}</div>
+          <div class="t">${x.type||''}</div>
+        </div>
+      </div>`).join('') : '<div style="color:var(--dim);padding:16px">No modules</div>';
+  } catch {}
+}
+
+function setDot(s) { dot.className = 'dot ' + (s==='online'?'':s); }
+function lb(t) { document.getElementById('status-label').textContent = t; }
+
+async function restartKernel() {
+  const btn = document.querySelector('.topbar-actions button');
+  btn.textContent = '...'; btn.disabled = true;
+  setDot('loading'); lb('Restarting...');
+  await fetch('http://127.0.0.1:38081', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({method:'restartKernel'})}).catch(()=>{});
+  setTimeout(()=>{btn.textContent='Restart';btn.disabled=false;setDot('online');lb('Online');},3000);
+}
+
+inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+window.hundunos.onNavigate(v=>show(v));
+window.hundunos.onKernelRestart(()=>restartKernel());
+
+setTimeout(async()=>{
+  try { await window.hundunos.getStatus(); setDot('online'); lb('Online'); }
+  catch { setDot('offline'); lb('Offline'); }
+  loading.classList.add('hidden');
+}, 1000);
+</script>
+</body>
+</html>

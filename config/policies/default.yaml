@@ -1,0 +1,78 @@
+# HundunOS 安全策略配置
+# 参考 fastclaw-ai/fastclaw 的 Policy Engine 设计
+
+## 文件系统策略
+file:
+  read:
+    allowed_paths:
+      - "${workspace}/*"
+      - "${workspace}/**/*"
+    denied_paths:
+      - "${workspace}/.qclaw/*"
+      - "${workspace}/.hundunos/*"
+    max_file_size: 10485760  # 10MB
+    allowed_extensions:
+      - ".js"
+      - ".json"
+      - ".md"
+      - ".txt"
+      - ".yaml"
+      - ".yml"
+
+  write:
+    allowed_paths:
+      - "${workspace}/*"
+    denied_paths:
+      - "${workspace}/.qclaw/**"
+      - "${workspace}/.hundunos/**"
+      - "${workspace}/config/system.*.json"
+    max_file_size: 10485760
+
+  delete:
+    require_confirmation: true
+    allowed_paths:
+      - "${workspace}/**/temp/*"
+      - "${workspace}/cache/**"
+    denied_paths:
+      - "${workspace}/*"
+
+## 网络策略
+network:
+  allowed_domains:
+    - "*.github.com"
+    - "*.githubusercontent.com"
+    - "api.openai.com"
+    - "api.anthropic.com"
+    - "localhost"
+    - "127.0.0.1"
+
+  blocked_domains:
+    - "*.onion"
+    - "*.i2p"
+
+  max_request_size: 5242880  # 5MB
+  timeout: 30000
+
+## 工具策略
+tools:
+  exec:
+    allowed: true
+    max_duration: 300000  # 5分钟
+    max_memory: 1073741824  # 1GB
+    sandbox_mode: "auto"  # auto, docker, none
+
+  browser:
+    allowed: true
+    max_tabs: 5
+
+  subagent:
+    allowed: true
+    max_concurrent: 3
+    max_depth: 2
+
+## 资源限制
+resources:
+  max_concurrent_requests: 50
+  max_token_per_hour: 1000000
+  max_sessions: 200
+  max_memory_mb: 2048

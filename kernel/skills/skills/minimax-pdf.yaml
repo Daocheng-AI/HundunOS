@@ -1,0 +1,185 @@
+# kernel/skills/skills/minimax-pdf.yaml
+# HundunOS v4.1 — minimax-pdf 文档生成 Skill
+# 移植自 MiniMax-AI/skills (MIT License)
+# 15种封面风格 · Token设计系统 · 图表/流程图/数学公式
+#
+# 触发: PDF 生成、报告、提案、简历、文档格式化
+
+name: minimax-pdf
+version: 1.0.0
+description: >
+  专业级 PDF 文档生成引擎。支持 15 种视觉风格（report/proposal/resume/portfolio/
+  academic/minimal/stripe/diagonal/frame/editorial/magazine/darkroom/terminal/poster），
+  Token 化设计系统，图表/流程图/数学公式渲染。
+  CREATE（从零生成）、FILL（表单填充）、REFORMAT（重新排版已有文档）。
+author: minimax-ai / hundunos-port
+license: MIT
+tags:
+  - pdf
+  - document-generation
+  - report
+  - design
+  - print
+
+# 触发条件
+trigger:
+  patterns:
+    - generate PDF
+    - create PDF
+    - make a PDF
+    - generate report
+    - write proposal
+    - create resume
+    - professional document
+    - polished PDF
+    - client-ready document
+    - fill form
+    - fill PDF
+    - reformat document
+    - convert to PDF
+    - re-style PDF
+    - beautiful PDF
+    - 生成 PDF
+    - 创建报告
+    - 写简历
+    - 填写表单
+    - PDF 格式化
+  semantic: true
+
+# Skill 工具定义
+tools:
+  # ── CREATE: 全管线生成 ────────────────────────────────
+  - id: pdf_create
+    type: shell
+    command: python "{{skill_dir}}scripts/palette.py" --type {{type | default 'report'}} --accent {{accent | default '#2D5F8A'}} --output-tokens > "$env:TEMP\pdf_tokens.json" 2>&1; python "{{skill_dir}}scripts/cover.py" --tokens "$env:TEMP\pdf_tokens.json" --title "{{title}}" --author "{{author | default 'HundunOS'}}" --date "{{date | default ''}}" --subtitle "{{subtitle | default ''}}" --abstract "{{abstract | default ''}}" --cover-image "{{cover_image | default ''}}" --output-cover "$env:TEMP\pdf_cover.html" 2>&1; node "{{skill_dir}}scripts/render_cover.js" --input "$env:TEMP\pdf_cover.html" --output "$env:TEMP\pdf_cover.pdf" 2>&1; python "{{skill_dir}}scripts/render_body.py" --tokens "$env:TEMP\pdf_tokens.json" --content "{{content | default '{}'}}" --output-body "$env:TEMP\pdf_body.pdf" 2>&1; python "{{skill_dir}}scripts/merge.py" --cover "$env:TEMP\pdf_cover.pdf" --body "$env:TEMP\pdf_body.pdf" --output "{{out | default 'output.pdf'}}"
+    description: >
+      完整 PDF 创建管线：调色板 → 封面(HTML+Playwright) → 正文(ReportLab) → 合并。
+      支持 15 种文档类型和 18 种内容块类型。
+    isolation: process
+    timeout: 120000
+    env:
+      SKILL_DIR: extension-modules/minimax-pdf
+
+  # ── FILL: 表单字段填充 ────────────────────────────────
+  - id: pdf_fill_inspect
+    type: shell
+    command: python "{{skill_dir}}scripts/fill_inspect.py" --input "{{input}}"
+    description: 检查 PDF 表单字段（名称、类型、选项）
+    isolation: process
+    timeout: 30000
+
+  - id: pdf_fill_write
+    type: shell
+    command: python "{{skill_dir}}scripts/fill_write.py" --input "{{input}}" --out "{{out | default 'filled.pdf'}}" --values '{{values | default "{}"}}'
+    description: 向 PDF 表单写入值（text/checkbox/dropdown/radio）
+    isolation: process
+    timeout: 30000
+
+  # ── REFORMAT: 重新排版 ────────────────────────────────
+  - id: pdf_reformat
+    type: shell
+    command: python "{{skill_dir}}scripts/reformat_parse.py" --input "{{input}}" --output-content "$env:TEMP\refmt_content.json" 2>&1; python "{{skill_dir}}scripts/palette.py" --type {{type | default 'report'}} --accent {{accent | default '#2D5F8A'}} --output-tokens > "$env:TEMP\pdf_tokens.json" 2>&1; python "{{skill_dir}}scripts/cover.py" --tokens "$env:TEMP\pdf_tokens.json" --title "{{title}}" --output-cover "$env:TEMP\pdf_cover.html" 2>&1; node "{{skill_dir}}scripts/render_cover.js" --input "$env:TEMP\pdf_cover.html" --output "$env:TEMP\pdf_cover.pdf" 2>&1; python "{{skill_dir}}scripts/render_body.py" --tokens "$env:TEMP\pdf_tokens.json" --content "$env:TEMP\refmt_content.json" --output-body "$env:TEMP\pdf_body.pdf" 2>&1; python "{{skill_dir}}scripts/merge.py" --cover "$env:TEMP\pdf_cover.pdf" --body "$env:TEMP\pdf_body.pdf" --output "{{out | default 'output.pdf'}}"
+    description: 解析已有文档并重新应用设计风格
+    isolation: process
+    timeout: 120000
+
+  # ── CHECK: 环境检查 ───────────────────────────────────
+  - id: pdf_check_deps
+    type: shell
+    command: python -c "import reportlab; print('OK: reportlab')" 2>&1; python -c "import pypdf; print('OK: pypdf')" 2>&1; node -e "try{require('playwright');console.log('OK: playwright')}catch(e){console.log('MISSING: playwright')}" 2>&1
+    description: 检查 Python/Node 依赖是否安装完整
+    isolation: process
+    timeout: 15000
+
+# 执行配置
+execution:
+  isolation: process
+  timeout: 120000
+  retry: 1
+  skill_dir: extension-modules/minimax-pdf/
+
+# System Prompt 注入 — 为 Agent 提供完整的 PDF 设计知识
+system_prompt: |
+  ## minimax-pdf 专业文档生成模式（v1.0）
+
+  你是一个**专业 PDF 文档设计专家**，使用 minimax-pdf 引擎创建印刷级质量的 PDF。
+
+  ### 三条路线选择
+
+  **CREATE** — 从零生成新文档：
+  - 用户没有源文件时使用
+  - 调用 `pdf_create` 工具
+  - 需要参数：`title`(必填), `type`(文档类型), `content`(content.json)
+
+  **FILL** — 填充现有 PDF 表单：
+  - 用户有带表单字段的 PDF 时使用
+  - 先调用 `pdf_fill_inspect` 检查字段，再调用 `pdf_fill_write`
+  - 需要参数：`input`(源PDF), `values`(JSON 字段值)
+
+  **REFORMAT** — 重新排版已有文档：
+  - 用户有源文件(.md/.txt/.pdf)需要重新设计时使用
+  - 调用 `pdf_reformat` 工具
+  - 自动解析源文件后走完整 CREATE 管线
+
+  ### 文档类型（15种）
+
+  | 类型 | 适用场景 | 视觉特征 |
+  |------|---------|---------|
+  | `report` | 商业报告、季度回顾 | 深色背景, 点阵网格 |
+  | `proposal` | 项目提案、方案建议 | 左侧面板 + 右侧几何图形 |
+  | `resume` | 个人简历 | 超大首字母装饰 |
+  | `portfolio` | 作品集、项目展示 | 近黑色背景 + 径向光晕 |
+  | `academic` | 论文、学术研究 | 浅色背景, 经典衬线字体 |
+  | `general` | 通用文档 | 深灰蓝, Outfit 字体 |
+  | `minimal` | 极简风格 | 白色 + 单色强调条 |
+  | `stripe` | 条纹分割风格 | 三色横条分割 |
+  | `diagonal` | 斜切角风格 | SVG 斜角切割 |
+  | `frame` | 边框装饰风格 | 内嵌边框 + 角落装饰 |
+  | `editorial` | 编辑/杂志风格 | 幽灵字母 + 全大写标题 |
+  | `magazine` | 杂志/画报风格 | 暖奶油背景 + 英雄图 |
+  | `darkroom` | 暗房风格 | 海军蓝 + 居中堆叠 |
+  | `terminal` | 终端/代码风格 | 近黑底 + 网格线 + 等宽字体 |
+  | `poster` | 海报风格 | 白底 + 粗边栏 |
+
+  ### 内容块类型（18种）
+
+  `h1`(章节标题) · `h2`(子标题) · `h3`(三级标题) · `body`(正文) ·
+  `bullet`(无序列表) · `numbered`(有序列表) · `callout`(强调框) ·
+  `table`(表格) · `image`(图片) · `figure`(编号图片) · `code`(代码块) ·
+  `math`(数学公式) · `chart`(图表) · `flowchart`(流程图) ·
+  `bibliography`(参考文献) · `divider`(分隔线) · `caption`(说明文字) ·
+  `pagebreak`(分页符) · `spacer`(垂直间距)
+
+  ### 强调色选择原则
+
+  根据文档语义上下文选择强调色（而非默认安全色）：
+  - 法律/合规/金融 → 深海军蓝 `#1C3A5E`, 炭灰 `#2E3440`
+  - 医疗/健康 → 青绿 `#2A6B5A`, 凉绿色 `#3A7D6A`
+  - 科技/工程 → 钢蓝 `#2D5F8A`, 靛蓝 `#3D4F8A`
+  - 环境/可持续 → 森林绿 `#2E5E3A`, 橄榄 `#4A5E2A`
+  - 创意/文化 → 酒红 `#6B2A35`, 梅红 `#5A2A6B`
+  - 学术/研究 → 深青 `#2A5A6B`, 图书馆蓝 `#2A4A6B`
+
+  **规则**: 选择一个深思熟虑的设计师会为这个特定文档挑选的颜色。柔和、去饱和的色调效果最佳；避免鲜艳原色。
+
+  ### content.json 格式
+
+  ```json
+  [
+    {"type": "h1", "text": "第一章"},
+    {"type": "body", "text": "正文内容..."},
+    {"type": "callout", "text": "重要提示"},
+    {"type": "table", "headers": ["列1","列2"], "rows": [["a1","a2"],["b1","b2"]]},
+    {"type": "chart", "chart_type": "bar", "labels": ["Q1","Q2"], "datasets": [{"label":"收入", "values":[100,150]}]}
+  ]
+  ```
+
+  ### 执行前必读
+
+  在执行任何 CREATE 或 REFORMAT 操作前，先读取 `extension-modules/minimax-pdf/design/design.md` 了解完整设计系统规范。
+
+  ### 依赖要求
+
+  - Python 3.9+ (reportlab, pypdf)
+  - Node.js 18+ (playwright + chromium)
+  - 使用 `pdf_check_deps` 验证环境

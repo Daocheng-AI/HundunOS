@@ -1,0 +1,168 @@
+{
+  "version": "2.0",
+  "description": "白名单配置 - 优先匹配的场景",
+  "items": [
+    {
+      "pattern": "^帮我整理",
+      "keywords": ["整理桌面", "整理文件", "整理文件夹", "桌面整理"],
+      "directTo": "gongbu",
+      "skipReview": false,
+      "priority": 10,
+      "description": "文件整理类任务"
+    },
+    {
+      "pattern": "^写一个",
+      "keywords": ["写代码", "写脚本", "写程序"],
+      "directTo": "bingbu",
+      "skipReview": false,
+      "priority": 10,
+      "description": "代码编写任务"
+    },
+    {
+      "pattern": "^分析",
+      "keywords": ["分析数据", "统计分析", "数据分析"],
+      "directTo": "hubu",
+      "skipReview": false,
+      "priority": 10,
+      "description": "数据分析任务"
+    },
+    {
+      "pattern": "^检查",
+      "keywords": ["检查代码", "代码审查", "review"],
+      "directTo": "xingbu",
+      "skipReview": false,
+      "priority": 10,
+      "description": "代码审查任务"
+    },
+    {
+      "pattern": "^写文档",
+      "keywords": ["写报告", "写说明", "写文章"],
+      "directTo": "libu_doc",
+      "skipReview": false,
+      "priority": 10,
+      "description": "文档撰写任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["excel", "xlsx", "csv", "表格", "数据处理"],
+      "directTo": "hubu",
+      "skipReview": false,
+      "priority": 8,
+      "description": "数据处理任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["python", "py文件", "脚本"],
+      "directTo": "bingbu",
+      "skipReview": false,
+      "priority": 8,
+      "description": "Python开发任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["javascript", "js", "node"],
+      "directTo": "bingbu",
+      "skipReview": false,
+      "priority": 8,
+      "description": "JavaScript开发任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["可视化", "图表", "dashboard", "画图"],
+      "directTo": "hubu",
+      "skipReview": false,
+      "priority": 7,
+      "description": "数据可视化任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["算法", "排序", "二叉树", "动态规划"],
+      "directTo": "bingbu",
+      "skipReview": false,
+      "priority": 7,
+      "description": "算法实现任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["api", "接口", "rest"],
+      "directTo": "bingbu",
+      "skipReview": false,
+      "priority": 7,
+      "description": "API开发任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["安排", "计划", "排期", "调度"],
+      "directTo": "libu",
+      "skipReview": false,
+      "priority": 7,
+      "description": "任务调度类任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["安全", "漏洞", "审计"],
+      "directTo": "xingbu",
+      "skipReview": false,
+      "priority": 8,
+      "description": "安全审核任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["测试", "test", "验证"],
+      "directTo": "xingbu",
+      "skipReview": false,
+      "priority": 6,
+      "description": "测试验证任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["技术文档", "readme", "手册", "说明"],
+      "directTo": "libu_doc",
+      "skipReview": false,
+      "priority": 6,
+      "description": "技术文档任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["清理", "清理桌面", "清理文件", "删除临时"],
+      "directTo": "gongbu",
+      "skipReview": false,
+      "priority": 7,
+      "description": "清理操作任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["搜索", "找文件", "查找"],
+      "directTo": "gongbu",
+      "skipReview": false,
+      "priority": 5,
+      "description": "文件搜索任务"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["批量重命名", "批量移动", "批量复制"],
+      "directTo": "gongbu",
+      "skipReview": false,
+      "priority": 7,
+      "description": "批量文件操作"
+    },
+    {
+      "pattern": "^规划",
+      "keywords": ["规划", "方案设计", "架构设计"],
+      "directTo": "libu",
+      "skipReview": false,
+      "priority": 8,
+      "description": "规划设计方案"
+    },
+    {
+      "pattern": ".*",
+      "keywords": ["短视频", "抖音", "小红书", "内容运营"],
+      "directTo": "libu_doc",
+      "skipReview": false,
+      "priority": 6,
+      "description": "内容运营任务"
+    }
+  ],
+  "defaultMinistry": "bingbu",
+  "fallbackStrategy": "score_based"
+}

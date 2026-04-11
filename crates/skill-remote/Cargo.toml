@@ -1,0 +1,29 @@
+[package]
+name = "hundunos-skill-remote"
+version = "0.1.0"
+edition = "2021"
+description = "HundunOS Skill Remote - Secure remote skill installation with SSRF protection"
+license = "MIT"
+
+[lib]
+name = "skill_remote"
+path = "src/lib.rs"
+
+[features]
+default = []
+napi = ["napi-derive", "napi"]
+
+[dependencies]
+url = "2.5"
+regex = "1.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+dns-lookup = "2.0"
+napi = { version = "2", optional = true, default-features = false, features = ["napi4", "serde-json"] }
+napi-derive = { version = "2", optional = true }
+
+[dev-dependencies]
+tokio-test = "0.4"

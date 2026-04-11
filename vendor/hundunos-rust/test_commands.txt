@@ -1,0 +1,9 @@
+{"action":"Record","content":"python programming tutorial for beginners","intent":"upgrade_kernel","result":true}
+{"action":"Record","content":"rust systems programming memory safety","intent":"upgrade_kernel","result":true}
+{"action":"Record","content":"machine learning neural networks deep learning AI","intent":"upgrade_kernel","result":true}
+{"action":"Record","content":"web development javascript typescript react","intent":"upgrade_kernel","result":false}
+{"action":"Record","content":"database sql postgresql optimization","intent":"upgrade_kernel","result":true}
+{"action":"GetStats"}
+{"action":"CompressSemantic"}
+{"action":"SemanticSearch","query":"python tutorial","top_k":3}
+{"action":"GetSemanticCompressorStats"}

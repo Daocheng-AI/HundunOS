@@ -1,0 +1,29 @@
+# Rust 编译产物（体积巨大，必须排除）
+# FIX-gitignore: hundunos-rust 项目此前完全没有 .gitignore，target/ 目录已达 3.3 GB
+/target/
+**/target/
+
+# 独立 crate 的 Cargo.lock（workspace 级别用根目录的即可）
+# 但保留子 crate 的 Cargo.lock 以便独立开发时有版本记录
+# agent-d99f2b91/Cargo.lock
+
+# Rust 调试符号（可选）
+# *.pdb 文件由 build/ 产生，已被 **/target/ 覆盖
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# Node.js（tool-bridge 子目录可能有 node_modules）
+**/node_modules/

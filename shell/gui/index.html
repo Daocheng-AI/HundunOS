@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSP: 禁止内联事件处理器以外的内联脚本，防止 XSS -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:* http://127.0.0.1:*;">
+  <title>HundunOS GUI</title>
+  <style>
+    :root {
+      --bg-base: #0a0c10;
+      --bg-panel: #111318;
+      --bg-card: #161922;
+      --border: #1e2230;
+      --text-primary: #e8e2d9;
+      --text-secondary: #7b7d8a;
+      --accent-gold: #c9a96e;
+      --accent-green: #70b08a;
+      --accent-red: #e07070;
+      --accent-blue: #7095d0;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { height: 100vh; background: var(--bg-base); color: var(--text-primary); font-family: system-ui, sans-serif; display: flex; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px; background: var(--bg-panel); border-right: 1px solid var(--border);
+      padding: 16px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0;
+    }
+    .sidebar h2 { font-size: 16px; color: var(--accent-gold); letter-spacing: 0.1em; }
+    .sidebar-status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); flex-shrink: 0;
+      box-shadow: 0 0 6px var(--accent-green); }
+    .status-dot.offline { background: var(--accent-red); box-shadow: 0 0 6px var(--accent-red); }
+    .new-chat-btn {
+      background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold);
+      padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; text-align: left;
+    }
+    .new-chat-btn:hover { background: rgba(201,169,110,0.15); }
+    .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+    .chat-item {
+      padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--text-secondary);
+      transition: all 0.15s; border: 1px solid transparent; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .chat-item:hover { background: var(--bg-card); color: var(--text-primary); }
+    .chat-item.active { background: rgba(201,169,110,0.12); border-color: rgba(201,169,110,0.3); color: var(--accent-gold); }
+    .api-key-group { margin-top: auto; display: flex; flex-direction: column; gap: 4px; }
+    .api-key-group label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; }
+    .api-key-input {
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary);
+      padding: 6px 10px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); outline: none;
+      transition: border-color 0.2s;
+    }
+    .api-key-input:focus { border-color: var(--accent-gold); }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── Message bubbles ── */
+    .msg-row { display: flex; gap: 10px; align-items: flex-start; animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .msg-row.user { flex-direction: row-reverse; }
+    .msg-avatar {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .msg-row.user .msg-avatar { background: rgba(112,149,208,0.2); }
+    .msg-row.assistant .msg-avatar { background: rgba(201,169,110,0.15); }
+    .msg-row.system .msg-avatar { background: rgba(224,112,112,0.15); }
+    .msg-bubble {
+      max-width: 72%; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.6;
+      border: 1px solid var(--border); word-break: break-word;
+    }
+    .msg-row.user .msg-bubble { background: rgba(112,149,208,0.1); border-color: rgba(112,149,208,0.2); color: var(--text-primary); }
+    .msg-row.assistant .msg-bubble { background: var(--bg-card); }
+    .msg-row.system .msg-bubble { background: rgba(224,112,112,0.08); border-color: rgba(224,112,112,0.2); color: var(--accent-red); font-size: 11px; font-family: var(--font-mono); }
+    .msg-meta { font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* ── Markdown 渲染样式 ── */
+    .msg-bubble p { margin-bottom: 6px; }
+    .msg-bubble p:last-child { margin-bottom: 0; }
+    .msg-bubble code {
+      background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 4px;
+      font-family: var(--font-mono); font-size: 11px;
+    }
+    .msg-bubble pre { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 6px; padding: 10px; overflow-x: auto; margin: 6px 0; }
+    .msg-bubble pre code { background: transparent; padding: 0; font-size: 11px; }
+    .msg-bubble ul, .msg-bubble ol { padding-left: 16px; margin: 4px 0; }
+    .msg-bubble li { margin-bottom: 2px; }
+    .msg-bubble h1, .msg-bubble h2, .msg-bubble h3 { color: var(--accent-gold); margin: 8px 0 4px; font-size: 14px; }
+    .msg-bubble blockquote { border-left: 3px solid var(--accent-gold); padding-left: 8px; color: var(--text-secondary); margin: 4px 0; }
+    .msg-bubble a { color: var(--accent-blue); text-decoration: none; }
+    .msg-bubble a:hover { text-decoration: underline; }
+
+    /* ── Input ── */
+    .chat-input-bar {
+      padding: 12px 20px; border-top: 1px solid var(--border); background: rgba(10,12,18,0.8);
+      display: flex; align-items: flex-end; gap: 10px;
+    }
+    .chat-textarea {
+      flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary);
+      padding: 10px 12px; border-radius: 8px; resize: none; font-family: inherit; font-size: 13px;
+      outline: none; transition: border-color 0.2s; max-height: 120px; min-height: 40px; line-height: 1.5;
+    }
+    .chat-textarea:focus { border-color: var(--accent-gold); }
+    .chat-textarea::placeholder { color: var(--text-secondary); }
+    .send-btn {
+      background: var(--accent-gold); border: none; color: #0a0c10; padding: 10px 18px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; flex-shrink: 0; height: 40px;
+    }
+    .send-btn:hover { opacity: 0.85; }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .input-hint { font-size: 10px; color: var(--text-secondary); padding: 0 20px 6px; }
+
+    /* ── Loading indicator ── */
+    .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 6px 14px; }
+    .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-gold);
+      animation: typing 1.2s infinite; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>HUNDUN OS</h2>
+    <div class="sidebar-status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">连接中...</span>
+    </div>
+    <button class="new-chat-btn" id="newChatBtn">+ 新建对话</button>
+    <div class="chat-list" id="chatList"></div>
+    <div class="api-key-group">
+      <label>API Key</label>
+      <input class="api-key-input" type="password" id="apiKeyInput" placeholder="可选，留空则无需认证" />
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="chat-messages" id="messages"></div>
+    <div class="input-hint">Enter 发送 · Shift+Enter 换行</div>
+    <div class="chat-input-bar">
+      <textarea class="chat-textarea" id="input" rows="1" placeholder="输入消息..."></textarea>
+      <button class="send-btn" id="sendBtn">发送</button>
+    </div>
+  </div>
+
+  <!-- marked.js: Markdown 渲染 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+  <script>
+    'use strict';
+
+    // Auto-detect API port: try 38081 (development) then 38080 (production)
+    const API = (() => {
+      const host = 'http://localhost';
+      const ports = [38081, 38080];
+      return `${host}:${ports[0]}`; // Default, will fallback in checkOnline()
+    })();
+    let chats = [];
+    let currentChatId = null;
+    let isSending = false;
+
+    // ── 初始化 marked ──
+    if (typeof marked !== 'undefined') {
+      marked.setOptions({ breaks: true, gfm: true });
+    }
+
+    // ── 安全的 HTML 转义（文本节点用，防 XSS） ──
+    function escapeHtml(str) {
+      if (typeof str !== 'string') str = String(str ?? '');
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ── 时间格式 ──
+    function fmtTime(ts) {
+      const d = new Date(ts || Date.now());
+      return [d.getHours(), d.getMinutes(), d.getSeconds()]
+        .map(n => String(n).padStart(2, '0')).join(':');
+    }
+
+    // ── 本地存储 ──
+    function loadChats() {
+      try { chats = JSON.parse(localStorage.getItem('hundunos_chats') || '[]'); }
+      catch { chats = []; }
+    }
+
+    function saveChats() {
+      try { localStorage.setItem('hundunos_chats', JSON.stringify(chats)); } catch {}
+    }
+
+    // ── API Key ──
+    function getApiKey() {
+      return document.getElementById('apiKeyInput').value.trim() ||
+             localStorage.getItem('hundunos_api_key') || '';
+    }
+
+    // ── 新建对话 ──
+    function newChat() {
+      const chat = { id: Date.now(), title: '新对话', messages: [], created: Date.now() };
+      chats.unshift(chat);
+      saveChats();
+      currentChatId = chat.id;
+      renderChatList();
+      renderMessages();
+    }
+
+    // ── 切换对话 ──
+    function loadChat(id) {
+      currentChatId = id;
+      renderChatList();
+      renderMessages();
+    }
+
+    // ── 渲染对话列表（DOM 构建，无 innerHTML 注入） ──
+    function renderChatList() {
+      const list = document.getElementById('chatList');
+      list.textContent = ''; // 清空
+      chats.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'chat-item' + (c.id === currentChatId ? ' active' : '');
+        div.textContent = c.title || ('对话 ' + fmtTime(c.created)); // textContent 安全，无 XSS
+        div.addEventListener('click', () => loadChat(c.id));
+        list.appendChild(div);
+      });
+    }
+
+    // ── 渲染消息（DOM 构建，Markdown 内容用 marked 渲染 + DOMPurify 过滤） ──
+    function renderMessages() {
+      const container = document.getElementById('messages');
+      container.textContent = '';
+      const chat = chats.find(c => c.id === currentChatId);
+      if (!chat) return;
+
+      chat.messages.forEach(m => appendMessageDOM(m, container));
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendMessageDOM(msg, container) {
+      if (!container) container = document.getElementById('messages');
+      const row = document.createElement('div');
+      row.className = 'msg-row ' + (msg.role === 'user' ? 'user' : msg.role === 'system' ? 'system' : 'assistant');
+
+      const avatar = document.createElement('div');
+      avatar.className = 'msg-avatar';
+      avatar.textContent = msg.role === 'user' ? '👤' : msg.role === 'system' ? '⚠' : '🤖';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+
+      if (msg.role === 'assistant' && typeof marked !== 'undefined') {
+        // assistant 消息渲染 Markdown（marked 已转义，相对安全；如需更严格可引入 DOMPurify）
+        bubble.innerHTML = marked.parse(String(msg.content || ''));
+      } else {
+        // user / system 消息：纯文本，防止任何注入
+        bubble.textContent = msg.content || '';
+      }
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.textContent = fmtTime(msg.ts);
+
+      bubble.appendChild(meta);
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+      container.appendChild(row);
+      container.scrollTop = container.scrollHeight;
+      return row;
+    }
+
+    // ── Loading 动画 ──
+    function showTyping() {
+      const container = document.getElementById('messages');
+      const row = document.createElement('div');
+      row.className = 'msg-row assistant';
+      row.id = 'typing-indicator';
+      const avatar = document.createElement('div');
+      avatar.className = 'msg-avatar';
+      avatar.textContent = '🤖';
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      const dots = document.createElement('div');
+      dots.className = 'typing-indicator';
+      [1,2,3].forEach(() => {
+        const d = document.createElement('span');
+        d.className = 'typing-dot';
+        dots.appendChild(d);
+      });
+      bubble.appendChild(dots);
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+      container.appendChild(row);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function hideTyping() {
+      const el = document.getElementById('typing-indicator');
+      if (el) el.remove();
+    }
+
+    // ── 发送消息 ──
+    async function send() {
+      if (isSending) return;
+      const input = document.getElementById('input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (!currentChatId) newChat();
+      const chat = chats.find(c => c.id === currentChatId);
+      if (!chat) return;
+
+      // 自动更新标题（取前20个字符）
+      if (chat.messages.length === 0) {
+        chat.title = text.slice(0, 20) + (text.length > 20 ? '…' : '');
+      }
+
+      const userMsg = { role: 'user', content: text, ts: Date.now() };
+      chat.messages.push(userMsg);
+      appendMessageDOM(userMsg);
+      input.value = '';
+      input.style.height = 'auto';
+      saveChats();
+      renderChatList();
+
+      isSending = true;
+      document.getElementById('sendBtn').disabled = true;
+      showTyping();
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        const key = getApiKey();
+        if (key) headers['X-API-Key'] = key;
+
+        const res = await fetch(API + '/api/process', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            type: 'text',
+            content: text,
+            sessionId: 'gui_' + currentChatId,
+            timestamp: Date.now()
+          }),
+          signal: AbortSignal.timeout(30000)
+        });
+
+        hideTyping();
+
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+        }
+
+        const data = await res.json();
+        const content = extractContent(data);
+        const assistantMsg = { role: 'assistant', content, ts: Date.now() };
+        chat.messages.push(assistantMsg);
+        appendMessageDOM(assistantMsg);
+        saveChats();
+
+      } catch (e) {
+        hideTyping();
+        const errMsg = { role: 'system', content: '请求失败: ' + e.message, ts: Date.now() };
+        chat.messages.push(errMsg);
+        appendMessageDOM(errMsg);
+        saveChats();
+      }
+
+      isSending = false;
+      document.getElementById('sendBtn').disabled = false;
+      input.focus();
+    }
+
+    function extractContent(data) {
+      if (!data) return '（空响应）';
+      if (typeof data === 'string') return data;
+      const d = data.data;
+      if (d?.results) {
+        const first = Array.isArray(d.results) ? d.results[0] : d.results;
+        if (typeof first === 'string') return first;
+        if (first?.content) return first.content;
+        if (first?.message) return first.message;
+      }
+      if (d?.message) return d.message;
+      if (data.reason) return data.reason;
+      if (data.error) return '错误: ' + data.error;
+      return JSON.stringify(data, null, 2).slice(0, 500);
+    }
+
+    // 健康检查（带指数退避重连，支持多端口）
+    let _healthFails = 0;
+    async function checkHealth() {
+      const ports = [38081, 38080];
+      for (const port of ports) {
+        try {
+          const testApi = `http://localhost:${port}`;
+          const r = await fetch(testApi + '/health', { signal: AbortSignal.timeout(2000) });
+          if (r.ok) {
+            _healthFails = 0;
+            document.getElementById('statusDot').className = 'status-dot';
+            document.getElementById('statusText').textContent = `已连接 (:${port})`;
+            // Update API global
+            window.API = testApi;
+            return;
+          }
+        } catch {}
+      }
+      _healthFails++;
+      document.getElementById('statusDot').className = 'status-dot offline';
+      document.getElementById('statusText').textContent = '离线';
+      // 指数退避：最大 60s
+      const delay = Math.min(10000 * Math.pow(1.5, _healthFails - 1), 60000);
+      setTimeout(checkHealth, delay);
+      return;
+    }
+
+    // ── 输入框自动增高 ──
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    // ── 事件绑定 ──
+    document.addEventListener('DOMContentLoaded', () => {
+      loadChats();
+      renderChatList();
+      if (chats.length > 0) {
+        currentChatId = chats[0].id;
+        renderMessages();
+      }
+
+      // 恢复保存的 API Key
+      const savedKey = localStorage.getItem('hundunos_api_key');
+      if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
+
+      // 保存 API Key
+      document.getElementById('apiKeyInput').addEventListener('change', (e) => {
+        localStorage.setItem('hundunos_api_key', e.target.value.trim());
+      });
+
+      // 新建对话按钮
+      document.getElementById('newChatBtn').addEventListener('click', newChat);
+
+      // 发送按钮
+      document.getElementById('sendBtn').addEventListener('click', send);
+
+      // 键盘快捷键（Enter 发送，Shift+Enter 换行）
+      document.getElementById('input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          send();
+        }
+      });
+
+      // 输入框自动增高
+      document.getElementById('input').addEventListener('input', (e) => {
+        autoResize(e.target);
+      });
+
+      // 启动健康检查
+      checkHealth();
+      setInterval(checkHealth, 10000);
+    });
+  </script>
+</body>
+</html>

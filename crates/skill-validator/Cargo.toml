@@ -1,0 +1,30 @@
+[package]
+name = "hundunos-skill-validator"
+version = "0.1.0"
+edition = "2021"
+description = "HundunOS Skill Validator - High-performance skill validation library"
+license = "MIT"
+
+[lib]
+name = "skill_validator"
+path = "src/lib.rs"
+
+[features]
+default = []
+napi = ["napi-derive", "napi"]
+
+[dependencies]
+regex = "1.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+lazy_static = "1.4"
+napi = { version = "2", optional = true, default-features = false, features = ["napi4", "serde-json"] }
+napi-derive = { version = "2", optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "validator_benchmark"
+harness = false

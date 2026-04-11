@@ -1,0 +1,45 @@
+[package]
+name = "hundunos-audiodit"
+version = "0.1.0"
+edition = "2021"
+description = "LongCat-AudioDiT TTS engine for HundunOS"
+license = "MIT"
+authors = ["HundunOS Team"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Tensor operations
+ndarray = "0.15"
+
+# Safe tensor loading
+safetensors = "0.4"
+
+# Tokenization
+tokenizers = "0.19"
+
+# Audio processing
+rubato = "0.14"  # Resampling
+hound = "3.5"    # WAV I/O
+
+# Math
+approx = "0.5"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Error handling
+anyhow = "1"
+thiserror = "1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+[dev-dependencies]
+criterion = "0.5"

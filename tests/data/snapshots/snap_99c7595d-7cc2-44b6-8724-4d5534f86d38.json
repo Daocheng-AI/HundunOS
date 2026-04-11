@@ -1,0 +1,1490 @@
+{
+  "id": "snap_99c7595d-7cc2-44b6-8724-4d5534f86d38",
+  "type": "full",
+  "timestamp": 1775790509562,
+  "parentId": null,
+  "state": {
+    "modules": {
+      "agent-teams": {
+        "status": "registered",
+        "config": {}
+      },
+      "client-adapter": {
+        "status": "registered",
+        "config": {}
+      },
+      "context": {
+        "status": "registered",
+        "config": {}
+      },
+      "health-monitor": {
+        "status": "registered",
+        "config": {}
+      },
+      "hooks": {
+        "status": "registered",
+        "config": {}
+      },
+      "hot-reload": {
+        "status": "registered",
+        "config": {}
+      },
+      "hud": {
+        "status": "registered",
+        "config": {}
+      },
+      "mcp": {
+        "status": "registered",
+        "config": {}
+      },
+      "model-router": {
+        "status": "registered",
+        "config": {}
+      },
+      "pipeline": {
+        "status": "registered",
+        "config": {}
+      },
+      "recovery": {
+        "status": "registered",
+        "config": {}
+      },
+      "skills": {
+        "status": "registered",
+        "config": {}
+      },
+      "subagents": {
+        "status": "registered",
+        "config": {}
+      },
+      "audit-logger": {
+        "status": "registered",
+        "config": {}
+      },
+      "client-adapter-module": {
+        "status": "registered",
+        "config": {}
+      },
+      "cowork-monitor": {
+        "status": "registered",
+        "config": {}
+      },
+      "env-health-checker": {
+        "status": "registered",
+        "config": {}
+      },
+      "permission-gating": {
+        "status": "registered",
+        "config": {}
+      },
+      "privacy-shield": {
+        "status": "registered",
+        "config": {}
+      },
+      "rbac": {
+        "status": "registered",
+        "config": {}
+      },
+      "recoverable-memory": {
+        "status": "registered",
+        "config": {}
+      },
+      "auto-optimize": {
+        "status": "registered",
+        "config": {}
+      },
+      "auto-recovery": {
+        "status": "registered",
+        "config": {}
+      },
+      "best-practices": {
+        "status": "registered",
+        "config": {}
+      },
+      "context-optimizer": {
+        "status": "registered",
+        "config": {}
+      },
+      "evolution": {
+        "status": "registered",
+        "config": {}
+      },
+      "feedback": {
+        "status": "registered",
+        "config": {}
+      },
+      "i18n": {
+        "status": "registered",
+        "config": {}
+      },
+      "learning-hub": {
+        "status": "registered",
+        "config": {}
+      },
+      "longcat-tts": {
+        "status": "registered",
+        "config": {}
+      },
+      "project-rules": {
+        "status": "registered",
+        "config": {}
+      },
+      "rule-generator": {
+        "status": "registered",
+        "config": {}
+      },
+      "search": {
+        "status": "registered",
+        "config": {}
+      },
+      "skill-market": {
+        "status": "registered",
+        "config": {}
+      },
+      "subagent调度": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-chain": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-checkpoint": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-visualizer": {
+        "status": "registered",
+        "config": {}
+      },
+      "tutorial-system": {
+        "status": "registered",
+        "config": {}
+      },
+      "workbuddy": {
+        "status": "registered",
+        "config": {}
+      },
+      "aware-system": {
+        "status": "registered",
+        "config": {}
+      },
+      "citation-processor": {
+        "status": "registered",
+        "config": {}
+      },
+      "context-enhancer": {
+        "status": "registered",
+        "config": {}
+      },
+      "deep-research": {
+        "status": "registered",
+        "config": {}
+      },
+      "error-codes": {
+        "status": "registered",
+        "config": {}
+      },
+      "feature-flags": {
+        "status": "registered",
+        "config": {}
+      },
+      "integrations": {
+        "status": "registered",
+        "config": {}
+      },
+      "intent-engine": {
+        "status": "registered",
+        "config": {}
+      },
+      "intent-vector-cache": {
+        "status": "registered",
+        "config": {}
+      },
+      "memory-graph-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "memory-graph-vector-compressor": {
+        "status": "registered",
+        "config": {}
+      },
+      "memory-graph": {
+        "status": "registered",
+        "config": {}
+      },
+      "message-router": {
+        "status": "registered",
+        "config": {}
+      },
+      "model-router-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "module-registry": {
+        "status": "registered",
+        "config": {}
+      },
+      "path-validation": {
+        "status": "registered",
+        "config": {}
+      },
+      "permission-mode": {
+        "status": "registered",
+        "config": {}
+      },
+      "permission-pipeline": {
+        "status": "registered",
+        "config": {}
+      },
+      "policy-engine-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "policy-engine": {
+        "status": "registered",
+        "config": {}
+      },
+      "prompt-template": {
+        "status": "registered",
+        "config": {}
+      },
+      "rate-limiter": {
+        "status": "registered",
+        "config": {}
+      },
+      "rust-integration": {
+        "status": "registered",
+        "config": {}
+      },
+      "scheduler": {
+        "status": "registered",
+        "config": {}
+      },
+      "self-adaptation": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-scientist-memory-tool": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-scientist": {
+        "status": "registered",
+        "config": {}
+      },
+      "tool-bridge-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "tool-bridge": {
+        "status": "registered",
+        "config": {}
+      },
+      "tool-scheduler": {
+        "status": "registered",
+        "config": {}
+      },
+      "tracing": {
+        "status": "registered",
+        "config": {}
+      },
+      "upgrade-controller": {
+        "status": "registered",
+        "config": {}
+      },
+      "status": {
+        "status": "registered",
+        "config": {}
+      },
+      "shutdown": {
+        "status": "registered",
+        "config": {}
+      },
+      "modelRouter": {
+        "status": "active",
+        "config": {}
+      },
+      "aware": {
+        "status": "registered",
+        "config": {}
+      },
+      "permissionGating": {
+        "status": "registered",
+        "config": {}
+      },
+      "auditLogger": {
+        "status": "registered",
+        "config": {}
+      },
+      "privacyShield": {
+        "status": "registered",
+        "config": {}
+      },
+      "recoverableMemory": {
+        "status": "registered",
+        "config": {}
+      },
+      "memoryGraph": {
+        "status": "registered",
+        "config": {}
+      },
+      "toolBridge": {
+        "status": "registered",
+        "config": {}
+      }
+    },
+    "memory": {
+      "working": [
+        [
+          "mem_86d31a1a-aac1-46f8-b621-c488b9a0a7ab",
+          {
+            "id": "mem_86d31a1a-aac1-46f8-b621-c488b9a0a7ab",
+            "timestamp": 1775790457346,
+            "message": "test 6",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_a084702f-d007-4b19-a8b3-4adfea31ecfc",
+          {
+            "id": "mem_a084702f-d007-4b19-a8b3-4adfea31ecfc",
+            "timestamp": 1775790460208,
+            "message": "test 1",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_5439908a-ac4b-4ceb-8126-b324240bbdb4",
+          {
+            "id": "mem_5439908a-ac4b-4ceb-8126-b324240bbdb4",
+            "timestamp": 1775790460886,
+            "message": "test 94",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_724025a3-6dac-400a-bcf3-81dd1aefb3b0",
+          {
+            "id": "mem_724025a3-6dac-400a-bcf3-81dd1aefb3b0",
+            "timestamp": 1775790462248,
+            "message": "test 34",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_17a6f457-dc3a-4816-8d6b-00831eae5655",
+          {
+            "id": "mem_17a6f457-dc3a-4816-8d6b-00831eae5655",
+            "timestamp": 1775790462795,
+            "message": "test 72",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_6e7dc0d9-98db-4c77-a90c-c312bcac7a01",
+          {
+            "id": "mem_6e7dc0d9-98db-4c77-a90c-c312bcac7a01",
+            "timestamp": 1775790464387,
+            "message": "test 70",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_f96f389a-c961-4cd6-9c40-121cc71eda6c",
+          {
+            "id": "mem_f96f389a-c961-4cd6-9c40-121cc71eda6c",
+            "timestamp": 1775790466198,
+            "message": "test 93",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_572fdfa3-51fa-4833-986d-72d36870c67b",
+          {
+            "id": "mem_572fdfa3-51fa-4833-986d-72d36870c67b",
+            "timestamp": 1775790466640,
+            "message": "test 31",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_06843c4f-022c-4497-afe3-b4bc0eb7d6d3",
+          {
+            "id": "mem_06843c4f-022c-4497-afe3-b4bc0eb7d6d3",
+            "timestamp": 1775790467820,
+            "message": "test 90",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_ae78bde1-1268-4383-919c-098f55dfb73f",
+          {
+            "id": "mem_ae78bde1-1268-4383-919c-098f55dfb73f",
+            "timestamp": 1775790469218,
+            "message": "test 96",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_6e9f850b-4a85-48d6-af5d-c524c8a4a102",
+          {
+            "id": "mem_6e9f850b-4a85-48d6-af5d-c524c8a4a102",
+            "timestamp": 1775790470202,
+            "message": "test 83",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_4b1ba98e-85fd-4ad2-a54c-306b07e18fb6",
+          {
+            "id": "mem_4b1ba98e-85fd-4ad2-a54c-306b07e18fb6",
+            "timestamp": 1775790471245,
+            "message": "test 38",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_4946c791-be9a-4b42-9ab2-36d0ca827d7b",
+          {
+            "id": "mem_4946c791-be9a-4b42-9ab2-36d0ca827d7b",
+            "timestamp": 1775790472500,
+            "message": "test 66",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_cbee1b15-334c-49e9-8bfa-fef22676441f",
+          {
+            "id": "mem_cbee1b15-334c-49e9-8bfa-fef22676441f",
+            "timestamp": 1775790474618,
+            "message": "test 56",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_047c35b0-2d63-4382-9f84-16e0cc8c9850",
+          {
+            "id": "mem_047c35b0-2d63-4382-9f84-16e0cc8c9850",
+            "timestamp": 1775790476475,
+            "message": "test 47",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_8a41e185-9a7b-4ea5-86ff-87127a38e5df",
+          {
+            "id": "mem_8a41e185-9a7b-4ea5-86ff-87127a38e5df",
+            "timestamp": 1775790477200,
+            "message": "test 5",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_f8ff5da7-b9f3-47d7-aea3-bd13fee02ae6",
+          {
+            "id": "mem_f8ff5da7-b9f3-47d7-aea3-bd13fee02ae6",
+            "timestamp": 1775790479955,
+            "message": "test 75",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_b16fe679-109f-4a70-8bde-1e66e37bb0ca",
+          {
+            "id": "mem_b16fe679-109f-4a70-8bde-1e66e37bb0ca",
+            "timestamp": 1775790480617,
+            "message": "test 50",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_73777a01-f88e-4684-9367-71fc08cc194d",
+          {
+            "id": "mem_73777a01-f88e-4684-9367-71fc08cc194d",
+            "timestamp": 1775790481344,
+            "message": "test 44",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_3033ce0f-046f-470d-a983-678bf6276fd6",
+          {
+            "id": "mem_3033ce0f-046f-470d-a983-678bf6276fd6",
+            "timestamp": 1775790482975,
+            "message": "test 60",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_a1626a61-7082-4c8f-acfe-504ac996db1c",
+          {
+            "id": "mem_a1626a61-7082-4c8f-acfe-504ac996db1c",
+            "timestamp": 1775790485426,
+            "message": "test 95",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_15888d30-5111-4c1c-b426-e1232c52fe8a",
+          {
+            "id": "mem_15888d30-5111-4c1c-b426-e1232c52fe8a",
+            "timestamp": 1775790486993,
+            "message": "test 53",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_be52477e-c230-4fc3-9ed2-1d4d06987eab",
+          {
+            "id": "mem_be52477e-c230-4fc3-9ed2-1d4d06987eab",
+            "timestamp": 1775790488231,
+            "message": "test 59",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_5f8688bb-7604-403b-bbaa-7ea031dbb597",
+          {
+            "id": "mem_5f8688bb-7604-403b-bbaa-7ea031dbb597",
+            "timestamp": 1775790489556,
+            "message": "test 30",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_0d27a43a-bbab-4610-b266-ec84f59fd031",
+          {
+            "id": "mem_0d27a43a-bbab-4610-b266-ec84f59fd031",
+            "timestamp": 1775790490624,
+            "message": "test 26",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_059e524b-b2d9-4fa5-ae23-83ccc80b5833",
+          {
+            "id": "mem_059e524b-b2d9-4fa5-ae23-83ccc80b5833",
+            "timestamp": 1775790492001,
+            "message": "test 10",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_9b89c6d1-856b-4bed-afe0-209e0d402786",
+          {
+            "id": "mem_9b89c6d1-856b-4bed-afe0-209e0d402786",
+            "timestamp": 1775790494180,
+            "message": "test 84",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_63718ace-e13f-422e-816f-3176a85555f0",
+          {
+            "id": "mem_63718ace-e13f-422e-816f-3176a85555f0",
+            "timestamp": 1775790495066,
+            "message": "test 40",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_0fd81a46-b0fd-47ad-b160-baa2fcaeef3f",
+          {
+            "id": "mem_0fd81a46-b0fd-47ad-b160-baa2fcaeef3f",
+            "timestamp": 1775790495839,
+            "message": "test 16",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_7cbbead9-044f-42e8-85ad-fe7f2f932eb7",
+          {
+            "id": "mem_7cbbead9-044f-42e8-85ad-fe7f2f932eb7",
+            "timestamp": 1775790496716,
+            "message": "test 23",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_5ac6e5ce-270e-4a79-a75f-fb1b130afcb8",
+          {
+            "id": "mem_5ac6e5ce-270e-4a79-a75f-fb1b130afcb8",
+            "timestamp": 1775790498294,
+            "message": "test 54",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_1ba3a43f-bf0a-441a-b362-727b7ef64e82",
+          {
+            "id": "mem_1ba3a43f-bf0a-441a-b362-727b7ef64e82",
+            "timestamp": 1775790499138,
+            "message": "test 91",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_318fe1d2-42e3-47cf-bad2-f28007a61198",
+          {
+            "id": "mem_318fe1d2-42e3-47cf-bad2-f28007a61198",
+            "timestamp": 1775790500590,
+            "message": "test 92",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_f4e9eb0a-f34f-493f-95ad-d14f8d620216",
+          {
+            "id": "mem_f4e9eb0a-f34f-493f-95ad-d14f8d620216",
+            "timestamp": 1775790502054,
+            "message": "test 39",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_04517df4-a487-45f4-b9d1-670d436a960f",
+          {
+            "id": "mem_04517df4-a487-45f4-b9d1-670d436a960f",
+            "timestamp": 1775790503298,
+            "message": "test 7",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_6b210d95-2b4b-4f73-971f-b649c0e4e499",
+          {
+            "id": "mem_6b210d95-2b4b-4f73-971f-b649c0e4e499",
+            "timestamp": 1775790504359,
+            "message": "test 13",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_7e2d5f91-a980-4104-8985-916c6f4fd7a7",
+          {
+            "id": "mem_7e2d5f91-a980-4104-8985-916c6f4fd7a7",
+            "timestamp": 1775790505515,
+            "message": "test 68",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_977a20df-cd46-4570-a732-d2c98ecd0f6d",
+          {
+            "id": "mem_977a20df-cd46-4570-a732-d2c98ecd0f6d",
+            "timestamp": 1775790506628,
+            "message": "test 85",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_ee24f25e-d4cc-4c3a-b8a8-c7f89266b97b",
+          {
+            "id": "mem_ee24f25e-d4cc-4c3a-b8a8-c7f89266b97b",
+            "timestamp": 1775790507495,
+            "message": "test 36",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ],
+        [
+          "mem_7b4f3e6c-7573-4158-91a7-bea72153be56",
+          {
+            "id": "mem_7b4f3e6c-7573-4158-91a7-bea72153be56",
+            "timestamp": 1775790508788,
+            "message": "test 89",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ]
+      ],
+      "recent": [
+        {
+          "id": "mem_7b4f3e6c-7573-4158-91a7-bea72153be56",
+          "timestamp": 1775790508788,
+          "message": "test 89",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_ee24f25e-d4cc-4c3a-b8a8-c7f89266b97b",
+          "timestamp": 1775790507495,
+          "message": "test 36",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_977a20df-cd46-4570-a732-d2c98ecd0f6d",
+          "timestamp": 1775790506628,
+          "message": "test 85",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_7e2d5f91-a980-4104-8985-916c6f4fd7a7",
+          "timestamp": 1775790505515,
+          "message": "test 68",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_6b210d95-2b4b-4f73-971f-b649c0e4e499",
+          "timestamp": 1775790504359,
+          "message": "test 13",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_04517df4-a487-45f4-b9d1-670d436a960f",
+          "timestamp": 1775790503298,
+          "message": "test 7",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f4e9eb0a-f34f-493f-95ad-d14f8d620216",
+          "timestamp": 1775790502054,
+          "message": "test 39",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_318fe1d2-42e3-47cf-bad2-f28007a61198",
+          "timestamp": 1775790500590,
+          "message": "test 92",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1ba3a43f-bf0a-441a-b362-727b7ef64e82",
+          "timestamp": 1775790499138,
+          "message": "test 91",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5ac6e5ce-270e-4a79-a75f-fb1b130afcb8",
+          "timestamp": 1775790498294,
+          "message": "test 54",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_7cbbead9-044f-42e8-85ad-fe7f2f932eb7",
+          "timestamp": 1775790496716,
+          "message": "test 23",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_0fd81a46-b0fd-47ad-b160-baa2fcaeef3f",
+          "timestamp": 1775790495839,
+          "message": "test 16",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_63718ace-e13f-422e-816f-3176a85555f0",
+          "timestamp": 1775790495066,
+          "message": "test 40",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_9b89c6d1-856b-4bed-afe0-209e0d402786",
+          "timestamp": 1775790494180,
+          "message": "test 84",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_059e524b-b2d9-4fa5-ae23-83ccc80b5833",
+          "timestamp": 1775790492001,
+          "message": "test 10",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_0d27a43a-bbab-4610-b266-ec84f59fd031",
+          "timestamp": 1775790490624,
+          "message": "test 26",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5f8688bb-7604-403b-bbaa-7ea031dbb597",
+          "timestamp": 1775790489556,
+          "message": "test 30",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_be52477e-c230-4fc3-9ed2-1d4d06987eab",
+          "timestamp": 1775790488231,
+          "message": "test 59",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_15888d30-5111-4c1c-b426-e1232c52fe8a",
+          "timestamp": 1775790486993,
+          "message": "test 53",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_a1626a61-7082-4c8f-acfe-504ac996db1c",
+          "timestamp": 1775790485426,
+          "message": "test 95",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_3033ce0f-046f-470d-a983-678bf6276fd6",
+          "timestamp": 1775790482975,
+          "message": "test 60",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_73777a01-f88e-4684-9367-71fc08cc194d",
+          "timestamp": 1775790481344,
+          "message": "test 44",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b16fe679-109f-4a70-8bde-1e66e37bb0ca",
+          "timestamp": 1775790480617,
+          "message": "test 50",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f8ff5da7-b9f3-47d7-aea3-bd13fee02ae6",
+          "timestamp": 1775790479955,
+          "message": "test 75",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_8a41e185-9a7b-4ea5-86ff-87127a38e5df",
+          "timestamp": 1775790477200,
+          "message": "test 5",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_047c35b0-2d63-4382-9f84-16e0cc8c9850",
+          "timestamp": 1775790476475,
+          "message": "test 47",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_cbee1b15-334c-49e9-8bfa-fef22676441f",
+          "timestamp": 1775790474618,
+          "message": "test 56",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_4946c791-be9a-4b42-9ab2-36d0ca827d7b",
+          "timestamp": 1775790472500,
+          "message": "test 66",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_4b1ba98e-85fd-4ad2-a54c-306b07e18fb6",
+          "timestamp": 1775790471245,
+          "message": "test 38",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_6e9f850b-4a85-48d6-af5d-c524c8a4a102",
+          "timestamp": 1775790470202,
+          "message": "test 83",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_ae78bde1-1268-4383-919c-098f55dfb73f",
+          "timestamp": 1775790469218,
+          "message": "test 96",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_06843c4f-022c-4497-afe3-b4bc0eb7d6d3",
+          "timestamp": 1775790467820,
+          "message": "test 90",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_572fdfa3-51fa-4833-986d-72d36870c67b",
+          "timestamp": 1775790466640,
+          "message": "test 31",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f96f389a-c961-4cd6-9c40-121cc71eda6c",
+          "timestamp": 1775790466198,
+          "message": "test 93",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_6e7dc0d9-98db-4c77-a90c-c312bcac7a01",
+          "timestamp": 1775790464387,
+          "message": "test 70",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_17a6f457-dc3a-4816-8d6b-00831eae5655",
+          "timestamp": 1775790462795,
+          "message": "test 72",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_724025a3-6dac-400a-bcf3-81dd1aefb3b0",
+          "timestamp": 1775790462248,
+          "message": "test 34",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5439908a-ac4b-4ceb-8126-b324240bbdb4",
+          "timestamp": 1775790460886,
+          "message": "test 94",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_a084702f-d007-4b19-a8b3-4adfea31ecfc",
+          "timestamp": 1775790460208,
+          "message": "test 1",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_86d31a1a-aac1-46f8-b621-c488b9a0a7ab",
+          "timestamp": 1775790457346,
+          "message": "test 6",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b7e6c209-f8ef-4c8f-a110-82e2cd1f0d8b",
+          "timestamp": 1775740902525,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_be993fae-c503-4357-92f2-cf057833432f",
+          "timestamp": 1775740900537,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b8b2b597-a1c0-4199-9d46-7f6a43cc05e7",
+          "timestamp": 1775740897511,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_041fa7ae-75f8-4804-93e8-9b93e88a5722",
+          "timestamp": 1775740879690,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f5066a03-a5ee-47a5-b8fa-2beffbaa7805",
+          "timestamp": 1775740243393,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b7a357a3-d03d-4828-a9c2-8c02f5d9f787",
+          "timestamp": 1775740241487,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_3cc8e884-921d-4b8d-ac00-a2caf039269d",
+          "timestamp": 1775740238537,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_0032c9ab-f7a8-4736-8bc7-690fea284992",
+          "timestamp": 1775740233737,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_c2326b26-85f8-44ce-99f9-dfd025f6bd78",
+          "timestamp": 1775739959710,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5dced25a-5285-4ce0-97e0-e6912ee95046",
+          "timestamp": 1775739957708,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_d5420c47-0418-48a8-be3d-6c5579a02292",
+          "timestamp": 1775739955126,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_4971ba2d-4835-4bea-b0b3-0057169af8da",
+          "timestamp": 1775739950770,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_11b7311b-e486-461f-a817-59b077a2e483",
+          "timestamp": 1775739760535,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_7a94123d-3d95-4789-a3a5-c4af6025d5e5",
+          "timestamp": 1775739758709,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5c5c70b4-b354-4694-9efa-b7065c7dc5f5",
+          "timestamp": 1775739755986,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f17452b5-446d-4cc3-9b43-64fc34e4e38f",
+          "timestamp": 1775739739295,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_4896ed9b-f976-4826-8049-39dae5c5702c",
+          "timestamp": 1775739236270,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_d90ebaf1-c495-4983-a251-fc1ba3337cbe",
+          "timestamp": 1775739233572,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_273ce3fa-2082-4006-a089-1039e262a240",
+          "timestamp": 1775739231170,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_ba593922-0258-46fa-b3ed-cc03a0e98b44",
+          "timestamp": 1775739201027,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_85e6a09c-90be-489f-8674-199530717403",
+          "timestamp": 1775657535003,
+          "message": "test message",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_7f75e59a-144e-4392-9a23-81ea91a294d2",
+          "timestamp": 1775574446285,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_60d52ea2-9dd7-4857-b0d3-b117a833a060",
+          "timestamp": 1775574443892,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_64cc9412-e80c-405c-8403-59de137772fc",
+          "timestamp": 1775574434042,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_03d3b6ac-a0f2-48c0-b99c-ad8bd790aadc",
+          "timestamp": 1775574389653,
+          "message": "hello",
+          "intent": "chat",
+          "result": false,
+          "importance": 2
+        },
+        {
+          "id": "mem_d01b315f-351e-4ceb-9b55-26dda92215d3",
+          "timestamp": 1775572052725,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_d83a2d24-7139-4fab-90f1-e21e60af8a9d",
+          "timestamp": 1775572051375,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_04300ba8-e417-46e5-97ba-ba538f56f768",
+          "timestamp": 1775572049224,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_46354d66-80f3-45cd-b07c-8c7647c97d0b",
+          "timestamp": 1775572022420,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_e00799e9-9c3f-4556-8b79-b1593f449a6f",
+          "timestamp": 1775571474027,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_e4d005cf-cd3c-49fb-af72-4106e43f0477",
+          "timestamp": 1775571472573,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_fd84dfa2-9db7-45ff-8235-dd12df9ba994",
+          "timestamp": 1775571470709,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_2b4305bf-98c7-4017-be08-4677250440b3",
+          "timestamp": 1775571466521,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022983496",
+          "timestamp": 1775022983496,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022982272",
+          "timestamp": 1775022982272,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022980609",
+          "timestamp": 1775022980609,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022977816",
+          "timestamp": 1775022977816,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022225679",
+          "timestamp": 1775022225679,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022223582",
+          "timestamp": 1775022223582,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022219278",
+          "timestamp": 1775022219278,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022209074",
+          "timestamp": 1775022209074,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        }
+      ],
+      "semantic": [],
+      "episodic": []
+    },
+    "sessions": [
+      "test"
+    ],
+    "aware": {
+      "focuses": [
+        [
+          "focus_c4a23914-e9eb-4316-a278-da577287fef6",
+          {
+            "id": "focus_c4a23914-e9eb-4316-a278-da577287fef6",
+            "task": "系统健康监控",
+            "description": "持续关注系统运行状态",
+            "status": "pending",
+            "priority": "normal",
+            "tags": [
+              "system",
+              "health"
+            ],
+            "triggers": [],
+            "parent": null,
+            "children": [],
+            "created": 1775558802559,
+            "updated": 1775558802559,
+            "started": null,
+            "completed": null
+          }
+        ],
+        [
+          "focus_498d8c46-8584-4050-a874-5082bc03e540",
+          {
+            "id": "focus_498d8c46-8584-4050-a874-5082bc03e540",
+            "task": "任务执行效率",
+            "description": "关注当前任务的执行效率",
+            "status": "pending",
+            "priority": "normal",
+            "tags": [
+              "performance",
+              "tasks"
+            ],
+            "triggers": [],
+            "parent": null,
+            "children": [],
+            "created": 1775558802559,
+            "updated": 1775558802559,
+            "started": null,
+            "completed": null
+          }
+        ]
+      ],
+      "triggers": [
+        "trigger_36875a51-ef0b-4b3e-b6cb-1762804172df"
+      ]
+    },
+    "timestamp": 1775790509562
+  },
+  "checksum": "550d89d87eb6c96e",
+  "size": 24299,
+  "compressed": false
+}

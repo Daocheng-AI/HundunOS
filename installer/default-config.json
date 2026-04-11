@@ -1,0 +1,57 @@
+{
+  "version": "3.0.0",
+  "name": "HundunOS",
+  "environment": "production",
+  "kernel": {
+    "logLevel": "info",
+    "maxRetries": 3,
+    "timeout": 30000
+  },
+  "modules": {
+    "edict": { "enabled": true, "path": "stable-modules/edict" },
+    "permission-gating": { "enabled": true, "path": "stable-modules/permission-gating" },
+    "cowork-monitor": { "enabled": true, "path": "stable-modules/cowork-monitor" },
+    "audit-logger": { "enabled": true, "path": "stable-modules/audit-logger" },
+    "privacy-shield": { "enabled": true, "path": "stable-modules/privacy-shield" },
+    "env-health-checker": { "enabled": true, "path": "stable-modules/env-health-checker" },
+    "recoverable-memory": { "enabled": true, "path": "stable-modules/recoverable-memory" },
+    "client-adapter-module": { "enabled": true, "path": "stable-modules/client-adapter-module" }
+  },
+  "modelRouter": {
+    "defaultStrategy": "COST_FIRST",
+    "providers": ["ollama", "openai", "anthropic", "glm", "custom", "client_adapter"],
+    "localFirst": true,
+    "endpoint": "http://127.0.0.1:11434",
+    "localModel": "qwen2.5:1.5b",
+    "localMaxTokens": 8192,
+    "requestTimeout": 30000,
+    "circuitBreaker": { "enabled": true, "threshold": 5, "timeout": 60000 },
+    "openai": { "apiKey": "", "endpoint": "https://api.openai.com/v1", "model": "gpt-4o-mini" },
+    "anthropic": { "apiKey": "", "endpoint": "https://api.anthropic.com", "model": "claude-sonnet-4-20250514" },
+    "glm": { "apiKey": "", "baseUrl": "https://open.bigmodel.cn/api/paas/v4", "defaultModel": "glm-4-flash" },
+    "custom": []
+  },
+  "storage": { "type": "json", "path": "./data" },
+  "messageBus": { "ackTimeout": 5000, "maxRetries": 3 },
+  "platform": { "os": "windows", "workspace": ".", "pythonPath": "python", "nodePath": "node" },
+  "toolBridge": { "toolsDir": "../scripts/tools", "timeout": 30000 },
+  "restApi": {
+    "port": 38080,
+    "apiKeys": [],
+    "cors": {
+      "allowedOrigins": ["http://localhost", "http://localhost:38080", "http://127.0.0.1", "file://"],
+      "allowCredentials": false,
+      "maxAge": 86400
+    }
+  },
+  "rateLimit": { "windowMs": 60000, "maxRequests": 60, "burstMax": 10 },
+  "healthMonitor": {
+    "weights": {
+      "kernel": 0.15, "memory": 0.12, "model_router": 0.12, "edict": 0.12,
+      "security": 0.10, "storage": 0.10, "cron": 0.08, "mcp": 0.08,
+      "workbuddy": 0.08, "network": 0.05
+    },
+    "alertThreshold": 60,
+    "maxHistory": 50
+  }
+}

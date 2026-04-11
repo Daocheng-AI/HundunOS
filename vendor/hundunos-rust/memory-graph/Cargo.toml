@@ -1,0 +1,22 @@
+[package]
+name = "hundunos-memory"
+version = "0.2.0"
+edition = "2021"
+description = "HundunOS Memory Graph v2.0 - Hierarchical memory system with edict-inspired enhancements"
+
+[[bin]]
+name = "hundunos-memory"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+dashmap = { workspace = true }
+uuid = { workspace = true }
+rusqlite = { version = "0.32", features = ["bundled"] }
+sha2 = "0.10"
+rand = "0.8"

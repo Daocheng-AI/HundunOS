@@ -1,0 +1,63 @@
+groups:
+  # HundunOS 告警规则
+  - name: hundunos_alerts
+    rules:
+      # 高错误率告警
+      - alert: HundunOSHighErrorRate
+        expr: rate(hundunos_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HundunOS 高错误率"
+          description: "HundunOS 5xx 错误率超过 5%，当前 {{ $value | humanizePercentage }}"
+
+      # 响应时间过长
+      - alert: HundunOSSlowResponse
+        expr: histogram_quantile(0.95, rate(hundunos_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HundunOS 响应时间过长"
+          description: "P95 响应时间超过 5 秒，当前 {{ $value | humanizeDuration }}"
+
+      # 内存使用率过高
+      - alert: HundunOSHighMemoryUsage
+        expr: (hundunos_process_resident_memory_bytes / hundunos_process_max_memory_bytes) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HundunOS 内存使用率过高"
+          description: "内存使用率超过 85%，当前 {{ $value | humanizePercentage }}"
+
+      # Ollama 服务不可用
+      - alert: OllamaDown
+        expr: up{job="ollama"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ollama 服务不可用"
+          description: "Ollama LLM 服务已离线超过 2 分钟"
+
+      # Redis 不可用
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: high
+        annotations:
+          summary: "Redis 缓存不可用"
+          description: "Redis 服务已离线，可能影响会话缓存"
+
+      # 模型推理队列积压
+      - alert: ModelQueueBacklog
+        expr: hundunos_model_queue_length > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "模型推理队列积压"
+          description: "模型推理队列积压超过 100 条，当前 {{ $value }}"

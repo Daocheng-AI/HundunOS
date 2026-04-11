@@ -1,0 +1,195 @@
+{
+  "version": "3.0.0",
+  "name": "HundunOS",
+  "environment": "testing",
+  "description": "HundunOS v3.0 测试环境配置",
+  
+  "kernel": {
+    "logLevel": "info",
+    "maxRetries": 1,
+    "timeout": 10000,
+    "enableMetrics": true,
+    "enableProfiling": false
+  },
+  
+  "modules": {
+    "edict": {
+      "enabled": false,
+      "path": "stable-modules/edict"
+    },
+    "permission-gating": {
+      "enabled": false,
+      "path": "stable-modules/permission-gating"
+    },
+    "cowork-monitor": {
+      "enabled": false,
+      "path": "stable-modules/cowork-monitor"
+    },
+    "audit-logger": {
+      "enabled": true,
+      "path": "stable-modules/audit-logger",
+      "retentionDays": 1,
+      "encryptLogs": false,
+      "compressArchives": false
+    },
+    "privacy-shield": {
+      "enabled": true,
+      "path": "stable-modules/privacy-shield",
+      "logRedaction": true,
+      "autoBlockLevels": [4]
+    },
+    "env-health-checker": {
+      "enabled": true,
+      "path": "stable-modules/env-health-checker",
+      "checkInterval": 30000,
+      "alertOnDegradation": false
+    },
+    "recoverable-memory": {
+      "enabled": false,
+      "path": "stable-modules/recoverable-memory"
+    }
+  },
+  
+  "modelRouter": {
+    "defaultStrategy": "MOCK",
+    "providers": ["mock"],
+    "localFirst": false,
+    "endpoint": "http://127.0.0.1:11434",
+    "localModel": "test-model",
+    "localMaxTokens": 1024,
+    "requestTimeout": 5000,
+    "circuitBreaker": {
+      "enabled": false,
+      "threshold": 0,
+      "timeout": 0
+    },
+    "mockResponses": true
+  },
+  
+  "storage": {
+    "type": "memory",
+    "path": "./data_test",
+    "inMemoryOnly": true
+  },
+  
+  "messageBus": {
+    "ackTimeout": 2000,
+    "maxRetries": 2,
+    "maxQueueSize": 50,
+    "enableDeadLetterQueue": false
+  },
+  
+  "platform": {
+    "os": "windows",
+    "workspace": ".",
+    "pythonPath": "python",
+    "nodePath": "node"
+  },
+  
+  "toolBridge": {
+    "toolsDir": "../scripts/tools",
+    "timeout": 10000,
+    "enableSandbox": true,
+    "maxConcurrentCalls": 3
+  },
+  
+  "upgrade": {
+    "trustedSources": [],
+    "allowedPatterns": [],
+    "requireSignature": false,
+    "requireHash": false,
+    "requireVersionIncrease": false,
+    "targetVersion": "3.0.0"
+  },
+  
+  "restApi": {
+    "port": 0,
+    "host": "0.0.0.0",
+    "maxBodySize": 1048576,
+    "cors": {
+      "allowedOrigins": ["*"],
+      "allowCredentials": false,
+      "maxAge": 300
+    },
+    "rateLimit": {
+      "enabled": false,
+      "windowMs": 60000,
+      "maxRequests": 10000,
+      "burstMax": 100
+    },
+    "compression": {
+      "enabled": false
+    },
+    "securityHeaders": {
+      "enabled": false
+    }
+  },
+  
+  "rateLimit": {
+    "windowMs": 60000,
+    "maxRequests": 10000,
+    "burstMax": 100,
+    "global": false,
+    "trustedIPs": ["127.0.0.1", "::1/128"]
+  },
+  
+  "healthMonitor": {
+    "weights": {
+      "kernel": 0.30,
+      "memory": 0.30,
+      "model_router": 0.10,
+      "edict": 0.00,
+      "security": 0.10,
+      "storage": 0.10,
+      "cron": 0.05,
+      "mcp": 0.05,
+      "workbuddy": 0.00,
+      "network": 0.00
+    },
+    "alertThreshold": 30,
+    "maxHistory": 10,
+    "checkInterval": 15000,
+    "enableTelemetry": false
+  },
+  
+  "logging": {
+    "level": "warn",
+    "format": "simple",
+    "file": {
+      "enabled": false
+    },
+    "console": {
+      "enabled": true,
+      "pretty": false,
+      "colors": false
+    }
+  },
+  
+  "metrics": {
+    "enabled": false
+  },
+  
+  "sessions": {
+    "maxSessions": 10,
+    "sessionTimeout": 1800000,
+    "cleanupInterval": 300000,
+    "enableSessionEncryption": false
+  },
+  
+  "performance": {
+    "fileReadMaxSize": 5242880,
+    "fileWriteMaxSize": 5242880,
+    "maxRequestSize": 1048576,
+    "enableResponseCompression": false,
+    "connectionPoolSize": 2,
+    "cacheEnabled": false,
+    "cacheTtlMs": 30000
+  },
+  
+  "test": {
+    "mockExternalServices": true,
+    "deterministicRandom": true,
+    "disableNetwork": false,
+    "enableFixtures": true
+  }
+}

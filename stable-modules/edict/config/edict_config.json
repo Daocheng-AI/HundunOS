@@ -1,0 +1,159 @@
+{
+  "name": "edict",
+  "description": "三省六部任务调度系统",
+  "version": "3.0.0",
+  "enabled": true,
+  
+  "stages": {
+    "taizi": { "name": "太子", "description": "旨意接收与分发阶段" },
+    "zhongshu": { "name": "中书省", "description": "规划与设计阶段" },
+    "menxia": { "name": "门下省", "description": "审核与审批阶段" },
+    "shangshu": { "name": "尚书省", "description": "调度与执行阶段" }
+  },
+
+  "router": {
+    "enabled": true,
+    "complexityThreshold": 3,
+    "simpleQueryMaxLength": 30,
+    "complexTaskMinLength": 100,
+    "multiSentenceMinLength": 50,
+    "stageMinKeywords": 2,
+    "whitelistPriority": true
+  },
+
+  "ministeries": {
+    "hubu": { 
+      "name": "户部", 
+      "description": "数据处理与分析", 
+      "keywords": ["数据", "分析", "统计", "报表", "excel", "csv", "可视化"],
+      "provider": {
+        "type": "ollama",
+        "model": "qwen2.5:1.5b",
+        "temperature": 0.3,
+        "maxTokens": 1200
+      }
+    },
+    "bingbu": { 
+      "name": "兵部", 
+      "description": "技术实现与编码", 
+      "keywords": ["代码", "写", "python", "脚本", "实现", "编程"],
+      "provider": {
+        "type": "ollama",
+        "model": "qwen2.5:1.5b",
+        "temperature": 0.2,
+        "maxTokens": 1500
+      }
+    },
+    "gongbu": { 
+      "name": "工部", 
+      "description": "执行操作与系统任务", 
+      "keywords": ["整理", "执行", "操作", "文件", "桌面", "搜索"],
+      "provider": {
+        "type": "ollama",
+        "model": "qwen2.5:1.5b",
+        "temperature": 0.3,
+        "maxTokens": 800
+      }
+    },
+    "libu": { 
+      "name": "吏部", 
+      "description": "资源调度与任务分配", 
+      "keywords": ["安排", "分配", "调度", "计划", "规划"],
+      "provider": {
+        "type": "ollama",
+        "model": "qwen2.5:1.5b",
+        "temperature": 0.4,
+        "maxTokens": 1000
+      }
+    },
+    "xingbu": { 
+      "name": "刑部", 
+      "description": "审核检查与代码审查", 
+      "keywords": ["检查", "审查", "审核", "review", "测试", "验证"],
+      "provider": {
+        "type": "ollama",
+        "model": "qwen2.5:1.5b",
+        "temperature": 0.2,
+        "maxTokens": 1200
+      }
+    },
+    "libu_doc": { 
+      "name": "礼部", 
+      "description": "文档撰写与报告", 
+      "keywords": ["写", "文档", "报告", "说明", "文章", "方案"],
+      "provider": {
+        "type": "ollama",
+        "model": "qwen2.5:1.5b",
+        "temperature": 0.4,
+        "maxTokens": 1500
+      }
+    }
+  },
+
+  "agents": {
+    "enabled": true,
+    "heartbeatInterval": 30000,
+    "maxIdleTime": 300000,
+    "maxTaskTime": 600000,
+    "maxHistory": 50
+  },
+
+  "providers": {
+    "ollama": {
+      "enabled": true,
+      "baseURL": "http://localhost:11434",
+      "defaultModel": "qwen2.5:1.5b",
+      "timeout": 120000
+    },
+    "openai": {
+      "enabled": false,
+      "baseURL": "https://api.openai.com/v1",
+      "defaultModel": "gpt-3.5-turbo",
+      "apiKeyEnv": "OPENAI_API_KEY"
+    },
+    "anthropic": {
+      "enabled": false,
+      "baseURL": "https://api.anthropic.com/v1",
+      "defaultModel": "claude-3-haiku-20240307",
+      "apiKeyEnv": "ANTHROPIC_API_KEY"
+    }
+  },
+
+  "safety": {
+    "enabled": true,
+    "patterns": [
+      { "pattern": "删除.*系统", "action": "block" },
+      { "pattern": "rm\\s+-rf", "action": "block" },
+      { "pattern": "drop\\s+database", "action": "block" },
+      { "pattern": "kill\\s+-9", "action": "warn" }
+    ]
+  },
+
+  "execution": {
+    "defaultMinistry": "bingbu",
+    "parallelLimit": 3,
+    "retryAttempts": 2,
+    "retryDelay": 1000,
+    "timeout": 120000
+  },
+
+  "taskHub": {
+    "enabled": true,
+    "minStagesForHub": 3,
+    "defaultStages": 3,
+    "stageTemplates": {
+      "media_operation": ["账号定位", "内容规划", "素材准备", "发布执行", "数据复盘"],
+      "knowledge_system": ["需求分析", "架构设计", "内容建设", "整理优化", "上线测试"],
+      "document": ["资料收集", "大纲设计", "内容撰写", "审核校对", "定稿发布"],
+      "code_project": ["需求分析", "代码实现", "测试验证", "优化部署", "文档编写"],
+      "data_analysis": ["数据获取", "数据清洗", "分析建模", "可视化", "报告输出"],
+      "general": ["规划", "执行", "收尾"]
+    }
+  },
+
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "logDirectory": "../../../data/edict/logs"
+  }
+}

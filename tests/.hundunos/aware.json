@@ -1,0 +1,79 @@
+{
+  "focusItems": [
+    [
+      "focus_d17c3acb-97b4-4769-9ff0-e0cbd42d6f12",
+      {
+        "id": "focus_d17c3acb-97b4-4769-9ff0-e0cbd42d6f12",
+        "task": "系统健康监控",
+        "description": "持续关注系统运行状态",
+        "status": "pending",
+        "priority": "normal",
+        "tags": [
+          "system",
+          "health"
+        ],
+        "triggers": [],
+        "parent": null,
+        "children": [],
+        "created": 1775225081190,
+        "updated": 1775225081190,
+        "started": null,
+        "completed": null
+      }
+    ],
+    [
+      "focus_abe9242d-2edc-49e0-83b9-9aac2c244ff0",
+      {
+        "id": "focus_abe9242d-2edc-49e0-83b9-9aac2c244ff0",
+        "task": "任务执行效率",
+        "description": "关注当前任务的执行效率",
+        "status": "pending",
+        "priority": "normal",
+        "tags": [
+          "performance",
+          "tasks"
+        ],
+        "triggers": [],
+        "parent": null,
+        "children": [],
+        "created": 1775225081191,
+        "updated": 1775225081191,
+        "started": null,
+        "completed": null
+      }
+    ]
+  ],
+  "triggers": [
+    [
+      "trigger_fdfbd22a-a61b-45c8-998c-37a2be5ddf54",
+      {
+        "id": "trigger_fdfbd22a-a61b-45c8-998c-37a2be5ddf54",
+        "type": "interval",
+        "config": {
+          "interval": 300000
+        },
+        "status": "active",
+        "focusRef": null,
+        "fireCount": 0,
+        "lastFired": null,
+        "lastError": null,
+        "created": 1775225081189,
+        "enabled": true
+      }
+    ]
+  ],
+  "reflections": [
+    {
+      "type": "focus_created",
+      "focusId": "focus_d17c3acb-97b4-4769-9ff0-e0cbd42d6f12",
+      "reasoning": "Created: \"系统健康监控\"",
+      "timestamp": 1775225081190
+    },
+    {
+      "type": "focus_created",
+      "focusId": "focus_abe9242d-2edc-49e0-83b9-9aac2c244ff0",
+      "reasoning": "Created: \"任务执行效率\"",
+      "timestamp": 1775225081191
+    }
+  ]
+}

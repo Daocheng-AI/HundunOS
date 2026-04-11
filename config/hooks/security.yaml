@@ -1,0 +1,58 @@
+# config/hooks/security.yaml
+# HundunOS v3.8 Phase 7 — 安全审查 Hook
+# 在危险命令执行前拦截，检测敏感内容写入
+
+hooks:
+  PreToolUse:
+    - matcher: 'Bash|Shell|execute_command'
+      description: '危险命令拦截'
+      hooks:
+        - type: 'command'
+          timeout: 10000
+          command: |
+            const input = JSON.parse(require('fs').readFileSync(0, 'utf-8'));
+            const cmd = input.tool_input?.command || '';
+            const dangerous = [
+              { pattern: /rm\s+-rf\s+\//,       reason: '根目录递归删除' },
+              { pattern: /sudo\s+rm/i,            reason: 'sudo rm 危险操作' },
+              { pattern: /format\s+[a-z]:/i,      reason: '磁盘格式化' },
+              { pattern: /dd\s+if=.*of=\/dev\//, reason: '直接写入设备文件' },
+              { pattern: /mkfs\./i,               reason: '格式化文件系统' },
+              { pattern: /:()\s*\{\s*:\|:\s*&\s*\};:/i, reason: 'Fork 炸弹' },
+            ];
+            for (const d of dangerous) {
+              if (d.pattern.test(cmd)) {
+                console.log(JSON.stringify({ block: true, reason: `危险命令: ${d.reason}`, cmd: cmd.slice(0, 50) }));
+                process.exit(2);
+              }
+            }
+            process.exit(0);
+
+  PostToolUse:
+    - matcher: 'Write|Edit|create_file|replace_in_file'
+      description: '硬编码密钥检测'
+      hooks:
+        - type: 'command'
+          timeout: 10000
+          command: |
+            const input = JSON.parse(require('fs').readFileSync(0, 'utf-8'));
+            const content = input.tool_input?.content || '';
+            const leaks = [
+              { pattern: /password\s*=\s*['"][^'"]{8,}['"]/i,             label: 'password=' },
+              { pattern: /api[_-]?key\s*=\s*['"][^'"]{16,}['"]/i,           label: 'api_key=' },
+              { pattern: /secret\s*=\s*['"][^'"]{16,}['"]/i,                label: 'secret=' },
+              { pattern: /token\s*=\s*['"][^'"]{20,}['"]/i,                label: 'token=' },
+              { pattern: /sk-[a-zA-Z0-9]{20,}/,                            label: 'OpenAI key' },
+              { pattern: /ghp_[a-zA-Z0-9]{36}/,                           label: 'GitHub token' },
+              { pattern: /xox[baprs]-[a-zA-Z0-9]{10,}/,                  label: 'Slack token' },
+            ];
+            for (const l of leaks) {
+              if (l.pattern.test(content)) {
+                console.log(JSON.stringify({
+                  hookSpecificOutput: {
+                    additionalContext: `⚠️ Security: potential ${l.label} detected in written content`
+                  }
+                }));
+                break;
+              }
+            }

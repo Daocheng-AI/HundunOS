@@ -1,0 +1,9 @@
+{
+  "name": "hundunos-tests",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "HundunOS v3.0 Test Suite",
+  "scripts": {
+    "test": "node test_runner.js"
+  }
+}

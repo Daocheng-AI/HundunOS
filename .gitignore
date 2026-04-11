@@ -1,0 +1,97 @@
+# 依赖
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 构建产物
+dist/
+build/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 安全扫描产物
+semgrep-results.json
+trivy-results.json
+security-report.md
+
+# 测试覆盖
+coverage/
+.nyc_output/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 临时文件
+*.tmp
+*.temp
+tmp/
+temp/
+
+# FIX-gitignore: 运行时数据（体积巨大，不应入库）
+data/snapshots/
+data/*.jsonl
+data/*.json
+data/*.log
+logs/
+.tmp/
+__pycache__/
+.pytest_cache/
+
+# FIX-gitignore: 子项目独立 node_modules（electron 等巨型包）
+shell/client/node_modules/
+
+# FIX-gitignore: 测试输出文件
+tests/*.txt
+tests/results/
+tests/*.json
+!tests/package.json
+
+# FIX-gitignore: benchmarks
+.benchmarks/
+
+# FIX-P0: 备份和检查文件（代码冗余）
+*_check.txt
+*_check.js
+*.bak
+*.backup
+
+# FIX-P0: 敏感信息文件
+*.pem
+*.key
+secrets/
+credentials/
+
+# 调试/诊断临时文件
+debug-*.mjs
+test-*.mjs
+verify_*.py
+diag*.txt
+phase*-out.txt
+test-output.txt
+final-test.txt
+mr_direct.txt
+integration-out.txt
+
+# Rust 编译产物
+target/
+
+# Snapshots & 临时目录
+.snapshots/
+.arts/
+.claude/
+.codeartsdoer/
+
+# vendor 一般不入库（太大了，按需决定）
+# vendor/

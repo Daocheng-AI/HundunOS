@@ -1,0 +1,241 @@
+{
+  "version": "3.0.0",
+  "name": "HundunOS",
+  "environment": "development",
+  "description": "HundunOS v3.0 开发环境配置",
+  
+  "kernel": {
+    "logLevel": "debug",
+    "maxRetries": 5,
+    "timeout": 60000,
+    "enableMetrics": true,
+    "enableProfiling": true
+  },
+  
+  "modules": {
+    "edict": {
+      "enabled": true,
+      "path": "stable-modules/edict",
+      "autoSaveInterval": 10000
+    },
+    "permission-gating": {
+      "enabled": true,
+      "path": "stable-modules/permission-gating",
+      "requireExplicitApproval": false,
+      "defaultRequireApprovalLevel": 2
+    },
+    "cowork-monitor": {
+      "enabled": true,
+      "path": "stable-modules/cowork-monitor",
+      "alertThreshold": 2,
+      "cooldownMs": 30000
+    },
+    "audit-logger": {
+      "enabled": true,
+      "path": "stable-modules/audit-logger",
+      "retentionDays": 7,
+      "encryptLogs": false,
+      "compressArchives": false
+    },
+    "privacy-shield": {
+      "enabled": true,
+      "path": "stable-modules/privacy-shield",
+      "logRedaction": false,
+      "autoBlockLevels": []
+    },
+    "env-health-checker": {
+      "enabled": true,
+      "path": "stable-modules/env-health-checker",
+      "checkInterval": 120000,
+      "alertOnDegradation": false
+    },
+    "recoverable-memory": {
+      "enabled": true,
+      "path": "stable-modules/recoverable-memory",
+      "autoPersistInterval": 30000,
+      "maxSizeBytes": 10485760
+    }
+  },
+  
+  "modelRouter": {
+    "defaultStrategy": "LOCAL_FIRST",
+    "providers": ["ollama", "qclaw", "anthropic", "openai"],
+    "localFirst": true,
+    "endpoint": "http://127.0.0.1:11434",
+    "localModel": "qwen2.5:1.5b",
+    "localMaxTokens": 8192,
+    "requestTimeout": 60000,
+    "circuitBreaker": {
+      "enabled": false,
+      "threshold": 5,
+      "timeout": 30000
+    },
+    "fallbackOrder": ["ollama", "anthropic", "openai"],
+    "enableCache": false,
+    "cacheTtlMs": 60000,
+    "maxCacheSize": 50
+  },
+  
+  "storage": {
+    "type": "json",
+    "path": "./data",
+    "backupPath": "./backups",
+    "backupInterval": 86400000,
+    "maxBackups": 5,
+    "encryptBackups": false
+  },
+  
+  "messageBus": {
+    "ackTimeout": 10000,
+    "maxRetries": 5,
+    "maxQueueSize": 100,
+    "enableDeadLetterQueue": false
+  },
+  
+  "platform": {
+    "os": "windows",
+    "workspace": ".",
+    "pythonPath": "python",
+    "nodePath": "node",
+    "maxMemoryUsagePercent": 90,
+    "maxCpuUsagePercent": 90
+  },
+  
+  "toolBridge": {
+    "toolsDir": "../scripts/tools",
+    "timeout": 60000,
+    "enableSandbox": false,
+    "maxConcurrentCalls": 5
+  },
+  
+  "upgrade": {
+    "trustedSources": [
+      "file:///C:/ProgramData/HundunOS/updates/",
+      "file:///C:/ProgramData/HundunOS/releases/",
+      "https://hundunos.local",
+      "file:///C:/Users/test/.hundunos/dev-updates/"
+    ],
+    "allowedPatterns": ["*.json", "*.js"],
+    "requireSignature": false,
+    "requireHash": true,
+    "requireVersionIncrease": false,
+    "targetVersion": "3.0.1"
+  },
+  
+  "restApi": {
+    "port": 38081,
+    "host": "0.0.0.0",
+    "maxBodySize": 10485760,
+    "cors": {
+      "allowedOrigins": [
+      "http://localhost",
+      "http://localhost:*",
+      "http://127.0.0.1",
+      "http://127.0.0.1:*",
+      "file://",
+      "null",
+      "*"
+    ],
+      "allowCredentials": true,
+      "maxAge": 86400,
+      "allowedHeaders": ["*"],
+      "exposedHeaders": ["*"]
+    },
+    "rateLimit": {
+      "enabled": false,
+      "windowMs": 60000,
+      "maxRequests": 1000,
+      "burstMax": 50,
+      "trustedProxies": ["127.0.0.1", "::1", "localhost"]
+    },
+    "compression": {
+      "enabled": false,
+      "threshold": 1024
+    },
+    "securityHeaders": {
+      "enabled": false
+    }
+  },
+  
+  "rateLimit": {
+    "windowMs": 60000,
+    "maxRequests": 1000,
+    "burstMax": 50,
+    "global": false,
+    "trustedIPs": ["127.0.0.1", "::1/128", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+  },
+  
+  "healthMonitor": {
+    "weights": {
+      "kernel": 0.10,
+      "memory": 0.10,
+      "model_router": 0.15,
+      "edict": 0.15,
+      "security": 0.05,
+      "storage": 0.10,
+      "cron": 0.10,
+      "mcp": 0.10,
+      "workbuddy": 0.10,
+      "network": 0.05
+    },
+    "alertThreshold": 40,
+    "maxHistory": 50,
+    "checkInterval": 60000,
+    "enableTelemetry": false
+  },
+  
+  "logging": {
+    "level": "debug",
+    "format": "pretty",
+    "file": {
+      "enabled": false,
+      "path": "./logs",
+      "maxSize": 10485760,
+      "maxFiles": 5,
+      "compress": false
+    },
+    "console": {
+      "enabled": true,
+      "pretty": true,
+      "colors": true
+    },
+    "sentry": {
+      "enabled": false,
+      "dsn": "",
+      "environment": "development"
+    }
+  },
+  
+  "metrics": {
+    "enabled": false,
+    "port": 38082,
+    "path": "/metrics",
+    "collectDefaultMetrics": false,
+    "customMetrics": []
+  },
+  
+  "sessions": {
+    "maxSessions": 50,
+    "sessionTimeout": 86400000,
+    "cleanupInterval": 600000,
+    "enableSessionEncryption": false
+  },
+  
+  "performance": {
+    "fileReadMaxSize": 20971520,
+    "fileWriteMaxSize": 20971520,
+    "maxRequestSize": 10485760,
+    "enableResponseCompression": false,
+    "connectionPoolSize": 5,
+    "cacheEnabled": false,
+    "cacheTtlMs": 60000
+  },
+  
+  "debug": {
+    "enabled": true,
+    "logRequests": true,
+    "logResponses": false,
+    "profilingEndpoint": "/debug/pprof",
+    "enableInspector": true
+  }
+}

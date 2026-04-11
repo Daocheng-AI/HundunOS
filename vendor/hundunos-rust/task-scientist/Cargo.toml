@@ -1,0 +1,27 @@
+[package]
+name = "task-scientist"
+version = "0.3.0"
+edition = "2021"
+authors = ["HundunOS Team"]
+description = "AI-Scientist-v2 inspired task orchestration with Agentic Tree Search"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tokio = { workspace = true }
+dashmap = { workspace = true }
+sha2 = { workspace = true }
+regex = { workspace = true }
+uuid = { workspace = true }
+rand = { workspace = true }
+
+# Additional dependencies for task-scientist
+chrono = { version = "0.4", features = ["serde"] }
+petgraph = "0.6"
+indexmap = "2"
+async-trait = "0.1"
+futures = "0.3"

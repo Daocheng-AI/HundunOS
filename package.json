@@ -1,0 +1,33 @@
+{
+    "scripts": {
+        "test": "node tests/run.js",
+        "health": "node infrastructure/platform-adapter/health-check.js",
+        "dev": "node --watch kernel/core.js",
+        "start": "node kernel/core.js"
+    },
+    "description": "HundunOS v3.6 - 微内核 AI 助手系统（Claude Code 优化版）",
+    "type": "module",
+    "version": "3.6.0",
+    "license": "MIT",
+    "name": "hundunos",
+    "main": "kernel/core.js",
+    "dependencies": {
+        "chokidar": "^3.6.0",
+        "cron-parser": "^4.9.0",
+        "better-sqlite3": "^11.0.0",
+        "yaml": "^2.3.4",
+        "minimatch": "^9.0.3"
+    },
+    "keywords": [
+        "ai",
+        "assistant",
+        "hundunos",
+        "kernel"
+    ],
+    "directories": {
+        "doc": "docs",
+        "test": "tests"
+    },
+    "devDependencies": {},
+    "author": ""
+}

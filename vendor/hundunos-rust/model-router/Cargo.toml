@@ -1,0 +1,20 @@
+[package]
+name = "hundunos-router"
+version = "0.2.0"
+edition = "2021"
+description = "HundunOS Model Router v2.0 - Multi-provider routing with LinUCB and edict-inspired enhancements"
+
+[[bin]]
+name = "hundunos-router"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+dashmap = { workspace = true }
+sha2 = { workspace = true }
+rand = { workspace = true }

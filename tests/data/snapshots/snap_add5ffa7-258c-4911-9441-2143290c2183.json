@@ -1,0 +1,749 @@
+{
+  "id": "snap_add5ffa7-258c-4911-9441-2143290c2183",
+  "type": "full",
+  "timestamp": 1775790504941,
+  "parentId": null,
+  "state": {
+    "modules": {
+      "agent-teams": {
+        "status": "registered",
+        "config": {}
+      },
+      "client-adapter": {
+        "status": "registered",
+        "config": {}
+      },
+      "context": {
+        "status": "registered",
+        "config": {}
+      },
+      "health-monitor": {
+        "status": "registered",
+        "config": {}
+      },
+      "hooks": {
+        "status": "registered",
+        "config": {}
+      },
+      "hot-reload": {
+        "status": "registered",
+        "config": {}
+      },
+      "hud": {
+        "status": "registered",
+        "config": {}
+      },
+      "mcp": {
+        "status": "registered",
+        "config": {}
+      },
+      "model-router": {
+        "status": "registered",
+        "config": {}
+      },
+      "pipeline": {
+        "status": "registered",
+        "config": {}
+      },
+      "recovery": {
+        "status": "registered",
+        "config": {}
+      },
+      "skills": {
+        "status": "registered",
+        "config": {}
+      },
+      "subagents": {
+        "status": "registered",
+        "config": {}
+      },
+      "audit-logger": {
+        "status": "registered",
+        "config": {}
+      },
+      "client-adapter-module": {
+        "status": "registered",
+        "config": {}
+      },
+      "cowork-monitor": {
+        "status": "registered",
+        "config": {}
+      },
+      "env-health-checker": {
+        "status": "registered",
+        "config": {}
+      },
+      "permission-gating": {
+        "status": "registered",
+        "config": {}
+      },
+      "privacy-shield": {
+        "status": "registered",
+        "config": {}
+      },
+      "rbac": {
+        "status": "registered",
+        "config": {}
+      },
+      "recoverable-memory": {
+        "status": "registered",
+        "config": {}
+      },
+      "auto-optimize": {
+        "status": "registered",
+        "config": {}
+      },
+      "auto-recovery": {
+        "status": "registered",
+        "config": {}
+      },
+      "best-practices": {
+        "status": "registered",
+        "config": {}
+      },
+      "context-optimizer": {
+        "status": "registered",
+        "config": {}
+      },
+      "evolution": {
+        "status": "registered",
+        "config": {}
+      },
+      "feedback": {
+        "status": "registered",
+        "config": {}
+      },
+      "i18n": {
+        "status": "registered",
+        "config": {}
+      },
+      "learning-hub": {
+        "status": "registered",
+        "config": {}
+      },
+      "longcat-tts": {
+        "status": "registered",
+        "config": {}
+      },
+      "project-rules": {
+        "status": "registered",
+        "config": {}
+      },
+      "rule-generator": {
+        "status": "registered",
+        "config": {}
+      },
+      "search": {
+        "status": "registered",
+        "config": {}
+      },
+      "skill-market": {
+        "status": "registered",
+        "config": {}
+      },
+      "subagent调度": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-chain": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-checkpoint": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-visualizer": {
+        "status": "registered",
+        "config": {}
+      },
+      "tutorial-system": {
+        "status": "registered",
+        "config": {}
+      },
+      "workbuddy": {
+        "status": "registered",
+        "config": {}
+      },
+      "aware-system": {
+        "status": "registered",
+        "config": {}
+      },
+      "citation-processor": {
+        "status": "registered",
+        "config": {}
+      },
+      "context-enhancer": {
+        "status": "registered",
+        "config": {}
+      },
+      "deep-research": {
+        "status": "registered",
+        "config": {}
+      },
+      "error-codes": {
+        "status": "registered",
+        "config": {}
+      },
+      "feature-flags": {
+        "status": "registered",
+        "config": {}
+      },
+      "integrations": {
+        "status": "registered",
+        "config": {}
+      },
+      "intent-engine": {
+        "status": "registered",
+        "config": {}
+      },
+      "intent-vector-cache": {
+        "status": "registered",
+        "config": {}
+      },
+      "memory-graph-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "memory-graph-vector-compressor": {
+        "status": "registered",
+        "config": {}
+      },
+      "memory-graph": {
+        "status": "registered",
+        "config": {}
+      },
+      "message-router": {
+        "status": "registered",
+        "config": {}
+      },
+      "model-router-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "module-registry": {
+        "status": "registered",
+        "config": {}
+      },
+      "path-validation": {
+        "status": "registered",
+        "config": {}
+      },
+      "permission-mode": {
+        "status": "registered",
+        "config": {}
+      },
+      "permission-pipeline": {
+        "status": "registered",
+        "config": {}
+      },
+      "policy-engine-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "policy-engine": {
+        "status": "registered",
+        "config": {}
+      },
+      "prompt-template": {
+        "status": "registered",
+        "config": {}
+      },
+      "rate-limiter": {
+        "status": "registered",
+        "config": {}
+      },
+      "rust-integration": {
+        "status": "registered",
+        "config": {}
+      },
+      "scheduler": {
+        "status": "registered",
+        "config": {}
+      },
+      "self-adaptation": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-scientist-memory-tool": {
+        "status": "registered",
+        "config": {}
+      },
+      "task-scientist": {
+        "status": "registered",
+        "config": {}
+      },
+      "tool-bridge-rust": {
+        "status": "registered",
+        "config": {}
+      },
+      "tool-bridge": {
+        "status": "registered",
+        "config": {}
+      },
+      "tool-scheduler": {
+        "status": "registered",
+        "config": {}
+      },
+      "tracing": {
+        "status": "registered",
+        "config": {}
+      },
+      "upgrade-controller": {
+        "status": "registered",
+        "config": {}
+      },
+      "status": {
+        "status": "registered",
+        "config": {}
+      },
+      "shutdown": {
+        "status": "registered",
+        "config": {}
+      },
+      "modelRouter": {
+        "status": "active",
+        "config": {}
+      },
+      "aware": {
+        "status": "registered",
+        "config": {}
+      },
+      "permissionGating": {
+        "status": "registered",
+        "config": {}
+      },
+      "auditLogger": {
+        "status": "registered",
+        "config": {}
+      },
+      "privacyShield": {
+        "status": "registered",
+        "config": {}
+      },
+      "recoverableMemory": {
+        "status": "registered",
+        "config": {}
+      },
+      "memoryGraph": {
+        "status": "registered",
+        "config": {}
+      },
+      "toolBridge": {
+        "status": "registered",
+        "config": {}
+      }
+    },
+    "memory": {
+      "working": [
+        [
+          "mem_30775be6-e72d-470d-bf30-9d15395bee1f",
+          {
+            "id": "mem_30775be6-e72d-470d-bf30-9d15395bee1f",
+            "timestamp": 1775790447415,
+            "message": "test",
+            "intent": "unknown",
+            "result": true,
+            "importance": 1
+          }
+        ]
+      ],
+      "recent": [
+        {
+          "id": "mem_30775be6-e72d-470d-bf30-9d15395bee1f",
+          "timestamp": 1775790447415,
+          "message": "test",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b7e6c209-f8ef-4c8f-a110-82e2cd1f0d8b",
+          "timestamp": 1775740902525,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_be993fae-c503-4357-92f2-cf057833432f",
+          "timestamp": 1775740900537,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b8b2b597-a1c0-4199-9d46-7f6a43cc05e7",
+          "timestamp": 1775740897511,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_041fa7ae-75f8-4804-93e8-9b93e88a5722",
+          "timestamp": 1775740879690,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f5066a03-a5ee-47a5-b8fa-2beffbaa7805",
+          "timestamp": 1775740243393,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_b7a357a3-d03d-4828-a9c2-8c02f5d9f787",
+          "timestamp": 1775740241487,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_3cc8e884-921d-4b8d-ac00-a2caf039269d",
+          "timestamp": 1775740238537,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_0032c9ab-f7a8-4736-8bc7-690fea284992",
+          "timestamp": 1775740233737,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_c2326b26-85f8-44ce-99f9-dfd025f6bd78",
+          "timestamp": 1775739959710,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5dced25a-5285-4ce0-97e0-e6912ee95046",
+          "timestamp": 1775739957708,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_d5420c47-0418-48a8-be3d-6c5579a02292",
+          "timestamp": 1775739955126,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_4971ba2d-4835-4bea-b0b3-0057169af8da",
+          "timestamp": 1775739950770,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_11b7311b-e486-461f-a817-59b077a2e483",
+          "timestamp": 1775739760535,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_7a94123d-3d95-4789-a3a5-c4af6025d5e5",
+          "timestamp": 1775739758709,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_5c5c70b4-b354-4694-9efa-b7065c7dc5f5",
+          "timestamp": 1775739755986,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_f17452b5-446d-4cc3-9b43-64fc34e4e38f",
+          "timestamp": 1775739739295,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_4896ed9b-f976-4826-8049-39dae5c5702c",
+          "timestamp": 1775739236270,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_d90ebaf1-c495-4983-a251-fc1ba3337cbe",
+          "timestamp": 1775739233572,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_273ce3fa-2082-4006-a089-1039e262a240",
+          "timestamp": 1775739231170,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_ba593922-0258-46fa-b3ed-cc03a0e98b44",
+          "timestamp": 1775739201027,
+          "message": "hello",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_85e6a09c-90be-489f-8674-199530717403",
+          "timestamp": 1775657535003,
+          "message": "test message",
+          "intent": "unknown",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_7f75e59a-144e-4392-9a23-81ea91a294d2",
+          "timestamp": 1775574446285,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_60d52ea2-9dd7-4857-b0d3-b117a833a060",
+          "timestamp": 1775574443892,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_64cc9412-e80c-405c-8403-59de137772fc",
+          "timestamp": 1775574434042,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_03d3b6ac-a0f2-48c0-b99c-ad8bd790aadc",
+          "timestamp": 1775574389653,
+          "message": "hello",
+          "intent": "chat",
+          "result": false,
+          "importance": 2
+        },
+        {
+          "id": "mem_d01b315f-351e-4ceb-9b55-26dda92215d3",
+          "timestamp": 1775572052725,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_d83a2d24-7139-4fab-90f1-e21e60af8a9d",
+          "timestamp": 1775572051375,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_04300ba8-e417-46e5-97ba-ba538f56f768",
+          "timestamp": 1775572049224,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_46354d66-80f3-45cd-b07c-8c7647c97d0b",
+          "timestamp": 1775572022420,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_e00799e9-9c3f-4556-8b79-b1593f449a6f",
+          "timestamp": 1775571474027,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_e4d005cf-cd3c-49fb-af72-4106e43f0477",
+          "timestamp": 1775571472573,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_fd84dfa2-9db7-45ff-8235-dd12df9ba994",
+          "timestamp": 1775571470709,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_2b4305bf-98c7-4017-be08-4677250440b3",
+          "timestamp": 1775571466521,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022983496",
+          "timestamp": 1775022983496,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022982272",
+          "timestamp": 1775022982272,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022980609",
+          "timestamp": 1775022980609,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022977816",
+          "timestamp": 1775022977816,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022225679",
+          "timestamp": 1775022225679,
+          "message": "test record message",
+          "intent": "test",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022223582",
+          "timestamp": 1775022223582,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022219278",
+          "timestamp": 1775022219278,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        },
+        {
+          "id": "mem_1775022209074",
+          "timestamp": 1775022209074,
+          "message": "hello",
+          "intent": "chat",
+          "result": true,
+          "importance": 1
+        }
+      ],
+      "semantic": [],
+      "episodic": []
+    },
+    "sessions": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "aware": {
+      "focuses": [
+        [
+          "focus_c4a23914-e9eb-4316-a278-da577287fef6",
+          {
+            "id": "focus_c4a23914-e9eb-4316-a278-da577287fef6",
+            "task": "系统健康监控",
+            "description": "持续关注系统运行状态",
+            "status": "pending",
+            "priority": "normal",
+            "tags": [
+              "system",
+              "health"
+            ],
+            "triggers": [],
+            "parent": null,
+            "children": [],
+            "created": 1775558802559,
+            "updated": 1775558802559,
+            "started": null,
+            "completed": null
+          }
+        ],
+        [
+          "focus_498d8c46-8584-4050-a874-5082bc03e540",
+          {
+            "id": "focus_498d8c46-8584-4050-a874-5082bc03e540",
+            "task": "任务执行效率",
+            "description": "关注当前任务的执行效率",
+            "status": "pending",
+            "priority": "normal",
+            "tags": [
+              "performance",
+              "tasks"
+            ],
+            "triggers": [],
+            "parent": null,
+            "children": [],
+            "created": 1775558802559,
+            "updated": 1775558802559,
+            "started": null,
+            "completed": null
+          }
+        ]
+      ],
+      "triggers": [
+        "trigger_36875a51-ef0b-4b3e-b6cb-1762804172df"
+      ]
+    },
+    "timestamp": 1775790504941
+  },
+  "checksum": "baef2472a785b740",
+  "size": 12310,
+  "compressed": false
+}

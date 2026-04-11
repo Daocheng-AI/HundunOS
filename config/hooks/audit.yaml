@@ -1,0 +1,45 @@
+# config/hooks/audit.yaml
+# HundunOS v3.8 Phase 7 — 审计 Hook
+# 记录所有工具执行和会话事件
+
+hooks:
+  PreToolUse:
+    - matcher: '*'
+      description: '工具执行前记录审计日志'
+      hooks:
+        - type: 'agent'
+          agent: 'Plan'
+          timeout: 5000
+          context: 'Audit logging: check if this tool call should be logged'
+
+  PostToolUse:
+    - matcher: '*'
+      description: '工具执行后记录审计日志'
+      hooks:
+        - type: 'command'
+          timeout: 5000
+          command: |
+            const input = JSON.parse(require('fs').readFileSync(0, 'utf-8'));
+            const logEntry = {
+              ts: Date.now(),
+              tool: input.tool_name,
+              success: input.result?.success !== false,
+              latency: input.latency,
+            };
+            // 在生产环境可发送到审计服务
+            if (process.env.HUNDUNOS_ENV === 'production') {
+              // async log — non-blocking
+            }
+            process.exit(0);
+
+  Stop:
+    - matcher: '*'
+      description: 'Agent 停止时记录会话摘要'
+      hooks:
+        - type: 'command'
+          timeout: 30000
+          command: |
+            const input = JSON.parse(require('fs').readFileSync(0, 'utf-8'));
+            const summary = `[STOP] Agent stopped: ${input.exitReason || 'unknown'}`;
+            console.log(summary);
+            process.exit(0);
