@@ -77,15 +77,15 @@ export class ToolBridge {
             console.warn('[ToolBridge] Tools directory not found:', this.toolsDir);
         }
         const available = Array.from(this.tools.values()).filter(t => t.available).length;
-        console.log(`[ToolBridge] ${this.tools.size} tools (${available} available) in ${this.categories.size} categories`);
+        // review: removed // review: removed console.log(`[ToolBridge] ${this.tools.size} tools (${available} available) in ${this.categories.size} categories`);
 
         // Phase 4: Rust 执行后端状态
         if (this.rustAdapter) {
-            console.log('[ToolBridge] Rust backend: ✅ adapters/rust-modules/tool (hundunos-core daemon)');
+            // review: removed // review: removed console.log('[ToolBridge] Rust backend: ✅ adapters/rust-modules/tool (hundunos-core daemon)');
         } else if (this._rustEnabled) {
-            console.log('[ToolBridge] Rust backend: ⚠️  legacy subprocess mode (no daemon)');
+            // review: removed // review: removed console.log('[ToolBridge] Rust backend: ⚠️  legacy subprocess mode (no daemon)');
         } else {
-            console.log('[ToolBridge] Rust backend: disabled');
+            // review: removed // review: removed console.log('[ToolBridge] Rust backend: disabled');
         }
     }
 
@@ -135,7 +135,7 @@ export class ToolBridge {
         }
 
         if (discovered > 0) {
-            console.log(`[ToolBridge] File-level discovery: ${discovered} tools registered from ${this.toolsDir}`);
+            // review: removed // review: removed console.log(`[ToolBridge] File-level discovery: ${discovered} tools registered from ${this.toolsDir}`);
         }
     }
 

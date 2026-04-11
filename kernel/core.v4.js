@@ -114,9 +114,9 @@ class CoreKernelV4 extends KernelBase {
             system: mergedSystemConfig,
         };
 
-        console.log(`[Kernel] Initialized for ${environment} environment`);
-        console.log(`[Kernel] Project root: ${projectRoot}`);
-        console.log(`[Kernel] Workspace: ${workspace}`);
+        // review: removed // review: removed console.log(`[Kernel] Initialized for ${environment} environment`);
+        // review: removed // review: removed console.log(`[Kernel] Project root: ${projectRoot}`);
+        // review: removed // review: removed console.log(`[Kernel] Workspace: ${workspace}`);
 
         // ── 状态 ───────────────────────────────────────────────
         this.state = {
@@ -158,7 +158,7 @@ class CoreKernelV4 extends KernelBase {
     // ── shutdown() — 核心关闭 ────────────────────────────────────
 
     async shutdown() {
-        console.log('[Kernel] Shutting down...');
+        // review: removed // review: removed console.log('[Kernel] Shutting down...');
         this.state.running = false;
 
         const tasks = [];
@@ -180,7 +180,7 @@ class CoreKernelV4 extends KernelBase {
         if (this.restServer?.stop) tasks.push(this.restServer.stop());
 
         await Promise.allSettled(tasks);
-        console.log('[Kernel] Shutdown complete');
+        // review: removed // review: removed console.log('[Kernel] Shutdown complete');
     }
 
     // ── getStatus() — 完整状态报告 ────────────────────────────────
@@ -280,13 +280,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const kernel = new CoreKernelV4();
 
     kernel.on('kernel:ready', async () => {
-        console.log('[Kernel] === HundunOS v4.1 Mixin Composition Mode ===');
-        console.log('[Kernel] Architecture: Mixin-based (5 mixins)');
-        console.log('[Kernel] Mixin sources:', KernelBase._mixinSources?.join(', ') || 'N/A');
-        console.log('[Kernel] Type messages or press Ctrl+C to exit');
+        // review: removed // review: removed console.log('[Kernel] === HundunOS v4.1 Mixin Composition Mode ===');
+        // review: removed // review: removed console.log('[Kernel] Architecture: Mixin-based (5 mixins)');
+        // review: removed // review: removed console.log('[Kernel] Mixin sources:', KernelBase._mixinSources?.join(', ') || 'N/A');
+        // review: removed // review: removed console.log('[Kernel] Type messages or press Ctrl+C to exit');
 
         process.on('SIGINT', async () => {
-            console.log('\n[Kernel] Shutting down...');
+            // review: removed // review: removed console.log('\n[Kernel] Shutting down...');
             await kernel.shutdown();
             process.exit(0);
         });
@@ -300,7 +300,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     if (process.argv[2]) {
         (async () => {
             const result = await kernel.process({ content: process.argv.slice(2).join(' '), sessionId: 'cli' });
-            console.log(JSON.stringify(result, null, 2));
+            // review: removed // review: removed console.log(JSON.stringify(result, null, 2));
             await kernel.shutdown();
             process.exit(0);
         })();

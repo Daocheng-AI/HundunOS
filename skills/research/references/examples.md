@@ -35,8 +35,8 @@ const researchResult = await kernel.skills.execute('research', {
   limit: 20
 });
 
-console.log(researchResult.summary);
-console.log(researchResult.sources);
+// review: removed // review: removed console.log(researchResult.summary);
+// review: removed // review: removed console.log(researchResult.sources);
 ```
 
 ## 输出格式

@@ -89,7 +89,7 @@ export class CircuitBreaker {
             this.successes = 0;
         }
 
-        console.log(`[CircuitBreaker] ${oldState} -> ${newState}`);
+        // review: removed // review: removed console.log(`[CircuitBreaker] ${oldState} -> ${newState}`);
     }
 
     /**

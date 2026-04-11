@@ -113,7 +113,7 @@ export class PipelineOrchestrator {
         if (fixIdx !== -1) {
           // 跳到 $fix 阶段
           if (this.config.verbose) {
-            console.log(`[Pipeline:${pipelineId}] Stage "${stage.name}" failed, jumping to $fix`);
+            // review: removed // review: removed console.log(`[Pipeline:${pipelineId}] Stage "${stage.name}" failed, jumping to $fix`);
           }
           const fixStage = normalized[fixIdx];
           const fixResult = await this._runStage(fixStage, context, fixIdx);
@@ -181,7 +181,7 @@ export class PipelineOrchestrator {
     this._emit('stage:start', { pipelineId: this._randomId, stage, index });
 
     if (this.config.verbose) {
-      console.log(`[Pipeline] ▶ Stage ${index + 1}: ${stage.name} (${stage.description || stage.type})`);
+      // review: removed // review: removed console.log(`[Pipeline] ▶ Stage ${index + 1}: ${stage.name} (${stage.description || stage.type})`);
     }
 
     let attempt = 0;
@@ -196,7 +196,7 @@ export class PipelineOrchestrator {
         result.completedAt = new Date().toISOString();
 
         if (this.config.verbose) {
-          console.log(`[Pipeline]   ✓ ${stage.name} (attempt ${attempt})`);
+          // review: removed // review: removed console.log(`[Pipeline]   ✓ ${stage.name} (attempt ${attempt})`);
         }
 
         this._emit('stage:complete', { stage, result, attempt });
@@ -555,7 +555,7 @@ export class PipelineOrchestrator {
       this.kernel.emit(event, { source: 'pipeline', ...data });
     }
     if (this.config.verbose) {
-      console.log(`[Pipeline Event] ${event}`, JSON.stringify(data).slice(0, 120));
+      // review: removed // review: removed console.log(`[Pipeline Event] ${event}`, JSON.stringify(data).slice(0, 120));
     }
   }
 

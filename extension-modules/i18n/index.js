@@ -39,7 +39,7 @@ export class I18n {
         // 设置默认语言
         this.currentLocale = this.config.defaultLocale;
         
-        console.log('[I18n] Initialized with', this.translations.size, 'locales');
+        // review: removed // review: removed console.log('[I18n] Initialized with', this.translations.size, 'locales');
     }
 
     /**
@@ -131,7 +131,7 @@ export class I18n {
         }
         
         this.currentLocale = locale;
-        console.log(`[I18n] Locale set to: ${locale}`);
+        // review: removed // review: removed console.log(`[I18n] Locale set to: ${locale}`);
         
         return true;
     }
@@ -238,7 +238,7 @@ export class I18n {
         const merged = { ...existing, ...translations };
         this.translations.set(locale, merged);
         
-        console.log(`[I18n] Custom translations loaded for ${locale}`);
+        // review: removed // review: removed console.log(`[I18n] Custom translations loaded for ${locale}`);
     }
 
     /**

@@ -175,7 +175,7 @@ export class HundunHUD extends EventEmitter {
       this._render();
     }, this.config.refreshInterval);
 
-    console.log(`[HUD] Started — ${this.config.refreshInterval}ms refresh`);
+    // review: removed // review: removed console.log(`[HUD] Started — ${this.config.refreshInterval}ms refresh`);
   }
 
   /** 停止 HUD */
@@ -190,7 +190,7 @@ export class HundunHUD extends EventEmitter {
 
     // 恢复光标 + 清屏
     this._write(CLEAR_SCREEN + CURSOR_HOME + SHOW_CURSOR);
-    console.log('[HUD] Stopped');
+    // review: removed // review: removed console.log('[HUD] Stopped');
   }
 
   /** 强制刷新 */

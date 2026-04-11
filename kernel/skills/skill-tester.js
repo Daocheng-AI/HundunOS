@@ -348,7 +348,7 @@ export class TestSuite {
     }
     
     async run() {
-        console.log(`\n🧪 Test Suite: ${this.name}\n`);
+        // review: removed // review: removed console.log(`\n🧪 Test Suite: ${this.name}\n`);
         
         const results = [];
         
@@ -363,7 +363,7 @@ export class TestSuite {
                 await this.beforeEach();
             }
             
-            console.log(`  ${test.name}...`);
+            // review: removed // review: removed console.log(`  ${test.name}...`);
             const startTime = Date.now();
             
             try {
@@ -371,11 +371,11 @@ export class TestSuite {
                 const duration = Date.now() - startTime;
                 
                 if (result.success) {
-                    console.log(`  ✅ PASS (${duration}ms)`);
+                    // review: removed // review: removed console.log(`  ✅ PASS (${duration}ms)`);
                 } else {
-                    console.log(`  ❌ FAIL (${duration}ms)`);
+                    // review: removed // review: removed console.log(`  ❌ FAIL (${duration}ms)`);
                     if (result.error) {
-                        console.log(`     Error: ${result.error.message}`);
+                        // review: removed // review: removed console.log(`     Error: ${result.error.message}`);
                     }
                 }
                 
@@ -388,8 +388,8 @@ export class TestSuite {
                 
             } catch (error) {
                 const duration = Date.now() - startTime;
-                console.log(`  ❌ ERROR (${duration}ms)`);
-                console.log(`     ${error.message}`);
+                // review: removed // review: removed console.log(`  ❌ ERROR (${duration}ms)`);
+                // review: removed // review: removed console.log(`     ${error.message}`);
                 
                 results.push({
                     name: test.name,
@@ -414,7 +414,7 @@ export class TestSuite {
         const passed = results.filter(r => r.success).length;
         const failed = results.filter(r => !r.success).length;
         
-        console.log(`\n📊 Summary: ${passed} passed, ${failed} failed\n`);
+        // review: removed // review: removed console.log(`\n📊 Summary: ${passed} passed, ${failed} failed\n`);
         
         return {
             suite: this.name,

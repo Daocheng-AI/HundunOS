@@ -83,7 +83,7 @@ export class SelfAdaptation {
     async initialize() {
         await this._loadState();
         this._startObservation();
-        console.log(`[SelfAdaptation] Initialized with pattern: ${this.currentPattern}`);
+        // review: removed // review: removed console.log(`[SelfAdaptation] Initialized with pattern: ${this.currentPattern}`);
         return this;
     }
 
@@ -218,7 +218,7 @@ export class SelfAdaptation {
 
         await this._saveState();
 
-        console.log(`[SelfAdaptation] Adapted to ${newPattern}: ${rules.description}`);
+        // review: removed // review: removed console.log(`[SelfAdaptation] Adapted to ${newPattern}: ${rules.description}`);
         return {
             adapted: true,
             pattern: newPattern,
@@ -288,7 +288,7 @@ export class SelfAdaptation {
     async shutdown() {
         this.stopObservation();
         await this._saveState();
-        console.log('[SelfAdaptation] Shutdown complete');
+        // review: removed // review: removed console.log('[SelfAdaptation] Shutdown complete');
     }
 
     // ========================================

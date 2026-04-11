@@ -81,7 +81,7 @@ async function handleInstall(modules, params) {
         process.exit(1);
     }
     
-    console.log(`Installing skill from: ${url}`);
+    // review: removed // review: removed console.log(`Installing skill from: ${url}`);
     
     let result;
     
@@ -100,8 +100,8 @@ async function handleInstall(modules, params) {
     }
     
     if (result.success) {
-        console.log(`✅ Installed: ${result.spec.name} v${result.spec.version}`);
-        console.log(`   Description: ${result.spec.description || '(none)'}`);
+        // review: removed // review: removed console.log(`✅ Installed: ${result.spec.name} v${result.spec.version}`);
+        // review: removed // review: removed console.log(`   Description: ${result.spec.description || '(none)'}`);
     } else {
         console.error(`❌ Failed: ${result.error}`);
         process.exit(1);
@@ -146,7 +146,7 @@ ${spec.system_prompt || spec.body || ''}
     const result = await modules.platformBridge.installSkillMd(skillName, skillMd, platform);
     
     if (result.success) {
-        console.log(`✅ Published ${skillName} to ${platform}`);
+        // review: removed // review: removed console.log(`✅ Published ${skillName} to ${platform}`);
     } else {
         console.error(`❌ Failed: ${result.error}`);
         process.exit(1);
@@ -172,7 +172,7 @@ async function handleList(modules, params) {
         }
         
         const skillsDir = modules.platformBridge.getPlatformSkillsDir(platform);
-        console.log(`Skills in ${platformInfo.name} (${skillsDir}):\n`);
+        // review: removed // review: removed console.log(`Skills in ${platformInfo.name} (${skillsDir}):\n`);
         
         if (existsSync(skillsDir)) {
             const entries = require('fs').readdirSync(skillsDir, { withFileTypes: true });
@@ -183,26 +183,26 @@ async function handleList(modules, params) {
                     if (existsSync(skillMdPath)) {
                         const content = readFileSync(skillMdPath, 'utf-8');
                         const parsed = modules.skillValidator.parseSkillMd(content);
-                        console.log(`  ${entry.name} v${parsed.frontmatter.version || '?''} - ${parsed.frontmatter.description || '(no description)'}`);
+                        // review: removed // review: removed console.log(`  ${entry.name} v${parsed.frontmatter.version || '?''} - ${parsed.frontmatter.description || '(no description)'}`);
                     } else {
-                        console.log(`  ${entry.name} (no SKILL.md)`);
+                        // review: removed // review: removed console.log(`  ${entry.name} (no SKILL.md)`);
                     }
                 }
             }
         } else {
-            console.log('  (directory not found)');
+            // review: removed // review: removed console.log('  (directory not found)');
         }
     } else {
         // 列出本地仓库的 Skill
         const skills = modules.skillRepo.list();
         
-        console.log(`Local skills (${modules.skillRepo.repoDir}):\n`);
+        // review: removed // review: removed console.log(`Local skills (${modules.skillRepo.repoDir}):\n`);
         
         if (skills.length === 0) {
-            console.log('  (no skills)');
+            // review: removed // review: removed console.log('  (no skills)');
         } else {
             for (const skill of skills) {
-                console.log(`  ${skill.name} v${skill.metadata.version || '?'} - ${skill.metadata.description || '(no description)'}`);
+                // review: removed // review: removed console.log(`  ${skill.name} v${skill.metadata.version || '?'} - ${skill.metadata.description || '(no description)'}`);
             }
         }
     }
@@ -232,39 +232,39 @@ async function handleValidate(modules, params) {
     
     if (stat.isDirectory()) {
         // 验证 Skill 文件夹
-        console.log(`Validating skill package: ${resolvedPath}\n`);
+        // review: removed // review: removed console.log(`Validating skill package: ${resolvedPath}\n`);
         
         const result = await modules.skillValidator.validateSkillPackage(resolvedPath);
         
         if (result.valid) {
-            console.log('✅ Valid skill package');
+            // review: removed // review: removed console.log('✅ Valid skill package');
         } else {
-            console.log('❌ Invalid skill package');
-            result.errors.forEach(e => console.log(`  Error: ${e}`));
+            // review: removed // review: removed console.log('❌ Invalid skill package');
+            result.errors.forEach(e => // review: removed // review: removed console.log(`  Error: ${e}`));
         }
         
         if (result.warnings.length > 0) {
-            console.log('\nWarnings:');
-            result.warnings.forEach(w => console.log(`  ⚠️  ${w}`));
+            // review: removed // review: removed console.log('\nWarnings:');
+            result.warnings.forEach(w => // review: removed // review: removed console.log(`  ⚠️  ${w}`));
         }
     } else {
         // 验证 SKILL.md 文件
-        console.log(`Validating SKILL.md: ${resolvedPath}\n`);
+        // review: removed // review: removed console.log(`Validating SKILL.md: ${resolvedPath}\n`);
         
         const content = readFileSync(resolvedPath, 'utf-8');
         const dirName = require('path').basename(require('path').dirname(resolvedPath));
         const result = modules.skillValidator.validateSkillMd(content, dirName);
         
         if (result.valid) {
-            console.log('✅ Valid SKILL.md');
+            // review: removed // review: removed console.log('✅ Valid SKILL.md');
         } else {
-            console.log('❌ Invalid SKILL.md');
-            result.errors.forEach(e => console.log(`  Error: ${e}`));
+            // review: removed // review: removed console.log('❌ Invalid SKILL.md');
+            result.errors.forEach(e => // review: removed // review: removed console.log(`  Error: ${e}`));
         }
         
         if (result.warnings.length > 0) {
-            console.log('\nWarnings:');
-            result.warnings.forEach(w => console.log(`  ⚠️  ${w}`));
+            // review: removed // review: removed console.log('\nWarnings:');
+            result.warnings.forEach(w => // review: removed // review: removed console.log(`  ⚠️  ${w}`));
         }
     }
 }
@@ -287,14 +287,14 @@ async function handleVersion(modules, params) {
     
     if (!action) {
         // 显示版本历史
-        console.log(`Versions for ${skillName}:\n`);
+        // review: removed // review: removed console.log(`Versions for ${skillName}:\n`);
         
         if (versions.length === 0) {
-            console.log('  (no versions)');
+            // review: removed // review: removed console.log('  (no versions)');
         } else {
             for (const v of versions) {
                 const date = new Date(v.createdAt).toLocaleString();
-                console.log(`  ${v.version} - ${date}${v.message ? ` - ${v.message}` : ''}`);
+                // review: removed // review: removed console.log(`  ${v.version} - ${date}${v.message ? ` - ${v.message}` : ''}`);
             }
         }
     } else if (['patch', 'minor', 'major'].includes(action)) {
@@ -302,14 +302,14 @@ async function handleVersion(modules, params) {
         const latest = versions[0]?.version || '0.0.0';
         const newVersion = modules.skillVersion.incrementVersion(latest, action);
         
-        console.log(`Version bump: ${latest} → ${newVersion}`);
+        // review: removed // review: removed console.log(`Version bump: ${latest} → ${newVersion}`);
         
         // 创建快照
         const skillPath = join(modules.skillRepo.repoDir, skillName);
         const result = versionManager.createSnapshot(skillName, skillPath, { version: newVersion });
         
         if (result.success) {
-            console.log(`✅ Created version ${newVersion}`);
+            // review: removed // review: removed console.log(`✅ Created version ${newVersion}`);
         } else {
             console.error(`❌ Failed: ${result.error}`);
         }
@@ -328,26 +328,26 @@ async function handlePlatform(modules, params) {
     
     switch (action) {
         case 'list':
-            console.log('Supported platforms:\n');
+            // review: removed // review: removed console.log('Supported platforms:\n');
             const platforms = modules.platformBridge.getSupportedPlatforms();
             const installed = modules.platformBridge.detectInstalledPlatforms();
             
             for (const p of platforms) {
                 const isInstalled = installed.includes(p.id);
-                console.log(`  ${isInstalled ? '✅' : '⚪'} ${p.name} (${p.id}) - ${p.type}`);
+                // review: removed // review: removed console.log(`  ${isInstalled ? '✅' : '⚪'} ${p.name} (${p.id}) - ${p.type}`);
             }
             break;
             
         case 'detect':
-            console.log('Detected platforms:\n');
+            // review: removed // review: removed console.log('Detected platforms:\n');
             const detected = modules.platformBridge.detectInstalledPlatforms();
             
             if (detected.length === 0) {
-                console.log('  (none)');
+                // review: removed // review: removed console.log('  (none)');
             } else {
                 for (const id of detected) {
                     const p = modules.platformBridge.getPlatform(id);
-                    console.log(`  ✅ ${p.name} (${id})`);
+                    // review: removed // review: removed console.log(`  ✅ ${p.name} (${id})`);
                 }
             }
             break;
@@ -363,7 +363,7 @@ async function handlePlatform(modules, params) {
 // ================================================================
 
 function printHelp() {
-    console.log(`
+    // review: removed // review: removed console.log(`
 HundunOS Skill CLI v3.9
 
 Usage: hundunos-skill <command> [options]

@@ -143,7 +143,7 @@ export class ProactiveManager {
   start(intervalMs = 30_000) {
     if (!this.enabled) return;
     this._intervalHandle = setInterval(() => this._checkAll(), intervalMs);
-    console.log('[Proactive] Manager started');
+    // review: removed // review: removed console.log('[Proactive] Manager started');
   }
 
   stop() {

@@ -403,7 +403,7 @@ export class SkillRegistryServer {
         return new Promise((resolve) => {
             this.server = createServer(this.handleRequest);
             this.server.listen(this.port, () => {
-                console.log(`Skill Registry running at http://localhost:${this.port}`);
+                // review: removed // review: removed console.log(`Skill Registry running at http://localhost:${this.port}`);
                 resolve();
             });
         });

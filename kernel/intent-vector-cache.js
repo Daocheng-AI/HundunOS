@@ -76,7 +76,7 @@ export class IntentVectorCache {
         if (!this.config.enabled) return;
         const classifiers = this.kernel?.intentEngine?.classifiers || [];
         await this._preloadIntents(classifiers);
-        console.log(`[IntentVectorCache] Initialized v2.0: ${this.intentIndex.size} intent nodes`);
+        // review: removed // review: removed console.log(`[IntentVectorCache] Initialized v2.0: ${this.intentIndex.size} intent nodes`);
     }
 
     // ================================================================

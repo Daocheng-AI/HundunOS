@@ -58,29 +58,29 @@ export class MemoryGraph {
             const semanticData = await this.kernel.storage.get('memory:semantic');
             if (semanticData) this.semantic = new Map(semanticData);
         } catch(e) {
-            console.log('[MemoryGraph] Loaded from storage');
+            // review: removed // review: removed console.log('[MemoryGraph] Loaded from storage');
         }
 
         // v4.0: 初始化向量压缩器（注入 semantic 层）
         try {
             this.compressor = new MemoryGraphVectorCompressor(this.kernel);
-            console.log('[MemoryGraph] MemoryGraphVectorCompressor enabled (v4.0)');
+            // review: removed // review: removed console.log('[MemoryGraph] MemoryGraphVectorCompressor enabled (v4.0)');
         } catch (e) {
             console.warn('[MemoryGraph] VectorCompressor init failed:', e.message);
         }
 
         // Phase 4: Rust 图谱后端状态
         if (this.rustAdapter) {
-            console.log('[MemoryGraph] Rust backend: ✅ adapters/rust-modules/memory (hundunos-core daemon)');
+            // review: removed // review: removed console.log('[MemoryGraph] Rust backend: ✅ adapters/rust-modules/memory (hundunos-core daemon)');
         } else {
-            console.log('[MemoryGraph] Rust backend: ⚠️  using JS layer only (daemon unavailable)');
+            // review: removed // review: removed console.log('[MemoryGraph] Rust backend: ⚠️  using JS layer only (daemon unavailable)');
         }
 
         // v4.1: MemOS 优化 — 初始化新组件
         this._initReorganizer();
         this._initActivationMemory();
-        console.log('[MemoryGraph] v4.1: AdvancedSearcher + TaskGoalParser + MemoryReorganizer + ActivationMemory enabled');
-        console.log('[MemoryGraph] Initialized');
+        // review: removed // review: removed console.log('[MemoryGraph] v4.1: AdvancedSearcher + TaskGoalParser + MemoryReorganizer + ActivationMemory enabled');
+        // review: removed // review: removed console.log('[MemoryGraph] Initialized');
     }
 
     // update: 别名，方便调用
@@ -717,7 +717,7 @@ class MemoryReorganizer {
             await this._deduplicate();
             await this._promoteHot();
             await this._cleanupExpired();
-            console.log('[MemoryReorganizer] reorganized:', JSON.stringify(this.stats));
+            // review: removed // review: removed console.log('[MemoryReorganizer] reorganized:', JSON.stringify(this.stats));
         } catch (e) {
             this.stats.errors++;
             console.warn('[MemoryReorganizer] error:', e.message);
@@ -746,7 +746,7 @@ class MemoryReorganizer {
 
         if (toRemove.size > 0) {
             this.mg.recent = recent.filter((_, i) => !toRemove.has(i));
-            console.log(`[MemoryReorganizer] deduplicated: removed ${toRemove.size} duplicates`);
+            // review: removed // review: removed console.log(`[MemoryReorganizer] deduplicated: removed ${toRemove.size} duplicates`);
         }
     }
 

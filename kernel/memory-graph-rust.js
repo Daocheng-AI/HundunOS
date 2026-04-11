@@ -29,7 +29,7 @@ export class MemoryGraphRust {
     }
 
     async initialize() {
-        console.log(`[MemoryGraphRust] ${this.rustAvailable ? 'Rust' : 'JS'} implementation`);
+        // review: removed // review: removed console.log(`[MemoryGraphRust] ${this.rustAvailable ? 'Rust' : 'JS'} implementation`);
     }
 
     /**

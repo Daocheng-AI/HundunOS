@@ -10,7 +10,7 @@ export class MessageRouter {
     }
 
     async initialize() {
-        console.log('[MessageRouter] Initialized with', this.routes.length, 'routes');
+        // review: removed // review: removed console.log('[MessageRouter] Initialized with', this.routes.length, 'routes');
     }
 
     _initRoutes() {

@@ -802,7 +802,7 @@ export class AgentRegistry extends EventEmitter {
         agent.on('error', (msg) => this.emit('agent_error', msg));
         agent.on('log', (entry) => this.emit('agent_log', entry));
 
-        console.log(`[AgentRegistry] Registered: ${agent.type} (${agent.id})`);
+        // review: removed // review: removed console.log(`[AgentRegistry] Registered: ${agent.type} (${agent.id})`);
         return true;
     }
 
@@ -814,7 +814,7 @@ export class AgentRegistry extends EventEmitter {
         if (agent) {
             agent.destroy();
             this.agents.delete(agentId);
-            console.log(`[AgentRegistry] Unregistered: ${agentId}`);
+            // review: removed // review: removed console.log(`[AgentRegistry] Unregistered: ${agentId}`);
             return true;
         }
         return false;

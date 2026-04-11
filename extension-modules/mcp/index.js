@@ -90,7 +90,7 @@ export class MCPExtension extends EventEmitter {
 
         this._registerDefaultTools();
 
-        console.log('[MCP] Extension initialized');
+        // review: removed // review: removed console.log('[MCP] Extension initialized');
     }
 
     // ========================================================================
@@ -120,7 +120,7 @@ export class MCPExtension extends EventEmitter {
 
             this.server.listen(this.config.port, this.config.host, () => {
                 this.state = MCPState.RUNNING;
-                console.log(`[MCP] Server listening on ${this.config.host}:${this.config.port}`);
+                // review: removed // review: removed console.log(`[MCP] Server listening on ${this.config.host}:${this.config.port}`);
                 this.emit('started');
                 resolve({ started: true, port: this.config.port });
             });
@@ -145,7 +145,7 @@ export class MCPExtension extends EventEmitter {
             if (this.server) {
                 this.server.close(() => {
                     this.state = MCPState.STOPPED;
-                    console.log('[MCP] Server stopped');
+                    // review: removed // review: removed console.log('[MCP] Server stopped');
                     this.emit('stopped');
                     resolve({ stopped: true });
                 });
@@ -182,7 +182,7 @@ export class MCPExtension extends EventEmitter {
             tool = new MCPTool(tool);
         }
         this.tools.set(tool.name, tool);
-        console.log(`[MCP] Tool registered: ${tool.name}`);
+        // review: removed // review: removed console.log(`[MCP] Tool registered: ${tool.name}`);
         this.emit('tool_registered', { name: tool.name });
         return tool;
     }
@@ -231,7 +231,7 @@ export class MCPExtension extends EventEmitter {
             mimeType: resource.mimeType || 'text/plain',
             content: resource.content
         });
-        console.log(`[MCP] Resource registered: ${uri}`);
+        // review: removed // review: removed console.log(`[MCP] Resource registered: ${uri}`);
         return resource;
     }
 
@@ -296,7 +296,7 @@ export class MCPExtension extends EventEmitter {
 
     _handleConnection(socket) {
         this.clients.add(socket);
-        console.log(`[MCP] Client connected, total: ${this.clients.size}`);
+        // review: removed // review: removed console.log(`[MCP] Client connected, total: ${this.clients.size}`);
 
         let buffer = '';
 
@@ -307,7 +307,7 @@ export class MCPExtension extends EventEmitter {
 
         socket.on('close', () => {
             this.clients.delete(socket);
-            console.log(`[MCP] Client disconnected, total: ${this.clients.size}`);
+            // review: removed // review: removed console.log(`[MCP] Client disconnected, total: ${this.clients.size}`);
         });
 
         socket.on('error', (err) => {

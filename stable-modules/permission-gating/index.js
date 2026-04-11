@@ -5,6 +5,9 @@ import { randomUUID } from 'crypto';
 import { checkPermission, createDefaultRules } from '../../kernel/permission-pipeline.js';
 import { validatePath, PROTECTED_PATHS } from '../../kernel/path-validation.js';
 import { PermissionMode } from '../../kernel/permission-mode.js';
+import { createLogger } from '../../kernel/logger.js';
+
+const logger = createLogger('Permission');
 
 export class PermissionGating {
     constructor(kernel) {
@@ -36,7 +39,7 @@ export class PermissionGating {
             this.rules = { ...this.rules, ...customRules };
         }
         
-        console.log(`[Permission] Initialized: mode=${this.permissionMode}, rules=${Object.keys(this.rules).length}`);
+        // review: removed // review: removed console.log(`[Permission] Initialized: mode=${this.permissionMode}, rules=${Object.keys(this.rules).length}`);
     }
 
     _initPolicies() {
@@ -94,7 +97,7 @@ export class PermissionGating {
 
             // 流水线返回 ask，继续原有逻辑
         } catch (e) {
-            console.warn('[Permission] Pipeline check failed:', e.message);
+            logger.warn('Pipeline check failed:', e.message);
         }
 
         // 原有风险推断逻辑作为后备
@@ -229,7 +232,7 @@ export class PermissionGating {
      */
     setPermissionMode(mode) {
         this.permissionMode = mode;
-        console.log(`[Permission] Mode changed to: ${mode}`);
+        // review: removed // review: removed console.log(`[Permission] Mode changed to: ${mode}`);
     }
 
     /**
@@ -237,7 +240,7 @@ export class PermissionGating {
      */
     updateRules(newRules) {
         this.rules = { ...this.rules, ...newRules };
-        console.log('[Permission] Rules updated');
+        // review: removed // review: removed console.log('[Permission] Rules updated');
     }
 
     getStats() { 

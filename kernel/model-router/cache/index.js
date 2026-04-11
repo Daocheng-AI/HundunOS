@@ -110,7 +110,7 @@ export class ResponseCache {
     clear() {
         this.cache.clear();
         this._persistCache();
-        console.log('[ResponseCache] Cleared');
+        // review: removed // review: removed console.log('[ResponseCache] Cleared');
     }
 
     /**
@@ -178,7 +178,7 @@ export class ResponseCache {
             for (const entry of data) {
                 this.cache.set(entry.key, entry);
             }
-            console.log('[ResponseCache] Loaded', this.cache.size, 'entries');
+            // review: removed // review: removed console.log('[ResponseCache] Loaded', this.cache.size, 'entries');
         } catch (e) {
             console.warn('[ResponseCache] Load failed:', e.message);
         }

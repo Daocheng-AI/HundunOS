@@ -45,7 +45,7 @@ tools:
   # ── READ: 提取现有 PPTX 文本 ───────────────────────────
   - id: pptx_read
     type: shell
-    command: node -e "const JSZip=require('jszip');const fs=require('fs');async()=>{const d=await fs.promises.readFile('{{input}}');const z=await JSZip.loadAsync(d);const s=z.file('ppt/slides/slide1.xml');if(s){console.log(await s.async('text'))}else{console.log('No slides found')}}()"
+    command: node -e "const JSZip=require('jszip');const fs=require('fs');async()=>{const d=await fs.promises.readFile('{{input}}');const z=await JSZip.loadAsync(d);const s=z.file('ppt/slides/slide1.xml');if(s){// review: removed // review: removed console.log(await s.async('text'))}else{// review: removed // review: removed console.log('No slides found')}}()"
     description: 使用 markitdown 思路读取现有 PPTX 内容
     isolation: process
     timeout: 15000
@@ -53,7 +53,7 @@ tools:
   # ── CHECK: 环境检查 ─────────────────────────────────────
   - id: pptx_check_deps
     type: shell
-    command: node -e "try{require('pptxgenjs');console.log('OK: pptxgenjs')}catch(e){console.log('MISSING: pptxgenjs')}" 2>&1
+    command: node -e "try{require('pptxgenjs');// review: removed // review: removed console.log('OK: pptxgenjs')}catch(e){// review: removed // review: removed console.log('MISSING: pptxgenjs')}" 2>&1
     description: 检查 pptxgenjs 是否已安装
     isolation: process
     timeout: 10000

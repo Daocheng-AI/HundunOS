@@ -292,7 +292,7 @@ export class SubagentManager {
    */
   register(subagent) {
     this.subagents.set(subagent.name, subagent);
-    console.log(`[SubagentManager] Registered: ${subagent.name}`);
+    // review: removed // review: removed console.log(`[SubagentManager] Registered: ${subagent.name}`);
   }
 
   /**
@@ -414,7 +414,7 @@ export class SubagentManager {
   async _executeBackground(session, task) {
     // 后台执行，不阻塞主流程
     setTimeout(() => {
-      console.log(`[Subagent:${session.subagent.name}] Background task: ${task}`);
+      // review: removed // review: removed console.log(`[Subagent:${session.subagent.name}] Background task: ${task}`);
     }, 0);
 
     return {
@@ -522,7 +522,7 @@ export class TaskModeManager {
 
     for (let i = 0; i < maxIterations; i++) {
       const iteration = i + 1;
-      console.log(`[TaskModeManager] ${config.name} 模式 - 迭代 ${iteration}/${maxIterations}`);
+      // review: removed // review: removed console.log(`[TaskModeManager] ${config.name} 模式 - 迭代 ${iteration}/${maxIterations}`);
 
       // 选择子代理
       const subagentName = this._selectSubagentForIteration(mode, iteration, config);
@@ -533,7 +533,7 @@ export class TaskModeManager {
 
       // 检查是否满足完成条件
       if (await this._checkCompletion(result, mode)) {
-        console.log(`[TaskModeManager] ${config.name} 模式 - 任务完成于迭代 ${iteration}`);
+        // review: removed // review: removed console.log(`[TaskModeManager] ${config.name} 模式 - 任务完成于迭代 ${iteration}`);
         break;
       }
     }

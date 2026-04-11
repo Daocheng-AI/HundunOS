@@ -88,7 +88,7 @@ export class RecoverableMemory {
     async initialize() {
         await this._loadPersistedSnapshots();
         this._startAutoSnapshot();
-        console.log(`[RecoverableMemory] Initialized with ${this.snapshots.length} snapshots`);
+        // review: removed // review: removed console.log(`[RecoverableMemory] Initialized with ${this.snapshots.length} snapshots`);
         return this;
     }
 
@@ -116,7 +116,7 @@ export class RecoverableMemory {
         // 清理旧快照
         this._cleanupOldSnapshots();
 
-        console.log(`[RecoverableMemory] Full snapshot: ${snapshot.id} (${snapshot.size} bytes)`);
+        // review: removed // review: removed console.log(`[RecoverableMemory] Full snapshot: ${snapshot.id} (${snapshot.size} bytes)`);
         return snapshot;
     }
 
@@ -133,7 +133,7 @@ export class RecoverableMemory {
 
         // 如果变化很小，跳过
         if (delta.changes === 0) {
-            console.log('[RecoverableMemory] No changes, skip incremental snapshot');
+            // review: removed // review: removed console.log('[RecoverableMemory] No changes, skip incremental snapshot');
             return null;
         }
 
@@ -149,7 +149,7 @@ export class RecoverableMemory {
 
         this._cleanupOldSnapshots();
 
-        console.log(`[RecoverableMemory] Incremental snapshot: ${snapshot.id} (${delta.changes} changes)`);
+        // review: removed // review: removed console.log(`[RecoverableMemory] Incremental snapshot: ${snapshot.id} (${delta.changes} changes)`);
         return snapshot;
     }
 
@@ -198,7 +198,7 @@ export class RecoverableMemory {
         // 完整快照直接恢复
         await this._restoreState(snapshot.state, mode);
 
-        console.log(`[RecoverableMemory] Recovered to ${snapshot.id}`);
+        // review: removed // review: removed console.log(`[RecoverableMemory] Recovered to ${snapshot.id}`);
         return {
             snapshotId: snapshot.id,
             type: snapshot.type,
@@ -329,7 +329,7 @@ export class RecoverableMemory {
             }
         }
 
-        console.log(`[RecoverableMemory] State restored (${mode} mode)`);
+        // review: removed // review: removed console.log(`[RecoverableMemory] State restored (${mode} mode)`);
     }
 
     // ========================================

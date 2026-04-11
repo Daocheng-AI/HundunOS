@@ -163,7 +163,7 @@ export class AgentTeam {
         const { merged, failed } = await this._worktreeManager.mergeWorkerResults(
           this.id, uniqueWorkers, 'cherry-pick'
         );
-        console.log(`[AgentTeam:${this.name}] Merge result — merged: [${merged.join(', ')}], failed: [${failed.join(', ')}]`);
+        // review: removed // review: removed console.log(`[AgentTeam:${this.name}] Merge result — merged: [${merged.join(', ')}], failed: [${failed.join(', ')}]`);
       }
       // 清理 worktrees
       await this._worktreeManager.cleanupTeam(this.id).catch(e =>

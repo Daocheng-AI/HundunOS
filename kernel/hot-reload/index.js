@@ -19,7 +19,7 @@ export class HotReload {
     }
 
     async initialize() {
-        console.log('[HotReload] Initializing...');
+        // review: removed // review: removed console.log('[HotReload] Initializing...');
 
         // 1. 监控配置文件
         await this._watchConfig();
@@ -27,7 +27,7 @@ export class HotReload {
         // 2. 监控 SOUL.md
         await this._watchSoul();
 
-        console.log('[HotReload] Hot reload enabled');
+        // review: removed // review: removed console.log('[HotReload] Hot reload enabled');
     }
 
     async _watchConfig() {
@@ -51,7 +51,7 @@ export class HotReload {
         );
 
         watcher.on('change', (path) => {
-            console.log(`[HotReload] Config changed: ${path}`);
+            // review: removed // review: removed console.log(`[HotReload] Config changed: ${path}`);
             this._reloadConfig(path);
         });
 
@@ -63,7 +63,7 @@ export class HotReload {
 
         // 检查 SOUL.md 是否存在
         if (!existsSync(soulPath)) {
-            console.log('[HotReload] SOUL.md not found, skipping');
+            // review: removed // review: removed console.log('[HotReload] SOUL.md not found, skipping');
             return;
         }
 
@@ -76,7 +76,7 @@ export class HotReload {
         });
 
         watcher.on('change', () => {
-            console.log('[HotReload] SOUL.md changed, reloading...');
+            // review: removed // review: removed console.log('[HotReload] SOUL.md changed, reloading...');
             this._reloadSoul();
         });
 
@@ -92,7 +92,7 @@ export class HotReload {
             const callbacks = this.callbacks.get('config') || [];
             callbacks.forEach(cb => cb(path, newConfig));
 
-            console.log(`[HotReload] Config reloaded: ${path}`);
+            // review: removed // review: removed console.log(`[HotReload] Config reloaded: ${path}`);
         } catch (e) {
             console.error(`[HotReload] Failed to reload config: ${e.message}`);
         }
@@ -112,7 +112,7 @@ export class HotReload {
             const callbacks = this.callbacks.get('soul') || [];
             callbacks.forEach(cb => cb(content));
 
-            console.log('[HotReload] SOUL.md reloaded');
+            // review: removed // review: removed console.log('[HotReload] SOUL.md reloaded');
         } catch (e) {
             console.error(`[HotReload] Failed to reload SOUL: ${e.message}`);
         }
@@ -139,7 +139,7 @@ export class HotReload {
     async shutdown() {
         for (const [name, watcher] of this.watchers) {
             await watcher.close();
-            console.log(`[HotReload] Stopped watching: ${name}`);
+            // review: removed // review: removed console.log(`[HotReload] Stopped watching: ${name}`);
         }
         this.watchers.clear();
     }

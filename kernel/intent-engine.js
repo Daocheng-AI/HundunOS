@@ -31,19 +31,19 @@ export class IntentEngine {
 
     async initialize() {
         // 加载内置意图（已通过 _initIntentPatterns 加载）
-        console.log('[IntentEngine] Built-in classifiers:', this.classifiers.length);
+        // review: removed // review: removed console.log('[IntentEngine] Built-in classifiers:', this.classifiers.length);
 
         // 热插拔：加载外部意图
         await this._loadExternalIntents();
 
-        console.log('[IntentEngine] Total classifiers:', this.classifiers.length);
+        // review: removed // review: removed console.log('[IntentEngine] Total classifiers:', this.classifiers.length);
 
         // v4.0: 初始化 IntentVectorCache（预量化所有意图 embedding）
         try {
             this.vectorCache = new IntentVectorCache(this.kernel);
             // 使用正确的 API: initialize() 而非 preload()
             await this.vectorCache.initialize();
-            console.log(
+            // review: removed // review: removed console.log(
                 `[IntentEngine] IntentVectorCache enabled: ${this.vectorCache.indexSize()} intent nodes`
             );
         } catch (e) {
@@ -54,7 +54,7 @@ export class IntentEngine {
     async _loadExternalIntents() {
         // 从 config/intents/ 目录热加载意图定义
         if (!existsSync(this.intentsDir)) {
-            console.log('[IntentEngine] No external intents dir:', this.intentsDir);
+            // review: removed // review: removed console.log('[IntentEngine] No external intents dir:', this.intentsDir);
             return;
         }
 
@@ -113,7 +113,7 @@ export class IntentEngine {
                 }
 
                 if (loaded > 0) {
-                    console.log(`[IntentEngine] Loaded ${loaded} external intent(s) from ${file}`);
+                    // review: removed // review: removed console.log(`[IntentEngine] Loaded ${loaded} external intent(s) from ${file}`);
                 }
             } catch (e) {
                 console.warn(`[IntentEngine] Failed to load intent file ${file}:`, e.message);
@@ -152,7 +152,7 @@ export class IntentEngine {
         const idx = this.classifiers.findIndex(c => c.name === name);
         if (idx === -1) return false;
         this.classifiers.splice(idx, 1);
-        console.log(`[IntentEngine] Unregistered intent: ${name}`);
+        // review: removed // review: removed console.log(`[IntentEngine] Unregistered intent: ${name}`);
 
         // v4.0: 同步向量缓存
         if (this.vectorCache) {
@@ -166,14 +166,14 @@ export class IntentEngine {
         // 保留内置（_builtin=true）和手动注册的（_external 未标记）
         const before = this.classifiers.length;
         this.classifiers = this.classifiers.filter(c => c._builtin || !c._external);
-        console.log(`[IntentEngine] Cleared external intents (${before} -> ${this.classifiers.length})`);
+        // review: removed // review: removed console.log(`[IntentEngine] Cleared external intents (${before} -> ${this.classifiers.length})`);
         await this._loadExternalIntents();
-        console.log(`[IntentEngine] Reload complete. Total classifiers: ${this.classifiers.length}`);
+        // review: removed // review: removed console.log(`[IntentEngine] Reload complete. Total classifiers: ${this.classifiers.length}`);
 
         // v4.0: 重建向量缓存
         if (this.vectorCache) {
             await this.vectorCache.initialize();
-            console.log(`[IntentEngine] IntentVectorCache reloaded`);
+            // review: removed // review: removed console.log(`[IntentEngine] IntentVectorCache reloaded`);
         }
     }
 

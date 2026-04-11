@@ -104,7 +104,7 @@ export class WorktreeManager {
       mkdirSync(base, { recursive: true });
     }
 
-    console.log(`[WorktreeManager] Initialized. Git root: ${this.gitRoot}`);
+    // review: removed // review: removed console.log(`[WorktreeManager] Initialized. Git root: ${this.gitRoot}`);
     return this;
   }
 
@@ -149,7 +149,7 @@ export class WorktreeManager {
       });
 
       this.worktrees.set(key, info);
-      console.log(`[WorktreeManager] Created worktree: ${worktreePath} (branch: ${branchName})`);
+      // review: removed // review: removed console.log(`[WorktreeManager] Created worktree: ${worktreePath} (branch: ${branchName})`);
       return info;
     } catch (e) {
       console.error(`[WorktreeManager] Failed to create worktree for ${key}:`, e.message);
@@ -191,7 +191,7 @@ export class WorktreeManager {
       // 提取 commit hash
       const hashMatch = stdout.match(/\[[\w/\-]+ ([0-9a-f]+)\]/);
       const hash = hashMatch?.[1] || null;
-      console.log(`[WorktreeManager] Committed in ${worktree.memberName}: ${hash}`);
+      // review: removed // review: removed console.log(`[WorktreeManager] Committed in ${worktree.memberName}: ${hash}`);
       return hash;
     } catch (e) {
       console.error(`[WorktreeManager] Commit failed in ${worktree.memberName}:`, e.message);
@@ -230,7 +230,7 @@ export class WorktreeManager {
           const hash = stdout.trim();
           if (hash) {
             await execAsync(`git cherry-pick --allow-empty ${hash}`, { cwd: this.gitRoot });
-            console.log(`[WorktreeManager] Cherry-picked ${memberName}: ${hash}`);
+            // review: removed // review: removed console.log(`[WorktreeManager] Cherry-picked ${memberName}: ${hash}`);
           }
         } else {
           // merge 策略
@@ -271,7 +271,7 @@ export class WorktreeManager {
       rmSync(teamDir, { recursive: true, force: true });
     }
 
-    console.log(`[WorktreeManager] Cleaned up team ${teamId}`);
+    // review: removed // review: removed console.log(`[WorktreeManager] Cleaned up team ${teamId}`);
   }
 
   /**

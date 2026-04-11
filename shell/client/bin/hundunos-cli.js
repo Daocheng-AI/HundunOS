@@ -82,16 +82,16 @@ async function runOnce(client, message) {
     const result = await client.process({ content: message, sessionId: 'cli-one-shot' });
 
     if (result?.data?.content) {
-      console.log('\n' + result.data.content);
+      // review: removed // review: removed console.log('\n' + result.data.content);
     } else if (result?.data) {
-      console.log('\n' + JSON.stringify(result.data, null, 2));
+      // review: removed // review: removed console.log('\n' + JSON.stringify(result.data, null, 2));
     } else {
-      console.log('\n' + JSON.stringify(result, null, 2));
+      // review: removed // review: removed console.log('\n' + JSON.stringify(result, null, 2));
     }
 
     if (result?.latency !== undefined) {
       const ms = result.latency < 1000 ? `${result.latency}ms` : `${(result.latency / 1000).toFixed(2)}s`;
-      console.log(`\n[Latency: ${ms}]`);
+      // review: removed // review: removed console.log(`\n[Latency: ${ms}]`);
     }
 
     if (!result?.success && result?.type) {
@@ -106,42 +106,42 @@ async function runOnce(client, message) {
 
 async function cmdStatus(client) {
   const status = await client.getStatus();
-  console.log('\n HundunOS Status');
-  console.log('─'.repeat(40));
-  console.log(`  Version:   ${status.version}`);
-  console.log(`  Running:   ${status.running ? 'Yes' : 'No'}`);
-  console.log(`  Uptime:    ${status.uptime ? (status.uptime / 60).toFixed(1) + 'm' : 'N/A'}`);
-  console.log(`  Platform:  ${status.platform}`);
-  console.log(`  Sessions: ${status.sessions?.active || 0}`);
+  // review: removed // review: removed console.log('\n HundunOS Status');
+  // review: removed // review: removed console.log('─'.repeat(40));
+  // review: removed // review: removed console.log(`  Version:   ${status.version}`);
+  // review: removed // review: removed console.log(`  Running:   ${status.running ? 'Yes' : 'No'}`);
+  // review: removed // review: removed console.log(`  Uptime:    ${status.uptime ? (status.uptime / 60).toFixed(1) + 'm' : 'N/A'}`);
+  // review: removed // review: removed console.log(`  Platform:  ${status.platform}`);
+  // review: removed // review: removed console.log(`  Sessions: ${status.sessions?.active || 0}`);
 }
 
 async function cmdHealth(client) {
   const health = await client.getHealth();
   const score = health.overall?.score || (health.healthy ? 100 : 0);
-  console.log(`\n Health Score: ${score}/100`);
+  // review: removed // review: removed console.log(`\n Health Score: ${score}/100`);
   if (health.dimensions) {
-    console.log('─'.repeat(40));
+    // review: removed // review: removed console.log('─'.repeat(40));
     for (const [dim, info] of Object.entries(health.dimensions)) {
-      console.log(`  ${dim.padEnd(15)} ${info.score || 0}`);
+      // review: removed // review: removed console.log(`  ${dim.padEnd(15)} ${info.score || 0}`);
     }
   }
 }
 
 async function cmdModules(client) {
   const mods = await client.getModules();
-  console.log('\n Modules');
-  console.log('─'.repeat(40));
+  // review: removed // review: removed console.log('\n Modules');
+  // review: removed // review: removed console.log('─'.repeat(40));
   const list = mods.modules || [];
   for (const mod of list) {
     const s = mod.status === 'active' ? '●' : '○';
-    console.log(`  ${s} ${mod.id.padEnd(20)} ${mod.name || ''}`);
+    // review: removed // review: removed console.log(`  ${s} ${mod.id.padEnd(20)} ${mod.name || ''}`);
   }
 }
 
 async function cmdKill(client) {
   try {
     await client.shutdown();
-    console.log('Daemon shutdown requested');
+    // review: removed // review: removed console.log('Daemon shutdown requested');
   } catch (e) {
     console.error(`Error: ${e.message}`);
   }
@@ -149,14 +149,14 @@ async function cmdKill(client) {
 
 async function cmdDaemon(client) {
   const status = await client.getDaemonStatus();
-  console.log('\n Daemon Status');
-  console.log('─'.repeat(40));
-  console.log(`  Connected: ${status.connected}`);
-  console.log(`  Endpoint: ${status.host}:${status.port}`);
+  // review: removed // review: removed console.log('\n Daemon Status');
+  // review: removed // review: removed console.log('─'.repeat(40));
+  // review: removed // review: removed console.log(`  Connected: ${status.connected}`);
+  // review: removed // review: removed console.log(`  Endpoint: ${status.host}:${status.port}`);
 }
 
 function printHelp() {
-  console.log(`
+  // review: removed // review: removed console.log(`
 HundunOS v3.0 CLI
 
 Usage:

@@ -53,7 +53,7 @@ export class AutoRecovery {
     }
 
     async initialize() {
-        console.log('[AutoRecovery] Initialized');
+        // review: removed // review: removed console.log('[AutoRecovery] Initialized');
     }
 
     /**
@@ -95,7 +95,7 @@ export class AutoRecovery {
         const errorType = this.detectErrorType(error);
         const strategies = this._getStrategies(errorType);
         
-        console.log(`[AutoRecovery] Error detected: ${errorType}, trying strategies: ${strategies.join(', ')}`);
+        // review: removed // review: removed console.log(`[AutoRecovery] Error detected: ${errorType}, trying strategies: ${strategies.join(', ')}`);
         
         // 记录错误
         const errorRecord = {
@@ -110,7 +110,7 @@ export class AutoRecovery {
         
         // 依次尝试恢复策略
         for (const strategy of strategies) {
-            console.log(`[AutoRecovery] Trying strategy: ${strategy}`);
+            // review: removed // review: removed console.log(`[AutoRecovery] Trying strategy: ${strategy}`);
             
             const result = await this._executeStrategy(strategy, context);
             errorRecord.strategiesAttempted.push({ strategy, result });
@@ -189,7 +189,7 @@ export class AutoRecovery {
         const maxRetries = metadata?.maxRetries || this.config.maxRetries;
         
         for (let i = 0; i < maxRetries; i++) {
-            console.log(`[AutoRecovery] Retry attempt ${i + 1}/${maxRetries}`);
+            // review: removed // review: removed console.log(`[AutoRecovery] Retry attempt ${i + 1}/${maxRetries}`);
             
             try {
                 if (this.kernel?.process) {
@@ -199,7 +199,7 @@ export class AutoRecovery {
                     }
                 }
             } catch (e) {
-                console.log(`[AutoRecovery] Retry failed: ${e.message}`);
+                // review: removed // review: removed console.log(`[AutoRecovery] Retry failed: ${e.message}`);
             }
             
             if (i < maxRetries - 1) {
@@ -272,7 +272,7 @@ export class AutoRecovery {
      * 发送告警
      */
     async _sendAlert(errorType, strategy, operation) {
-        console.log(`[AutoRecovery] ALERT: ${errorType} via ${strategy} for ${operation}`);
+        // review: removed // review: removed console.log(`[AutoRecovery] ALERT: ${errorType} via ${strategy} for ${operation}`);
         
         // 可以集成到通知系统
         if (this.kernel?.emit) {

@@ -64,7 +64,7 @@ export const SessionMixin = class SessionMixin {
         const { id, task, isolation = 'process', timeout = 120_000 } = config;
 
         if (this.featureFlags?.isEnabled?.('DEBUG_MODE')) {
-            console.log(`[Kernel] Spawning agent ${id}: "${task.substring(0, 60)}..."`);
+            // review: removed // review: removed console.log(`[Kernel] Spawning agent ${id}: "${task.substring(0, 60)}..."`);
         }
 
         try {

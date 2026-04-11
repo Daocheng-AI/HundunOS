@@ -268,4 +268,4 @@ describe('LogService', () => {
   });
 });
 
-console.log('✅ Service layer tests completed');
+// review: removed // review: removed console.log('✅ Service layer tests completed');

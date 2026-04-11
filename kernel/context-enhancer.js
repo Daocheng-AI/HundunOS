@@ -242,7 +242,7 @@ export class ContextEnhancer {
   async initialize() {
     this._gitBuilder = new GitContextBuilder(this.cwd);
     this._memoryDiscoverer = new MemoryFileDiscoverer(this.projectRoot);
-    console.log('[ContextEnhancer] Initialized v2.0');
+    // review: removed // review: removed console.log('[ContextEnhancer] Initialized v2.0');
   }
 
   /**

@@ -65,7 +65,7 @@ export class AwareSystem extends EventEmitter {
         if (this.focusItems.size === 0) {
             this._initDefaults();
         }
-        console.log(`[Aware] Loaded ${this.focusItems.size} Focus, ${this.triggers.size} Triggers`);
+        // review: removed // review: removed console.log(`[Aware] Loaded ${this.focusItems.size} Focus, ${this.triggers.size} Triggers`);
     }
 
     /**

@@ -30,8 +30,8 @@ export class UpgradeController {
     }
 
     async initialize() {
-        console.log('[UpgradeController] Initialized, trusted sources:', this.trustedSources.size);
-        console.log('[UpgradeController] Security: signature=', this.requireSignature, 'hash=', this.requireHash);
+        // review: removed // review: removed console.log('[UpgradeController] Initialized, trusted sources:', this.trustedSources.size);
+        // review: removed // review: removed console.log('[UpgradeController] Security: signature=', this.requireSignature, 'hash=', this.requireHash);
     }
 
     verifySource(source) {
@@ -162,7 +162,7 @@ export class UpgradeController {
             this.upgradeHistory.push(upgrade);
 
             // 应用升级代码（实际实现需要根据 upgrade.source 加载新代码）
-            console.log(`[UpgradeController] Upgrade ${upgrade.id} queued for ${upgrade.source} -> ${upgrade.to}`);
+            // review: removed // review: removed console.log(`[UpgradeController] Upgrade ${upgrade.id} queued for ${upgrade.source} -> ${upgrade.to}`);
             return { success: true, upgradeId: upgrade.id, message: 'Kernel upgrade queued' };
         } catch (e) {
             return { success: false, error: e.message };
@@ -174,7 +174,7 @@ export class UpgradeController {
         if (!upgrade) return { success: false, error: 'Upgrade not found' };
         // 回滚实现：标记 upgrade 为 rolled back，恢复到 from 版本
         upgrade.status = 'rolled_back';
-        console.log(`[UpgradeController] Rollback ${upgradeId}: ${upgrade.to} -> ${upgrade.from}`);
+        // review: removed // review: removed console.log(`[UpgradeController] Rollback ${upgradeId}: ${upgrade.to} -> ${upgrade.from}`);
         return { success: true, message: 'Rollback completed', from: upgrade.to, to: upgrade.from };
     }
 

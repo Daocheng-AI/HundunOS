@@ -367,7 +367,7 @@ export class TaskScientist extends EventEmitter {
    */
   async initialize() {
     if (!this.config.enabled) {
-      console.log('[TaskScientist] Disabled by configuration');
+      // review: removed // review: removed console.log('[TaskScientist] Disabled by configuration');
       return;
     }
 
@@ -383,7 +383,7 @@ export class TaskScientist extends EventEmitter {
         if (stats !== null) {
           this.rustAvailable = true;
           const rustConfig = await this.rustAdapter.getConfig().catch(() => null);
-          console.log(`[TaskScientist] ✅ Rust BFTS engine available (config: ${JSON.stringify(rustConfig || {}).slice(0, 80)})`);
+          // review: removed // review: removed console.log(`[TaskScientist] ✅ Rust BFTS engine available (config: ${JSON.stringify(rustConfig || {}).slice(0, 80)})`);
         } else {
           this._warnRustUnavailable();
         }
@@ -391,7 +391,7 @@ export class TaskScientist extends EventEmitter {
         this._warnRustUnavailable(e.message);
       }
     } else {
-      console.log('[TaskScientist] ⚠️  Using JS fallback (no Rust engine)');
+      // review: removed // review: removed console.log('[TaskScientist] ⚠️  Using JS fallback (no Rust engine)');
     }
 
     // 注册内核快捷访问器（Phase 5 新增：rustScientist）
@@ -408,7 +408,7 @@ export class TaskScientist extends EventEmitter {
   setMemoryTool(memoryTool) {
     this.memoryTool = memoryTool;
     this.jsFallback.setMemoryTool(memoryTool);
-    console.log('[TaskScientist] memoryTool injected into JS fallback orchestrator');
+    // review: removed // review: removed console.log('[TaskScientist] memoryTool injected into JS fallback orchestrator');
   }
 
   _warnRustUnavailable(reason = '') {
@@ -727,7 +727,7 @@ export class TaskScientist extends EventEmitter {
    * shutdown
    */
   async shutdown() {
-    console.log('[TaskScientist] Shutting down...');
+    // review: removed // review: removed console.log('[TaskScientist] Shutting down...');
     this.removeAllListeners();
   }
 }

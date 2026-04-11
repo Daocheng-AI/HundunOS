@@ -12,6 +12,9 @@ import { join, dirname, normalize } from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'yaml';
 import { minimatch } from 'minimatch';
+import { createLogger } from './logger.js';
+
+const logger = createLogger('PolicyEngine');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -101,7 +104,7 @@ export class PolicyEngine {
     }
 
     async initialize() {
-        console.log('[PolicyEngine] Initializing...');
+        // review: removed // review: removed console.log('[PolicyEngine] Initializing...');
 
         // 加载默认策略
         await this._loadPolicy('default');
@@ -112,13 +115,13 @@ export class PolicyEngine {
             await this._loadPolicy('custom', customPath);
         }
 
-        console.log('[PolicyEngine] Loaded policies:', Object.keys(this.policies));
+        // review: removed // review: removed console.log('[PolicyEngine] Loaded policies:', Object.keys(this.policies));
 
         // Phase 4: Rust 后端状态
         if (this.rustAdapter) {
-            console.log('[PolicyEngine] Rust backend: ✅ adapters/rust-modules/policy (hundunos-core daemon)');
+            // review: removed // review: removed console.log('[PolicyEngine] Rust backend: ✅ adapters/rust-modules/policy (hundunos-core daemon)');
         } else {
-            console.log('[PolicyEngine] Rust backend: ⚠️  using JS policy layer only');
+            // review: removed // review: removed console.log('[PolicyEngine] Rust backend: ⚠️  using JS policy layer only');
         }
     }
 
@@ -126,7 +129,7 @@ export class PolicyEngine {
         const policyPath = path || join(__dirname, '..', '..', 'config', 'policies', `${name}.yaml`);
 
         if (!existsSync(policyPath)) {
-            console.warn(`[PolicyEngine] Policy not found: ${policyPath}`);
+            logger.warn(`Policy not found: ${policyPath}`);
             return;
         }
 
@@ -134,9 +137,9 @@ export class PolicyEngine {
             const content = readFileSync(policyPath, 'utf8');
             const parsed = parse(content);
             this.policies[name] = this._expandVariables(parsed);
-            console.log(`[PolicyEngine] Loaded: ${name}`);
+            // review: removed // review: removed console.log(`[PolicyEngine] Loaded: ${name}`);
         } catch (e) {
-            console.error(`[PolicyEngine] Failed to load ${name}:`, e.message);
+            logger.error(`Failed to load ${name}:`, e.message);
         }
     }
 
@@ -191,7 +194,7 @@ export class PolicyEngine {
         // v4.2: 首先检查敏感路径（防御深度，不可绕过）
         const sensitiveCheck = this.checkSensitivePath(filePath);
         if (sensitiveCheck) {
-            console.warn(`[PolicyEngine] Sensitive path access blocked: ${filePath}`);
+            logger.warn(`Sensitive path access blocked: ${filePath}`);
             return sensitiveCheck;
         }
 
@@ -261,7 +264,7 @@ export class PolicyEngine {
         if (params.path || params.file_path) {
             const sensitiveCheck = this.checkSensitivePath(params.path || params.file_path);
             if (sensitiveCheck) {
-                console.warn(`[PolicyEngine] Tool ${toolName} blocked on sensitive path: ${params.path || params.file_path}`);
+                logger.warn(`Tool ${toolName} blocked on sensitive path: ${params.path || params.file_path}`);
                 return sensitiveCheck;
             }
         }

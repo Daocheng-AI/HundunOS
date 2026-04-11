@@ -1,10 +1,10 @@
-# 依赖
+﻿# 渚濊禆
 node_modules/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# 构建产物
+# 鏋勫缓浜х墿
 dist/
 build/
 *.log
@@ -19,27 +19,27 @@ build/
 .DS_Store
 Thumbs.db
 
-# 安全扫描产物
+# 瀹夊叏鎵弿浜х墿
 semgrep-results.json
 trivy-results.json
 security-report.md
 
-# 测试覆盖
+# 娴嬭瘯瑕嗙洊
 coverage/
 .nyc_output/
 
-# 环境变量
+# 鐜鍙橀噺
 .env
 .env.local
 .env.*.local
 
-# 临时文件
+# 涓存椂鏂囦欢
 *.tmp
 *.temp
 tmp/
 temp/
 
-# FIX-gitignore: 运行时数据（体积巨大，不应入库）
+# FIX-gitignore: 杩愯鏃舵暟鎹紙浣撶Н宸ㄥぇ锛屼笉搴斿叆搴擄級
 data/snapshots/
 data/*.jsonl
 data/*.json
@@ -49,10 +49,10 @@ logs/
 __pycache__/
 .pytest_cache/
 
-# FIX-gitignore: 子项目独立 node_modules（electron 等巨型包）
+# FIX-gitignore: 瀛愰」鐩嫭绔?node_modules锛坋lectron 绛夊法鍨嬪寘锛?
 shell/client/node_modules/
 
-# FIX-gitignore: 测试输出文件
+# FIX-gitignore: 娴嬭瘯杈撳嚭鏂囦欢
 tests/*.txt
 tests/results/
 tests/*.json
@@ -61,19 +61,19 @@ tests/*.json
 # FIX-gitignore: benchmarks
 .benchmarks/
 
-# FIX-P0: 备份和检查文件（代码冗余）
+# FIX-P0: 澶囦唤鍜屾鏌ユ枃浠讹紙浠ｇ爜鍐椾綑锛?
 *_check.txt
 *_check.js
 *.bak
 *.backup
 
-# FIX-P0: 敏感信息文件
+# FIX-P0: 鏁忔劅淇℃伅鏂囦欢
 *.pem
 *.key
 secrets/
 credentials/
 
-# 调试/诊断临时文件
+# 璋冭瘯/璇婃柇涓存椂鏂囦欢
 debug-*.mjs
 test-*.mjs
 verify_*.py
@@ -84,14 +84,19 @@ final-test.txt
 mr_direct.txt
 integration-out.txt
 
-# Rust 编译产物
+# Rust 缂栬瘧浜х墿
 target/
 
-# Snapshots & 临时目录
+# Snapshots & 涓存椂鐩綍
 .snapshots/
 .arts/
 .claude/
 .codeartsdoer/
 
-# vendor 一般不入库（太大了，按需决定）
+# vendor 涓€鑸笉鍏ュ簱锛堝お澶т簡锛屾寜闇€鍐冲畾锛?
 # vendor/
+
+# Runtime data
+data/
+review/reports/
+

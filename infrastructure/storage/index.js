@@ -4,6 +4,9 @@
 import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, unlinkSync, statSync } from 'fs';
 import { join, dirname, normalize } from 'path';
 import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';
+import { createLogger } from '../../kernel/logger.js';
+
+const logger = createLogger('Storage');
 
 // S-04: 加密工具类
 class DataEncryptor {
@@ -19,7 +22,7 @@ class DataEncryptor {
             return createHash('sha256').update(envKey).digest();
         }
         // P0 修复：禁止 fallback 到可预测的机器名，改为强制要求
-        console.warn('[Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. ' +
+        logger.warn('SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. ' +
             'Encryption is DISABLED for this session. Set the env var before production use.');
         return null; // 返回 null 表示不加密，由 encryptor 层处理
     }
@@ -53,7 +56,7 @@ class DataEncryptor {
             decrypted += decipher.final('utf8');
             return decrypted;
         } catch (e) {
-            console.warn('[Storage] Decrypt failed:', e.message);
+            logger.warn('Decrypt failed:', e.message);
             return null;
         }
     }
@@ -78,7 +81,7 @@ export class Storage {
 
     async initialize() {
         mkdirSync(this.dir, { recursive: true });
-        console.log('[Storage] Initialized at:', this.dir);
+        // review: removed // review: removed console.log('[Storage] Initialized at:', this.dir);
         // 清理过期缓存
         setInterval(() => this._cleanCache(), this.maxCacheAge * 2);
     }
@@ -125,7 +128,7 @@ if (this._shouldEncrypt(key)) {
             this.stats.errors++;
             // 写入失败时移除缓存
             this.cache.delete(key);
-            console.warn('[Storage] put error:', e.message);
+            logger.warn('put error:', e.message);
             throw e;
         }
     }
@@ -149,7 +152,7 @@ if (this._shouldEncrypt(key)) {
             const MAX_READ_BYTES = 10 * 1024 * 1024; // 10MB 上限
             if (stat.size > MAX_READ_BYTES) {
                 this.stats.errors++;
-                console.warn(`[Storage] File too large to read (${stat.size} bytes > ${MAX_READ_BYTES}): ${key}`);
+                logger.warn(`File too large to read (${stat.size} bytes > ${MAX_READ_BYTES}): ${key}`);
                 return defaultValue;
             }
             const storedData = JSON.parse(readFileSync(path, 'utf8'));
@@ -179,7 +182,7 @@ if (this._shouldEncrypt(key)) {
     async delete(key) {
         const path = this._keyToPath(key);
         if (existsSync(path)) {
-            try { unlinkSync(path); } catch (e) { this.stats.errors++; console.warn('[Storage] delete error:', e.message); }
+            try { unlinkSync(path); } catch (e) { this.stats.errors++; logger.warn('delete error:', e.message); }
         }
         this.cache.delete(key);
     }
@@ -306,7 +309,7 @@ if (this._shouldEncrypt(key)) {
         }
         
         if (keysToDelete.length > 0) {
-            console.log(`[Storage] Cleaned ${keysToDelete.length} expired cache entries`);
+            // review: removed // review: removed console.log(`[Storage] Cleaned ${keysToDelete.length} expired cache entries`);
         }
     }
 

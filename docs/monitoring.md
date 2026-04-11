@@ -418,7 +418,7 @@ global:
   smtp_smarthost: 'smtp.example.com:587'
   smtp_from: 'alerts@example.com'
   smtp_auth_username: 'alerts@example.com'
-  smtp_auth_password: 'password'
+  smtp_auth_password: $SMTP_AUTH_PASSWORD  # 请通过环境变量设置，不要硬编码实际密码
 
 route:
   receiver: 'default-receiver'

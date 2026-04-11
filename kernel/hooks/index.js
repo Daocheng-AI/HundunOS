@@ -477,7 +477,7 @@ export function createDefaultHooks() {
               const content = input.tool_input?.content || '';
               const secrets = /password\\s*=/i.test(content) || /api[_-]?key\\s*=/i.test(content);
               if (secrets) {
-                console.log(JSON.stringify({
+                // review: removed // review: removed console.log(JSON.stringify({
                   hookSpecificOutput: {
                     additionalContext: 'Security warning: potential hardcoded secret detected'
                   }

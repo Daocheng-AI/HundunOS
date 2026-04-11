@@ -107,7 +107,7 @@ export class RestAPI extends EventEmitter {
         this.use(this._rateLimiter());
         this.use(this._authenticate());
 
-        console.log('[REST] API initialized');
+        // review: removed // review: removed console.log('[REST] API initialized');
     }
 
     // ========================================================================
@@ -147,7 +147,7 @@ export class RestAPI extends EventEmitter {
 
             this.server.listen(this.config.port, this.config.host, () => {
                 this.state = 'running';
-                console.log(`[REST] API listening on http://${this.config.host}:${this.config.port}`);
+                // review: removed // review: removed console.log(`[REST] API listening on http://${this.config.host}:${this.config.port}`);
                 this.emit('started');
                 resolve({ started: true, url: `http://${this.config.host}:${this.config.port}` });
             });
@@ -165,7 +165,7 @@ export class RestAPI extends EventEmitter {
         return new Promise((resolve) => {
             this.server.close(() => {
                 this.state = 'stopped';
-                console.log('[REST] API stopped');
+                // review: removed // review: removed console.log('[REST] API stopped');
                 this.emit('stopped');
                 resolve({ stopped: true });
             });

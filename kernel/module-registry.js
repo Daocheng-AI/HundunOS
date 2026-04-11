@@ -118,9 +118,9 @@ export class ModuleRegistry {
     // ================================================================
 
     async initialize() {
-        console.log('[ModuleRegistry] Initializing...');
+        // review: removed // review: removed console.log('[ModuleRegistry] Initializing...');
         await this.discoverModules();
-        console.log(`[ModuleRegistry] Discovered ${this.#modules.size} modules (factories: ${this.#factories.size})`);
+        // review: removed // review: removed console.log(`[ModuleRegistry] Discovered ${this.#modules.size} modules (factories: ${this.#factories.size})`);
     }
 
     async discoverModules() {
@@ -277,7 +277,7 @@ export class ModuleRegistry {
     async sleep(id) { return this.deactivate(id); }
 
     async shutdownAll() {
-        console.log(`[ModuleRegistry] Shutting down ${this.#modules.size} registered modules...`);
+        // review: removed // review: removed console.log(`[ModuleRegistry] Shutting down ${this.#modules.size} registered modules...`);
 
         for (const [id, mod] of this.#modules.entries()) {
             try {
@@ -293,7 +293,7 @@ export class ModuleRegistry {
             }
         }
 
-        console.log('[ModuleRegistry] All modules stopped');
+        // review: removed // review: removed console.log('[ModuleRegistry] All modules stopped');
     }
 
     listModules(filter = {}) {

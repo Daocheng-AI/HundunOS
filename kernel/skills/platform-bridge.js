@@ -307,7 +307,7 @@ export async function installToPlatform(platformId, name, mcpConfig) {
             // Write updated config
             writeFileSync(configPath, JSON.stringify(config, null, 2));
             
-            console.log(`[PlatformBridge] Installed skill "${name}" to ${p.name}`);
+            // review: removed // review: removed console.log(`[PlatformBridge] Installed skill "${name}" to ${p.name}`);
             return { success: true };
         } catch (error) {
             console.error(`[PlatformBridge] Failed to install to ${p.name}:`, error);
@@ -351,7 +351,7 @@ export async function uninstallFromPlatform(platformId, name) {
             if (config[serversKey] && config[serversKey][name]) {
                 delete config[serversKey][name];
                 writeFileSync(configPath, JSON.stringify(config, null, 2));
-                console.log(`[PlatformBridge] Uninstalled skill "${name}" from ${p.name}`);
+                // review: removed // review: removed console.log(`[PlatformBridge] Uninstalled skill "${name}" from ${p.name}`);
             }
             
             return { success: true };
@@ -389,7 +389,7 @@ export async function installSkillMd(skillName, skillMdContent, platformId) {
         // Write SKILL.md file
         writeFileSync(join(skillDir, 'SKILL.md'), skillMdContent, 'utf-8');
         
-        console.log(`[PlatformBridge] Installed SKILL.md for "${skillName}" to ${p.name}`);
+        // review: removed // review: removed console.log(`[PlatformBridge] Installed SKILL.md for "${skillName}" to ${p.name}`);
         return { success: true };
     } catch (error) {
         console.error(`[PlatformBridge] Failed to install SKILL.md to ${p.name}:`, error);
@@ -415,7 +415,7 @@ export async function uninstallSkillMd(skillName, platformId) {
     try {
         if (existsSync(skillDir)) {
             rmSync(skillDir, { recursive: true, force: true });
-            console.log(`[PlatformBridge] Uninstalled SKILL.md for "${skillName}" from ${p.name}`);
+            // review: removed // review: removed console.log(`[PlatformBridge] Uninstalled SKILL.md for "${skillName}" from ${p.name}`);
         }
         return { success: true };
     } catch (error) {
@@ -474,7 +474,7 @@ export async function installSkillMdSymlink(skillName, skillMdContent, platformI
             symlinkSync(sourceDir, platformSkillDir, 'dir');
         }
         
-        console.log(`[PlatformBridge] Symlinked "${skillName}" → ${p.name}: ${sourceDir} → ${platformSkillDir}`);
+        // review: removed // review: removed console.log(`[PlatformBridge] Symlinked "${skillName}" → ${p.name}: ${sourceDir} → ${platformSkillDir}`);
         return { success: true };
     } catch (error) {
         console.error(`[PlatformBridge] Failed to create symlink for "${skillName}" to ${p.name}:`, error);

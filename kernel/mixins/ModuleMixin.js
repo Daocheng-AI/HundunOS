@@ -48,7 +48,7 @@ export const ModuleMixin = class ModuleMixin {
      */
     async init_modules(kernel) {
         const start = Date.now();
-        console.log('[Kernel] HundunOS v4.1 initializing via Mixins...');
+        // review: removed // review: removed console.log('[Kernel] HundunOS v4.1 initializing via Mixins...');
 
         // FIX-M3: 生产环境强制加密密钥检查
         if (kernel.config.environment === 'production') {
@@ -58,7 +58,7 @@ export const ModuleMixin = class ModuleMixin {
             if (process.env.HUNDUNOS_ENCRYPTION_KEY.length < 32) {
                 throw new Error('[Kernel] Security: HUNDUNOS_ENCRYPTION_KEY must be >= 32 chars.');
             }
-            console.log('[Kernel] Production security checks passed.');
+            // review: removed // review: removed console.log('[Kernel] Production security checks passed.');
         }
 
         // v3.6: Feature Flag 系统（最先执行）
@@ -101,8 +101,8 @@ export const ModuleMixin = class ModuleMixin {
         kernel.state.running = true;
 
         const elapsed = Date.now() - start;
-        console.log(`[Kernel] Registered modules: ${kernel.moduleRegistry?.getRegisteredIds?.()?.join(', ') || 'N/A'}`);
-        console.log(`[Kernel] HundunOS v4.1 ready in ${elapsed}ms (Mixin composition)`);
+        // review: removed // review: removed console.log(`[Kernel] Registered modules: ${kernel.moduleRegistry?.getRegisteredIds?.()?.join(', ') || 'N/A'}`);
+        // review: removed // review: removed console.log(`[Kernel] HundunOS v4.1 ready in ${elapsed}ms (Mixin composition)`);
         kernel.emit('kernel:ready', { elapsed, modules: kernel.moduleRegistry?.count?.() || 0 });
     }
 
@@ -139,9 +139,9 @@ export const ModuleMixin = class ModuleMixin {
         k.platform = new _WindowsAdapter_class();
         k.platform.kernel = k;
         k.env = await k.platform.detect();
-        console.log(`[Kernel] Platform: ${k.env.platform}`);
-        console.log(`[Kernel] Python: ${k.env.python?.available ? k.env.python.version : 'NOT FOUND'}`);
-        console.log(`[Kernel] Ollama: ${k.env.ollama?.available ? 'running' : 'NOT FOUND'}`);
+        // review: removed // review: removed console.log(`[Kernel] Platform: ${k.env.platform}`);
+        // review: removed // review: removed console.log(`[Kernel] Python: ${k.env.python?.available ? k.env.python.version : 'NOT FOUND'}`);
+        // review: removed // review: removed console.log(`[Kernel] Ollama: ${k.env.ollama?.available ? 'running' : 'NOT FOUND'}`);
 
         // MessageBus
         k.messageBus = new _MessageBus_class(k);
@@ -261,7 +261,7 @@ export const ModuleMixin = class ModuleMixin {
             const { ModelRouter } = await import(_r('model-router/index.js'));
             k.modelRouter = new ModelRouter(k);
             await k.modelRouter.initialize();
-            console.log(`[Kernel] ModelRouter: initialized`);
+            // review: removed // review: removed console.log(`[Kernel] ModelRouter: initialized`);
         } catch (e) {
             console.warn('[Kernel] ModelRouter init failed:', e.message);
         }
@@ -271,7 +271,7 @@ export const ModuleMixin = class ModuleMixin {
             const { HealthMonitor } = await import(_r('health-monitor/index.js'));
             k.healthMonitor = new HealthMonitor(k);
             await k.healthMonitor.checkAll();
-            console.log(`[Kernel] HealthMonitor: score=${k.healthMonitor.history?.[0]?.overall?.score}`);
+            // review: removed // review: removed console.log(`[Kernel] HealthMonitor: score=${k.healthMonitor.history?.[0]?.overall?.score}`);
         } catch (e) {
             console.warn('[Kernel] HealthMonitor init failed:', e.message);
         }
@@ -281,7 +281,7 @@ export const ModuleMixin = class ModuleMixin {
             const { ClientAdapterModule } = await import(_r('stable-modules/client-adapter-module/index.js'));
             k.clientAdapter = new ClientAdapterModule(k);
             await k.clientAdapter.initialize();
-            console.log(`[Kernel] ClientAdapter: ${k.clientAdapter.getActiveAdapter()?.name || 'none'}`);
+            // review: removed // review: removed console.log(`[Kernel] ClientAdapter: ${k.clientAdapter.getActiveAdapter()?.name || 'none'}`);
         } catch (e) {
             console.warn('[Kernel] ClientAdapter init failed:', e.message);
         }
@@ -303,7 +303,7 @@ export const ModuleMixin = class ModuleMixin {
             const rustHealth = await k.rust.initialize().catch(e => ({ allHealthy: false, error: e.message }));
             k.rustHealth = rustHealth;
             if (rustHealth.allHealthy) {
-                console.log(`[Kernel] RustModules: ✓ ${rustHealth.transport || 'daemon'} — all modules healthy`);
+                // review: removed // review: removed console.log(`[Kernel] RustModules: ✓ ${rustHealth.transport || 'daemon'} — all modules healthy`);
             } else {
                 console.warn(`[Kernel] RustModules: ✗ daemon unavailable — using JS fallback`);
             }
@@ -335,7 +335,7 @@ export const ModuleMixin = class ModuleMixin {
             k.taskScientist.setMemoryTool(k.taskScientistMemoryTool);
             const status = k.taskScientist.getStatus();
             const memStats = k.taskScientistMemoryTool.getStats();
-            console.log(`[Kernel] TaskScientist: ${status.engine} — ${status.activeTasks} active — memory: ${memStats.recentCount} recent`);
+            // review: removed // review: removed console.log(`[Kernel] TaskScientist: ${status.engine} — ${status.activeTasks} active — memory: ${memStats.recentCount} recent`);
         } catch (e) {
             console.warn('[Kernel] TaskScientist init failed:', e.message);
         }
@@ -352,7 +352,7 @@ export const ModuleMixin = class ModuleMixin {
             k.skills.injector = new SkillContextInjector(k.skills);
             k.skills.market = new SkillMarket(k.skills);
             const stats = k.skills.getStats();
-            console.log(`[Kernel] Skills: ${stats.totalSkills} local — market: ${k.skills.market.list().length} official`);
+            // review: removed // review: removed console.log(`[Kernel] Skills: ${stats.totalSkills} local — market: ${k.skills.market.list().length} official`);
         } catch (e) {
             console.warn('[Kernel] Skill system init failed:', e.message);
         }
@@ -397,7 +397,7 @@ export const ModuleMixin = class ModuleMixin {
                 maxConcurrency: k.config.system?.toolScheduler?.maxConcurrency || 10,
                 enableRwSplit: true,
             });
-            console.log('[Kernel] ToolScheduler: RW split enabled');
+            // review: removed // review: removed console.log('[Kernel] ToolScheduler: RW split enabled');
         } catch (e) {
             console.warn('[Kernel] ToolScheduler init failed:', e.message);
         }
@@ -411,7 +411,7 @@ export const ModuleMixin = class ModuleMixin {
             const { AgentTeams } = await import(_r('agent-teams/index.js')).catch(() => ({ AgentTeams: null }));
             if (AgentTeams) {
                 k.agentTeams = new AgentTeams({ kernel: k });
-                console.log('[Kernel] AgentTeams: legacy mode');
+                // review: removed // review: removed console.log('[Kernel] AgentTeams: legacy mode');
             } else {
                 console.warn('[Kernel] AgentTeams init failed:', e.message);
             }
@@ -430,7 +430,7 @@ export const ModuleMixin = class ModuleMixin {
         try {
             const { UnifiedProvider } = await import(_r('providers/provider-compat.js'));
             k.unifiedProvider = new UnifiedProvider(k);
-            console.log('[Kernel] UnifiedProvider:', k.unifiedProvider.listProviders().join(', '));
+            // review: removed // review: removed console.log('[Kernel] UnifiedProvider:', k.unifiedProvider.listProviders().join(', '));
         } catch (e) {
             console.warn('[Kernel] UnifiedProvider init failed:', e.message);
         }
@@ -439,7 +439,7 @@ export const ModuleMixin = class ModuleMixin {
         try {
             const { ComputerUse } = await import(_r('computer-use/computer-use.js'));
             k.computerUse = new ComputerUse(k);
-            console.log('[Kernel] ComputerUse:', k.computerUse.enabled ? 'enabled' : 'disabled');
+            // review: removed // review: removed console.log('[Kernel] ComputerUse:', k.computerUse.enabled ? 'enabled' : 'disabled');
         } catch (e) {
             console.warn('[Kernel] ComputerUse init failed:', e.message);
         }
@@ -466,7 +466,7 @@ export const ModuleMixin = class ModuleMixin {
             const { registerAgentTeamTools } = await import(_r('agent-teams/agent-tools.js'));
             if (registerAgentTeamTools && k.toolBridge) {
                 const count = registerAgentTeamTools(k.toolBridge);
-                console.log(`[Kernel] Registered ${count} AgentTeam tools`);
+                // review: removed // review: removed console.log(`[Kernel] Registered ${count} AgentTeam tools`);
             }
         } catch (e) {
             console.warn('[Kernel] AgentTeam tools registration failed:', e.message);

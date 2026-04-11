@@ -10,6 +10,9 @@
 import { getCircuitBreakerManager } from './circuit-breaker.js';
 import { TurboContextCompressor } from './turbo-context-compressor.js';
 import { replaceTemplate, parseLLMResponse } from '../prompt-template.js';
+import { createLogger } from '../logger.js';
+
+const logger = createLogger('ModelRouter');
 
 // ================================================================
 // TaxHacker 风格：标准化 Provider 元数据
@@ -117,9 +120,9 @@ class ModelRouter {
                     clusterThreshold: 0.80,
                     embeddingDim: this.routerConfig.embeddingDim || 384,
                 });
-                console.log('[ModelRouter] TurboQuant ContextCompressor enabled (v4.0)');
+                // review: removed // review: removed console.log('[ModelRouter] TurboQuant ContextCompressor enabled (v4.0)');
             } catch (e) {
-                console.warn('[ModelRouter] TurboQuant ContextCompressor init failed:', e.message);
+                logger.warn('TurboQuant ContextCompressor init failed:', e.message);
             }
         }
 
@@ -180,13 +183,13 @@ class ModelRouter {
             await this._registerProvider(id);
         }
 
-        console.log('[ModelRouter] Initialized v4.0 with', this.providers.size, 'providers, order:', this._providerOrder);
+        // review: removed // review: removed console.log('[ModelRouter] Initialized v4.0 with', this.providers.size, 'providers, order:', this._providerOrder);
 
         // Phase 4: Rust 后端状态
         if (this.rustAdapter) {
-            console.log('[ModelRouter] Rust backend: ✅ adapters/rust-modules/router (hundunos-core daemon)');
+            // review: removed // review: removed console.log('[ModelRouter] Rust backend: ✅ adapters/rust-modules/router (hundunos-core daemon)');
         } else {
-            console.log('[ModelRouter] Rust backend: ⚠️  using JS router only (daemon unavailable)');
+            // review: removed // review: removed console.log('[ModelRouter] Rust backend: ⚠️  using JS router only (daemon unavailable)');
         }
     }
 
@@ -322,12 +325,12 @@ class ModelRouter {
                             costPer1M: custom.config.costPer1M,
                             meta: SUPPORTED_PROVIDERS.find(p => p.key === 'openai_compatible'),
                         });
-                        console.log(`[ModelRouter] Custom provider loaded: ${providerId}`);
+                        // review: removed // review: removed console.log(`[ModelRouter] Custom provider loaded: ${providerId}`);
                     }
                 }
             }
         } catch (e) {
-            console.warn(`[ModelRouter] Provider ${id} registration failed:`, e.message);
+            logger.warn(`Provider ${id} registration failed:`, e.message);
         }
     }
 
@@ -360,7 +363,7 @@ class ModelRouter {
         for (const providerId of providerIds) {
             // 熔断器检查
             if (!this.circuitBreakerManager.canCall(providerId)) {
-                console.info(`[ModelRouter] Skipping ${providerId} (circuit breaker open)`);
+                // review: removed // review: removed console.info(`[ModelRouter] Skipping ${providerId} (circuit breaker open)`);
                 continue;
             }
 
@@ -385,12 +388,12 @@ class ModelRouter {
                 }
 
                 lastError = result?.error || 'Unknown error';
-                console.warn(`[ModelRouter] Provider ${providerId} failed: ${lastError}`);
+                logger.warn(`Provider ${providerId} failed: ${lastError}`);
                 this.circuitBreakerManager.recordFailure(providerId);
                 this.usageStats.failures++;
             } catch (e) {
                 lastError = e.message;
-                console.warn(`[ModelRouter] Provider ${providerId} exception: ${lastError}`);
+                logger.warn(`Provider ${providerId} exception: ${lastError}`);
                 this.circuitBreakerManager.recordFailure(providerId);
                 this.usageStats.failures++;
             }
@@ -517,7 +520,7 @@ class ModelRouter {
             compression = await this._maybeCompress(messages);
         }
         if (compression.compressed) {
-            console.log(`[ModelRouter] Compressed messages: ${compression.originalTokens} → ${compression.compressedTokens} tokens`);
+            // review: removed // review: removed console.log(`[ModelRouter] Compressed messages: ${compression.originalTokens} → ${compression.compressedTokens} tokens`);
         }
 
         // v4.0: Multi-Provider Failover
@@ -552,7 +555,7 @@ class ModelRouter {
         try {
             return await this.rustAdapter.route(content, taskType, maxTokens);
         } catch (e) {
-            console.warn('[ModelRouter/Rust] route failed:', e.message);
+            logger.warn('Rust route failed:', e.message);
             return null;
         }
     }
@@ -650,7 +653,7 @@ class ModelRouter {
         messages.push({ role: 'user', content: intent.content || '' });
 
         if (options.debug) {
-            console.log(`[ModelRouter] Token budget: max=${maxTokens}, system=${systemTokens}, history=${usedTokens}/${historyBudget}`);
+            // review: removed // review: removed console.log(`[ModelRouter] Token budget: max=${maxTokens}, system=${systemTokens}, history=${usedTokens}/${historyBudget}`);
         }
         return messages;
     }
@@ -822,7 +825,7 @@ class ModelRouter {
                 if (result.success && result.content) return result.content.trim();
             }
         } catch (e) {
-            console.warn('[ModelRouter] LLM summarization failed:', e.message);
+            logger.warn('LLM summarization failed:', e.message);
         }
         return this._simpleCompress(msgs);
     }

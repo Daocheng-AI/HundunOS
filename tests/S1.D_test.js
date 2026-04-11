@@ -22,11 +22,11 @@ function test(name, fn) {
         fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        console.log(`✅ ${name}`);
+        // review: removed // review: removed console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        console.log(`❌ ${name}: ${e.message}`);
+        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
@@ -36,18 +36,18 @@ async function asyncTest(name, fn) {
         await fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        console.log(`✅ ${name}`);
+        // review: removed // review: removed console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        console.log(`❌ ${name}: ${e.message}`);
+        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
 // ========================================
 // 目录结构验证
 // ========================================
-console.log('\n=== 目录结构验证 ===\n');
+// review: removed // review: removed console.log('\n=== 目录结构验证 ===\n');
 
 test('S1.D.1.1 kernel 目录存在', () => {
     assert.ok(fs.existsSync(path.join(HUNDUNOS_ROOT, 'kernel')));
@@ -76,7 +76,7 @@ test('S1.D.1.6 .snapshots 目录存在', () => {
 // ========================================
 // Kernel 模块验证
 // ========================================
-console.log('\n=== Kernel 模块验证 ===\n');
+// review: removed // review: removed console.log('\n=== Kernel 模块验证 ===\n');
 
 test('S1.D.1.7 core.js 存在', () => {
     assert.ok(fs.existsSync(path.join(HUNDUNOS_ROOT, 'kernel/core.js')));
@@ -101,7 +101,7 @@ test('S1.D.1.11 model-router 目录存在', () => {
 // ========================================
 // Stable Modules 验证
 // ========================================
-console.log('\n=== Stable Modules 验证 ===\n');
+// review: removed // review: removed console.log('\n=== Stable Modules 验证 ===\n');
 
 const stableModules = [
     'edict', 'permission-gating', 'cowork-monitor', 
@@ -118,7 +118,7 @@ for (const mod of stableModules) {
 // ========================================
 // 模块导入验证
 // ========================================
-console.log('\n=== 模块导入验证 ===\n');
+// review: removed // review: removed console.log('\n=== 模块导入验证 ===\n');
 
 await asyncTest('S1.D.1.13 edict 模块可导入', async () => {
     const mod = await import('../stable-modules/edict/core/index.js');
@@ -143,7 +143,7 @@ await asyncTest('S1.D.1.16 recoverable-memory 模块可导入', async () => {
 // ========================================
 // 代码量统计
 // ========================================
-console.log('\n=== 代码量统计 ===\n');
+// review: removed // review: removed console.log('\n=== 代码量统计 ===\n');
 
 const jsFiles = [];
 function collectJs(dir) {
@@ -167,12 +167,12 @@ test(`S1.D.1.17 代码量达标 (当前: ${totalKB} KB)`, () => {
     assert.ok(totalSize > 200000, `代码量应 > 200KB，当前 ${totalKB} KB`);
 });
 
-console.log(`\n📊 统计: ${jsFiles.length} 个 JS 文件，共 ${totalKB} KB`);
+// review: removed // review: removed console.log(`\n📊 统计: ${jsFiles.length} 个 JS 文件，共 ${totalKB} KB`);
 
 // ========================================
 // 测试结果汇总
 // ========================================
-console.log('\n=== 测试结果汇总 ===\n');
+// review: removed // review: removed console.log('\n=== 测试结果汇总 ===\n');
 
 // 读取各模块测试结果
 const testResults = {
@@ -185,21 +185,21 @@ const testResults = {
 let totalPassed = 0;
 let totalTests = 0;
 for (const [task, result] of Object.entries(testResults)) {
-    console.log(`  ${task}: ${result.passed}/${result.total} ✅`);
+    // review: removed // review: removed console.log(`  ${task}: ${result.passed}/${result.total} ✅`);
     totalPassed += result.passed;
     totalTests += result.total;
 }
 
-console.log(`\n  总计: ${totalPassed}/${totalTests} 通过`);
+// review: removed // review: removed console.log(`\n  总计: ${totalPassed}/${totalTests} 通过`);
 
 // ========================================
 // 输出结果
 // ========================================
-console.log('\n========================================');
-console.log('S1.D 阶段1全量集成测试结果');
-console.log('========================================');
-console.log(`本模块: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
-console.log('========================================\n');
+// review: removed // review: removed console.log('\n========================================');
+// review: removed // review: removed console.log('S1.D 阶段1全量集成测试结果');
+// review: removed // review: removed console.log('========================================');
+// review: removed // review: removed console.log(`本模块: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
+// review: removed // review: removed console.log('========================================\n');
 
 // 保存结果
 const report = {

@@ -50,7 +50,7 @@ export class SkillMarket {
         // 加载已有技能
         await this._loadSkills();
         
-        console.log('[SkillMarket] Initialized with', this.skills.size, 'skills');
+        // review: removed // review: removed console.log('[SkillMarket] Initialized with', this.skills.size, 'skills');
     }
 
     /**
@@ -104,7 +104,7 @@ export class SkillMarket {
         this._saveSkill(skill);
         
         this.stats.published++;
-        console.log(`[SkillMarket] Published: ${skill.name} (${skillId})`);
+        // review: removed // review: removed console.log(`[SkillMarket] Published: ${skill.name} (${skillId})`);
         
         return { success: true, skillId };
     }
@@ -307,7 +307,7 @@ export class SkillMarket {
                 }
             }
         } catch (e) {
-            console.log('[SkillMarket] No existing skills');
+            // review: removed // review: removed console.log('[SkillMarket] No existing skills');
         }
     }
 

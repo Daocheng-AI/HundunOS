@@ -10,7 +10,7 @@ export class AgentTeamManager {
   }
 
   async initialize() {
-    console.log('[AgentTeamManager] Initialized');
+    // review: removed // review: removed console.log('[AgentTeamManager] Initialized');
   }
 
   register(team) {

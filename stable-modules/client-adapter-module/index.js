@@ -44,7 +44,7 @@ export class ClientAdapterModule {
     }
 
     async initialize() {
-        console.log('[ClientAdapterModule] Initializing...');
+        // review: removed // review: removed console.log('[ClientAdapterModule] Initializing...');
         
         try {
             const { ClientAdapterManager } = await getClientAdapterDeps();
@@ -68,7 +68,7 @@ export class ClientAdapterModule {
             this.registerAsModelProvider();
         }
         
-        console.log('[ClientAdapterModule] Initialized with', this.manager.listAdapters().length, 'adapters');
+        // review: removed // review: removed console.log('[ClientAdapterModule] Initialized with', this.manager.listAdapters().length, 'adapters');
     }
 
     /**
@@ -103,7 +103,7 @@ export class ClientAdapterModule {
         mr.providers.set('client_adapter', clientProvider);
         mr.providerInstances.set('client_adapter', clientProvider);
         
-        console.log('[ClientAdapterModule] Registered as model provider');
+        // review: removed // review: removed console.log('[ClientAdapterModule] Registered as model provider');
     }
 
     /**

@@ -264,7 +264,7 @@ export class ClientAdapterManager extends EventEmitter {
     }
 
     async initialize() {
-        console.log('[ClientAdapterManager] Initializing...');
+        // review: removed // review: removed console.log('[ClientAdapterManager] Initializing...');
         
         // 注册内置适配器
         this.register(QClawAdapter);
@@ -279,7 +279,7 @@ export class ClientAdapterManager extends EventEmitter {
                 try {
                     await adapter.connect();
                     this.activeAdapterId = id;
-                    console.log(`[ClientAdapterManager] Connected to ${adapter.name}`);
+                    // review: removed // review: removed console.log(`[ClientAdapterManager] Connected to ${adapter.name}`);
                     break;
                 } catch (e) {
                     console.warn(`[ClientAdapterManager] Failed to connect ${id}:`, e.message);

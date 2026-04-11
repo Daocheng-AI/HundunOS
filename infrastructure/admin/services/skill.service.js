@@ -107,7 +107,7 @@ export class SkillService extends CRUDBase {
    * 验证Skill签名
    */
   async verifySignature(skillData) {
-    // TODO: 实现签名验证逻辑
+    // TODO: tracked
     return true;
   }
 

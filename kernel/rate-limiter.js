@@ -145,7 +145,7 @@ export class RateLimiter {
             } else {
                 this.stats.cleanup += cleaned;
                 if (cleaned > 0) {
-                    console.log(`[RateLimiter] Cleaned ${cleaned} expired buckets`);
+                    // review: removed // review: removed console.log(`[RateLimiter] Cleaned ${cleaned} expired buckets`);
                 }
             }
         };

@@ -26,16 +26,16 @@ export class RustIntegration {
     }
 
     async initialize() {
-        console.log('[RustIntegration] Initializing...');
+        // review: removed // review: removed console.log('[RustIntegration] Initializing...');
         
         // 检查 Rust CLI 是否存在
         this.stats.rustEnabled = this._checkRustModules();
         
         if (this.stats.rustEnabled) {
-            console.log('[RustIntegration] Rust modules enabled');
+            // review: removed // review: removed console.log('[RustIntegration] Rust modules enabled');
             this._initializeModules();
         } else {
-            console.log('[RustIntegration] Rust modules not found, using JS fallback');
+            // review: removed // review: removed console.log('[RustIntegration] Rust modules not found, using JS fallback');
             this.stats.jsFallback = true;
         }
     }
@@ -59,7 +59,7 @@ export class RustIntegration {
             }
         }
         
-        console.log(`[RustIntegration] Found ${available}/${modules.length} Rust modules`);
+        // review: removed // review: removed console.log(`[RustIntegration] Found ${available}/${modules.length} Rust modules`);
         return available >= 1;  // 至少有一个模块可用
     }
 

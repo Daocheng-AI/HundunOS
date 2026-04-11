@@ -46,7 +46,7 @@ export class TaskCheckpoint {
         // 加载已有的检查点
         await this._loadCheckpoints();
         
-        console.log('[TaskCheckpoint] Initialized,', this.checkpoints.size, 'checkpoints loaded');
+        // review: removed // review: removed console.log('[TaskCheckpoint] Initialized,', this.checkpoints.size, 'checkpoints loaded');
     }
 
     /**
@@ -72,7 +72,7 @@ export class TaskCheckpoint {
         this.activeTasks.set(taskId, task);
         this.stats.created++;
         
-        console.log(`[TaskCheckpoint] Created task: ${taskId} (${name})`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Created task: ${taskId} (${name})`);
         return taskId;
     }
 
@@ -87,7 +87,7 @@ export class TaskCheckpoint {
         task.startedAt = Date.now();
         task.updatedAt = Date.now();
         
-        console.log(`[TaskCheckpoint] Started task: ${taskId}`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Started task: ${taskId}`);
         return task;
     }
 
@@ -156,7 +156,7 @@ export class TaskCheckpoint {
         this._saveCheckpoint(taskId);
         
         this.stats.paused++;
-        console.log(`[TaskCheckpoint] Paused task: ${taskId} (${reason})`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Paused task: ${taskId} (${reason})`);
         
         return task;
     }
@@ -182,7 +182,7 @@ export class TaskCheckpoint {
         task.updatedAt = Date.now();
         
         this.stats.resumed++;
-        console.log(`[TaskCheckpoint] Resumed task: ${taskId}`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Resumed task: ${taskId}`);
         
         return task;
     }
@@ -204,7 +204,7 @@ export class TaskCheckpoint {
         this.checkpoints.delete(taskId);
         
         this.stats.completed++;
-        console.log(`[TaskCheckpoint] Completed task: ${taskId}`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Completed task: ${taskId}`);
         
         return task;
     }
@@ -225,7 +225,7 @@ export class TaskCheckpoint {
         this._saveCheckpoint(taskId);
         
         this.stats.failed++;
-        console.log(`[TaskCheckpoint] Failed task: ${taskId} (${error})`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Failed task: ${taskId} (${error})`);
         
         return task;
     }
@@ -267,7 +267,7 @@ export class TaskCheckpoint {
             console.error(`[TaskCheckpoint] Failed to delete file:`, e.message);
         }
         
-        console.log(`[TaskCheckpoint] Deleted task: ${taskId}`);
+        // review: removed // review: removed console.log(`[TaskCheckpoint] Deleted task: ${taskId}`);
     }
 
     /**

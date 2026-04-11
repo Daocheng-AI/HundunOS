@@ -31,7 +31,7 @@ class Scheduler extends EventEmitter {
                 this._scheduleJob(job);
             }
         }
-        console.log(`[Scheduler] Initialized ${this.jobs.size} jobs (${this.stats.scheduled} active)`);
+        // review: removed // review: removed console.log(`[Scheduler] Initialized ${this.jobs.size} jobs (${this.stats.scheduled} active)`);
     }
 
     // ================================================================
@@ -84,7 +84,7 @@ class Scheduler extends EventEmitter {
 
         this.stats.scheduled++;
         this.emit('job:created', job);
-        console.log(`[Scheduler] Job "${job.name}" (${job.id}) scheduled: next run in ${this._msToHuman(job.nextRun - Date.now())}`);
+        // review: removed // review: removed console.log(`[Scheduler] Job "${job.name}" (${job.id}) scheduled: next run in ${this._msToHuman(job.nextRun - Date.now())}`);
         return job;
     }
 
@@ -106,7 +106,7 @@ class Scheduler extends EventEmitter {
         job.status = 'cancelled';
         this._persistJob(job);
         this.emit('job:cancelled', job);
-        console.log(`[Scheduler] Job "${job.name}" cancelled`);
+        // review: removed // review: removed console.log(`[Scheduler] Job "${job.name}" cancelled`);
         return true;
     }
 
@@ -408,7 +408,7 @@ $t.Show([Windows.UI.Notifications.ToastNotification]::new($xml))
         }
         this.timers.clear();
         await this._persistAll();
-        console.log('[Scheduler] Shutdown — all timers cleared');
+        // review: removed // review: removed console.log('[Scheduler] Shutdown — all timers cleared');
     }
 
     async _persistAll() {

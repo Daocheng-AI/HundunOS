@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const FeedbackType = {
-    BUG_REPORT: 'bug_report',        // Bug报告
+    BUG_REPORT: 'bug_report',        // Bug: tracked
     FEATURE_REQUEST: 'feature_request', // 功能请求
     IMPROVEMENT: 'improvement',      // 改进建议
     COMPLAINT: 'complaint',          // 投诉
@@ -61,7 +61,7 @@ export class FeedbackSystem {
         // 加载历史反馈
         await this._loadFeedback();
         
-        console.log('[Feedback] Initialized with', this.feedbackList.size, 'feedbacks');
+        // review: removed // review: removed console.log('[Feedback] Initialized with', this.feedbackList.size, 'feedbacks');
     }
 
     /**
@@ -114,7 +114,7 @@ export class FeedbackSystem {
         this.stats.submitted++;
         this._updateAnonymousStats(feedback);
         
-        console.log(`[Feedback] Submitted: ${feedbackId} (${feedback.type})`);
+        // review: removed // review: removed console.log(`[Feedback] Submitted: ${feedbackId} (${feedback.type})`);
         
         return {
             success: true,
@@ -349,7 +349,7 @@ export class FeedbackSystem {
                 }
             }
         } catch (e) {
-            console.log('[Feedback] No existing feedback');
+            // review: removed // review: removed console.log('[Feedback] No existing feedback');
         }
     }
 

@@ -218,7 +218,7 @@ export class McpClient extends EventEmitter {
     await this._refreshTools();
     await this._refreshResources();
 
-    console.log(`[MCP] Connected to ${this.serverName} (${this.serverInfo.name} ${this.serverInfo.version})`);
+    // review: removed // review: removed console.log(`[MCP] Connected to ${this.serverName} (${this.serverInfo.name} ${this.serverInfo.version})`);
   }
 
   /**
@@ -320,7 +320,7 @@ export class McpClientManager {
 
   async initialize() {
     if (!feature('MCP_CLIENT')) {
-      console.log('[MCP] MCP_CLIENT feature disabled, skipping');
+      // review: removed // review: removed console.log('[MCP] MCP_CLIENT feature disabled, skipping');
       return;
     }
 
@@ -330,7 +330,7 @@ export class McpClientManager {
       await this.addServer(server);
     }
 
-    console.log(`[MCP] ${this.clients.size} servers registered`);
+    // review: removed // review: removed console.log(`[MCP] ${this.clients.size} servers registered`);
   }
 
   async addServer(config) {
@@ -379,7 +379,7 @@ export class McpClientManager {
     }
     // 简化实现：打开浏览器授权
     const authUrl = `${serverUrl}/oauth/authorize?client_id=hundunos&redirect_uri=hundunos://oauth/callback`;
-    console.log(`[MCP OAuth] Opening: ${authUrl}`);
+    // review: removed // review: removed console.log(`[MCP OAuth] Opening: ${authUrl}`);
     // 实际实现需启动本地 HTTP 服务器接收回调
     return { authUrl, status: 'requires_manual_auth' };
   }

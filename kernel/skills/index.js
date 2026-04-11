@@ -70,7 +70,7 @@ export class SkillLoader {
 
     // 按优先级输出加载顺序
     const loaded = sorted.map(s => s.name).join(', ');
-    console.log(`[SkillLoader] Loaded ${this.metadata.size} skills (priority order): ${loaded}`);
+    // review: removed // review: removed console.log(`[SkillLoader] Loaded ${this.metadata.size} skills (priority order): ${loaded}`);
   }
 
   /**

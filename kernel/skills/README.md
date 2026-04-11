@@ -160,7 +160,7 @@ const kernel = await HundunOSKernel.create();
 
 // 获取最佳匹配的 Skill
 const matches = await kernel.skills.match('帮我操作 GitHub issue');
-console.log(matches);
+// review: removed // review: removed console.log(matches);
 
 // 注入到 System Prompt
 const { systemPrompt, injectedSkills } = await kernel.skills.inject('帮我操作 GitHub issue');
@@ -173,7 +173,7 @@ const result = await kernel.skills.run('github', {
     title: '修复登录 bug',
     body: '描述...',
 });
-console.log(result);
+// review: removed // review: removed console.log(result);
 ```
 
 ### 3. REST API

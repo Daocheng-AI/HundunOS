@@ -7,6 +7,9 @@
 import http from 'node:http';
 import { URL } from 'node:url';
 import { createHash } from 'node:crypto';
+import { createLogger } from '../../kernel/logger.js';
+
+const logger = createLogger('RestServer');
 
 export class RestServer {
     /**
@@ -29,9 +32,9 @@ export class RestServer {
         );
         this._authEnabled = this._apiKeys.size > 0;
         if (this._authEnabled) {
-            console.log(`[RestServer] API Key auth: ENABLED (${this._apiKeys.size} key(s))`);
+            // review: removed // review: removed console.log(`[RestServer] API Key auth: ENABLED (${this._apiKeys.size} key(s))`);
         } else {
-            console.log('[RestServer] API Key auth: DISABLED (no keys configured)');
+            // review: removed // review: removed console.log('[RestServer] API Key auth: DISABLED (no keys configured)');
         }
 
         // FIX-R2: RateLimiter 引用（由 core.js 注入）
@@ -116,10 +119,10 @@ export class RestServer {
         if (this.server) return;
         this.server = http.createServer((req, res) => this._handle(req, res));
         this.server.listen(this.port, this.host, () => {
-            console.log(`[RestServer] HTTP API listening on http://${this.host}:${this.port}`);
+            // review: removed // review: removed console.log(`[RestServer] HTTP API listening on http://${this.host}:${this.port}`);
         });
         this.server.on('error', (e) => {
-            console.error('[RestServer] Server error:', e.message);
+            logger.error('Server error:', e.message);
         });
     }
 

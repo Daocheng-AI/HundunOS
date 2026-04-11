@@ -11,6 +11,9 @@
 //   HUNDUNOS_BUDDY=1 hundunos start
 //   HUNDUNOS_AUTO_MODE=1 hundunos start
 
+import { createLogger } from './logger.js';
+const logger = createLogger('FeatureFlags');
+
 /**
  * Feature Flag 定义表
  * 每个 flag: { env, description, default, type }
@@ -314,7 +317,7 @@ export function initFeatureFlags(kernel) {
   const enabled = Array.from(_kernelRef ? Object.keys(FEATURE_REGISTRY) : [])
     .filter(name => feature(name));
 
-  console.log(`[FeatureFlags] ${enabled.length}/${Object.keys(FEATURE_REGISTRY).length} features enabled`);
+  // review: removed // review: removed console.log(`[FeatureFlags] ${enabled.length}/${Object.keys(FEATURE_REGISTRY).length} features enabled`);
   return enabled;
 }
 
@@ -347,7 +350,7 @@ function _resolveFromEnv(name) {
   if (!def) {
     // 未知 flag，默认关闭（安全策略）
     if (process.env.HUNDUNOS_STRICT_MODE !== '1') {
-      console.warn(`[FeatureFlags] Unknown flag: ${name} (default: false)`);
+      logger.warn(`Unknown flag: ${name} (default: false)`);
     }
     return false;
   }
@@ -375,7 +378,7 @@ function _isBootstrapMode() {
 export function setFeature(name, value) {
   const def = FEATURE_REGISTRY[name];
   if (!def) {
-    console.warn(`[FeatureFlags] setFeature: unknown flag "${name}"`);
+    logger.warn(`setFeature: unknown flag "${name}"`);
     return false;
   }
   _runtimeOverrides[name] = !!value;

@@ -277,7 +277,7 @@ export class SkillLazyLoader {
             }
         }
 
-        console.log(`[SkillLazyLoader] Level1: ${loaded} skills loaded (${failed} failed)`);
+        // review: removed // review: removed console.log(`[SkillLazyLoader] Level1: ${loaded} skills loaded (${failed} failed)`);
         return { loaded, failed };
     }
 
@@ -458,7 +458,7 @@ export class SkillLazyLoader {
             await this._loadLevel2(skillName);
             this._loadState.set(skillName, LoadLevel.L2_INSTRUCTIONS);
             this._stats.l2Count++;
-            console.log(`[SkillLazyLoader] Level2 warmed: ${skillName}`);
+            // review: removed // review: removed console.log(`[SkillLazyLoader] Level2 warmed: ${skillName}`);
             return true;
         } catch (e) {
             console.warn(`[SkillLazyLoader] L2 failed for ${skillName}: ${e.message}`);

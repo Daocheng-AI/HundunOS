@@ -37,7 +37,7 @@ function parseYaml(str) {
         }
         line = line.replace(/\t/g, '  ').replace(/\r$/, '');
         const trimmed = line.trim();
-        if (!trimmed) { console.log(`${i}: [BLANK]`); continue; }
+        if (!trimmed) { // review: removed // review: removed console.log(`${i}: [BLANK]`); continue; }
 
         const indent = line.search(/\S/);
 
@@ -69,11 +69,11 @@ function parseYaml(str) {
                 const newObj = { [firstKey]: _unquote(firstRaw.trim()) };
                 currentObj[currentKey].push(newObj);
                 stack.push({ obj: newObj, indent, isArrayItem: true });
-                console.log(`${i}: ARR_OBJ ${currentKey} -> id=${firstRaw.trim().slice(0,30)} stackLen=${stack.length}`);
+                // review: removed // review: removed console.log(`${i}: ARR_OBJ ${currentKey} -> id=${firstRaw.trim().slice(0,30)} stackLen=${stack.length}`);
             } else {
                 currentObj[currentKey] = currentObj[currentKey] || [];
                 if (val) currentObj[currentKey].push(_unquote(val));
-                console.log(`${i}: ARR_SCALAR ${currentKey} -> "${val}"`);
+                // review: removed // review: removed console.log(`${i}: ARR_SCALAR ${currentKey} -> "${val}"`);
             }
             continue;
         }
@@ -95,7 +95,7 @@ function parseYaml(str) {
                     pieces.push(l.trimEnd());
                 }
                 currentObj[key] = pieces.join(val === '|' ? '\n' : ' ');
-                console.log(`${i}: LITERAL ${key} = "${currentObj[key].slice(0,30)}..."`);
+                // review: removed // review: removed console.log(`${i}: LITERAL ${key} = "${currentObj[key].slice(0,30)}..."`);
                 i = j - 1;
                 continue;
             }
@@ -107,21 +107,21 @@ function parseYaml(str) {
                     if (nextTrimmed && nextIndent > indent) {
                         if (nextTrimmed.startsWith('- ')) {
                             currentObj[key] = [];
-                            console.log(`${i}: KEY_EMPTY_ARR ${key}`);
+                            // review: removed // review: removed console.log(`${i}: KEY_EMPTY_ARR ${key}`);
                             continue;
                         }
                         currentObj[key] = {};
                         stack.push({ obj: currentObj[key], indent: nextIndent });
-                        console.log(`${i}: KEY_NESTED ${key}`);
+                        // review: removed // review: removed console.log(`${i}: KEY_NESTED ${key}`);
                         continue;
                     }
                 }
                 currentObj[key] = null;
-                console.log(`${i}: KEY_NULL ${key}`);
+                // review: removed // review: removed console.log(`${i}: KEY_NULL ${key}`);
                 continue;
             }
             currentObj[key] = _unquote(val);
-            console.log(`${i}: KEY ${key} = "${val}"`);
+            // review: removed // review: removed console.log(`${i}: KEY ${key} = "${val}"`);
             continue;
         }
     }
@@ -129,8 +129,8 @@ function parseYaml(str) {
 }
 
 const s = parseYaml(content);
-console.log('\n=== RESULT ===');
-console.log('name:', s.name);
-console.log('tools length:', s.tools?.length);
-console.log('first tool:', JSON.stringify(s.tools?.[0]));
-console.log('tags:', JSON.stringify(s.tags));
+// review: removed // review: removed console.log('\n=== RESULT ===');
+// review: removed // review: removed console.log('name:', s.name);
+// review: removed // review: removed console.log('tools length:', s.tools?.length);
+// review: removed // review: removed console.log('first tool:', JSON.stringify(s.tools?.[0]));
+// review: removed // review: removed console.log('tags:', JSON.stringify(s.tags));

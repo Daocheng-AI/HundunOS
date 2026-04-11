@@ -6,6 +6,9 @@
 import { dirname, join } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { rateLimitPresets } from '../rate-limiter.js';
+import { createLogger } from '../logger.js';
+
+const logger = createLogger('RestMixin');
 
 // ROOT: 相对于 kernel/mixins/ → 上两级到项目根
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -41,7 +44,7 @@ export const RestMixin = class RestMixin {
         const rateLimitConfig = kernel.config.system?.rateLimit || rateLimitPresets.default;
         const { RateLimiter } = await import(_r('kernel/rate-limiter.js'));
         kernel.rateLimiter = new RateLimiter(rateLimitConfig);
-        console.log(`[Kernel] Rate limiter: ${rateLimitConfig.maxRequests} req/${rateLimitConfig.windowMs / 1000}s`);
+        // review: removed // review: removed console.log(`[Kernel] Rate limiter: ${rateLimitConfig.maxRequests} req/${rateLimitConfig.windowMs / 1000}s`);
 
         // REST 服务器
         try {
@@ -53,9 +56,9 @@ export const RestMixin = class RestMixin {
             kernel.restServer.addFlagGate('HOOK_SYSTEM', '*', '/api/hooks');
             kernel.restServer.addFlagGate('SKILLS_SYSTEM', '*', '/api/skills');
             await kernel.restServer.start();
-            console.log('[Kernel] RestServer: HTTP API ready (auth+rateLimit+flags enabled)');
+            // review: removed // review: removed console.log('[Kernel] RestServer: HTTP API ready (auth+rateLimit+flags enabled)');
         } catch (e) {
-            console.warn('[Kernel] RestServer init failed:', e.message);
+            logger.warn('RestServer init failed:', e.message);
         }
 
         // SubagentManager
@@ -64,9 +67,9 @@ export const RestMixin = class RestMixin {
             kernel.subagents = new SubagentManager(kernel);
             kernel.TaskMode = TaskMode;
             kernel.IsolationLevel = IsolationLevel;
-            console.log(`[Kernel] SubagentManager: ${kernel.subagents.getNames().join(', ')}`);
+            // review: removed // review: removed console.log(`[Kernel] SubagentManager: ${kernel.subagents.getNames().join(', ')}`);
         } catch (e) {
-            console.warn('[Kernel] SubagentManager init failed:', e.message);
+            logger.warn('SubagentManager init failed:', e.message);
         }
     }
 
@@ -441,9 +444,9 @@ export const RestMixin = class RestMixin {
                 hooksLoaded: hookLoader.getStats().loadedFiles,
             }).catch(() => {});
 
-            console.log(`[Kernel] HookExecutor: ${Object.keys(mergedHooks).length} events registered`);
+            // review: removed // review: removed console.log(`[Kernel] HookExecutor: ${Object.keys(mergedHooks).length} events registered`);
         } catch (e) {
-            console.warn('[Kernel] HookExecutor init failed:', e.message);
+            logger.warn('HookExecutor init failed:', e.message);
         }
     }
 

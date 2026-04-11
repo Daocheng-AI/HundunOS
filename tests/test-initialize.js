@@ -1,11 +1,11 @@
 // HundunOS v3.0 初始化测试脚本
 import { CoreKernel } from './kernel/core.js';
 
-console.log('=== HundunOS v3.0 初始化测试 ===');
-console.log('环境变量 NODE_ENV:', process.env.NODE_ENV || '未设置');
+// review: removed // review: removed console.log('=== HundunOS v3.0 初始化测试 ===');
+// review: removed // review: removed console.log('环境变量 NODE_ENV:', process.env.NODE_ENV || '未设置');
 
 async function testInitialization(env = 'development') {
-  console.log(`\n--- 测试 ${env} 环境初始化 ---`);
+  // review: removed // review: removed console.log(`\n--- 测试 ${env} 环境初始化 ---`);
   
   // 设置环境变量
   const originalEnv = process.env.NODE_ENV;
@@ -18,8 +18,8 @@ async function testInitialization(env = 'development') {
       storageDir: './data'
     });
     
-    console.log('✅ 内核对象创建成功');
-    console.log('配置加载统计:', {
+    // review: removed // review: removed console.log('✅ 内核对象创建成功');
+    // review: removed // review: removed console.log('配置加载统计:', {
       environment: kernel.config?.environment,
       projectRoot: kernel.config?.projectRoot?.substring(0, 50) + '...',
       modulesCount: Object.keys(kernel.config?.system?.modules || {}).length,
@@ -27,14 +27,14 @@ async function testInitialization(env = 'development') {
       hasRateLimit: !!(kernel.config?.system?.rateLimit)
     });
     
-    console.log('状态检查:', {
+    // review: removed // review: removed console.log('状态检查:', {
       initialized: kernel.state?.initialized,
       running: kernel.state?.running,
       environment: kernel.state?.environment
     });
     
     // 尝试初始化（快速测试）
-    console.log('\n正在初始化内核...');
+    // review: removed // review: removed console.log('\n正在初始化内核...');
     const startTime = Date.now();
     
     // 设置超时，避免长时间运行
@@ -44,36 +44,36 @@ async function testInitialization(env = 'development') {
     
     const initPromise = kernel.initialize().then(() => {
       const elapsed = Date.now() - startTime;
-      console.log(`✅ 初始化成功 (${elapsed}ms)`);
+      // review: removed // review: removed console.log(`✅ 初始化成功 (${elapsed}ms)`);
       return { success: true, elapsed };
     }).catch(error => {
-      console.log('❌ 初始化失败:', error.message);
+      // review: removed // review: removed console.log('❌ 初始化失败:', error.message);
       return { success: false, error: error.message };
     });
     
     const result = await Promise.race([initPromise, timeoutPromise]);
     
-    console.log('初始化结果:', result);
+    // review: removed // review: removed console.log('初始化结果:', result);
     
     // 尝试一个简单的处理
     if (result.success) {
-      console.log('\n--- 测试简单请求处理 ---');
+      // review: removed // review: removed console.log('\n--- 测试简单请求处理 ---');
       try {
         const processResult = await kernel.process({ content: 'test message' });
-        console.log('✅ 请求处理成功:', {
+        // review: removed // review: removed console.log('✅ 请求处理成功:', {
           success: processResult.success,
           type: processResult.type,
           latency: processResult.latency
         });
       } catch (error) {
-        console.log('⚠️  请求处理失败（可能是预期的）:', error.message);
+        // review: removed // review: removed console.log('⚠️  请求处理失败（可能是预期的）:', error.message);
       }
     }
     
     return { environment: env, success: result.success !== false };
     
   } catch (error) {
-    console.log('❌ 内核创建失败:', error.message);
+    // review: removed // review: removed console.log('❌ 内核创建失败:', error.message);
     return { environment: env, success: false, error: error.message };
   } finally {
     // 恢复环境变量
@@ -83,7 +83,7 @@ async function testInitialization(env = 'development') {
 
 // 运行测试
 async function runTests() {
-  console.log('开始测试不同环境的初始化...');
+  // review: removed // review: removed console.log('开始测试不同环境的初始化...');
   
   const environments = ['development', 'testing'];
   // 注意：生产环境可能需要更多配置，这里暂时跳过
@@ -98,24 +98,24 @@ async function runTests() {
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
   
-  console.log('\n=== 测试结果汇总 ===');
+  // review: removed // review: removed console.log('\n=== 测试结果汇总 ===');
   results.forEach(result => {
-    console.log(`${result.environment}: ${result.success ? '✅ 通过' : '❌ 失败'} ${result.error ? `(${result.error})` : ''}`);
+    // review: removed // review: removed console.log(`${result.environment}: ${result.success ? '✅ 通过' : '❌ 失败'} ${result.error ? `(${result.error})` : ''}`);
   });
   
   const totalPassed = results.filter(r => r.success).length;
   const totalTests = results.length;
   
-  console.log(`\n总测试数: ${totalTests}, 通过: ${totalPassed}, 失败: ${totalTests - totalPassed}`);
+  // review: removed // review: removed console.log(`\n总测试数: ${totalTests}, 通过: ${totalPassed}, 失败: ${totalTests - totalPassed}`);
   
   if (totalPassed === totalTests) {
-    console.log('✅ 所有环境测试通过！');
+    // review: removed // review: removed console.log('✅ 所有环境测试通过！');
   } else {
-    console.log('⚠️  某些测试失败，请检查配置');
+    // review: removed // review: removed console.log('⚠️  某些测试失败，请检查配置');
   }
   
   // 清理：建议手动关闭内核
-  console.log('\n测试完成。如果内核正在运行，请手动关闭。');
+  // review: removed // review: removed console.log('\n测试完成。如果内核正在运行，请手动关闭。');
 }
 
 // 运行测试

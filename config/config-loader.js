@@ -21,7 +21,7 @@ export class ConfigLoader {
     const environment = env || process.env.NODE_ENV || 'development';
     const configDir = join(baseDir, 'config');
     
-    console.log(`[Config] Loading configuration for environment: ${environment}`);
+    // review: removed // review: removed console.log(`[Config] Loading configuration for environment: ${environment}`);
     
     // 1. 加载基础配置
     const baseConfig = this._loadConfigFile(join(configDir, 'system.json'));
@@ -49,7 +49,7 @@ export class ConfigLoader {
     // 6. 安全验证
     this._validateConfig(merged, environment);
     
-    console.log(`[Config] Configuration loaded: ${JSON.stringify(this._getConfigStats(merged))}`);
+    // review: removed // review: removed console.log(`[Config] Configuration loaded: ${JSON.stringify(this._getConfigStats(merged))}`);
     
     return merged;
   }
@@ -67,7 +67,7 @@ export class ConfigLoader {
     try {
       const content = readFileSync(filePath, 'utf8');
       const config = JSON.parse(content);
-      console.log(`[Config] Loaded: ${filePath.replace(/^.*config[\\/]/, '')}`);
+      // review: removed // review: removed console.log(`[Config] Loaded: ${filePath.replace(/^.*config[\\/]/, '')}`);
       return config;
     } catch (error) {
       console.error(`[Config] Failed to load ${filePath}:`, error.message);
@@ -275,12 +275,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   switch (command) {
     case 'validate':
       const filePath = process.argv[3] || './config/system.json';
-      console.log(`Validating ${filePath}...`);
+      // review: removed // review: removed console.log(`Validating ${filePath}...`);
       const result = ConfigLoader.validateFile(filePath);
       
       if (result.valid) {
-        console.log('✅ Configuration is valid');
-        console.log(JSON.stringify(ConfigLoader._getConfigStats(result.config), null, 2));
+        // review: removed // review: removed console.log('✅ Configuration is valid');
+        // review: removed // review: removed console.log(JSON.stringify(ConfigLoader._getConfigStats(result.config), null, 2));
       } else {
         console.error('❌ Configuration validation failed:');
         result.errors.forEach(error => console.error(`  - ${error}`));
@@ -292,7 +292,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       const env = process.argv[3] || process.env.NODE_ENV || 'development';
       process.chdir(join(__dirname, '..'));
       const config = ConfigLoader.load('.', env);
-      console.log(JSON.stringify(config, null, 2));
+      // review: removed // review: removed console.log(JSON.stringify(config, null, 2));
       break;
       
     case 'template':
@@ -304,14 +304,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       
       const baseConfig = ConfigLoader._loadConfigFile('./config/system.json') || {};
       const template = ConfigLoader.createTemplate(targetEnv, baseConfig);
-      console.log(JSON.stringify(template, null, 2));
+      // review: removed // review: removed console.log(JSON.stringify(template, null, 2));
       break;
       
     default:
-      console.log('Configuration Loader Commands:');
-      console.log('  node config-loader.js validate [file]  - Validate a configuration file');
-      console.log('  node config-loader.js list [env]       - List configuration for environment');
-      console.log('  node config-loader.js template <env>   - Generate template for environment');
+      // review: removed // review: removed console.log('Configuration Loader Commands:');
+      // review: removed // review: removed console.log('  node config-loader.js validate [file]  - Validate a configuration file');
+      // review: removed // review: removed console.log('  node config-loader.js list [env]       - List configuration for environment');
+      // review: removed // review: removed console.log('  node config-loader.js template <env>   - Generate template for environment');
       break;
   }
 }

@@ -86,7 +86,7 @@ export class MemoryGraphVectorCompressor {
             return this.compressExisting(semanticMap);
         };
 
-        console.log('[MemoryGraphVectorCompressor] Injected into MemoryGraph');
+        // review: removed // review: removed console.log('[MemoryGraphVectorCompressor] Injected into MemoryGraph');
     }
 
     _compressOnWrite(key, value) {
@@ -167,7 +167,7 @@ export class MemoryGraphVectorCompressor {
                 compressed++;
             } catch (_) { skipped++; }
         }
-        console.log(`[MemoryGraphVectorCompressor] 批量压缩: ${compressed} 节点压缩, ${skipped} 跳过`);
+        // review: removed // review: removed console.log(`[MemoryGraphVectorCompressor] 批量压缩: ${compressed} 节点压缩, ${skipped} 跳过`);
         return { compressed, skipped, total: this.semanticIndex.size };
     }
 

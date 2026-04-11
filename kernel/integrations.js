@@ -16,7 +16,7 @@ async function _initSubagentManager() {
     const { SubagentManager } = await import('./subagents/index.js');
     this.subagentManager = new SubagentManager(this);
     await this.subagentManager.initialize?.() || Promise.resolve();
-    console.log(`[Kernel] SubagentManager: ${this.subagentManager.getStats().totalSubagents} subagents`);
+    // review: removed // review: removed console.log(`[Kernel] SubagentManager: ${this.subagentManager.getStats().totalSubagents} subagents`);
 }
 
 // ============== Skills 集成 ==============
@@ -40,7 +40,7 @@ async function _initSkillLoader() {
     
     this.skillExecutor = new SkillExecutor(this.skillLoader);
     
-    console.log(`[Kernel] SkillLoader: ${this.skillLoader.metadata.size} skills loaded`);
+    // review: removed // review: removed console.log(`[Kernel] SkillLoader: ${this.skillLoader.metadata.size} skills loaded`);
 }
 
 // ============== Hooks 集成 ==============
@@ -56,7 +56,7 @@ async function _initHookExecutor() {
     const hooksConfig = this.config.system?.hooks || createDefaultHooks();
     this.hookExecutor = new HookExecutor({ hooks: hooksConfig });
     
-    console.log(`[Kernel] HookExecutor: initialized`);
+    // review: removed // review: removed console.log(`[Kernel] HookExecutor: initialized`);
 }
 
 /**
@@ -77,7 +77,7 @@ function _configurePermissionMode() {
     if (this.permissionGating?.setPermissionMode) {
         this.permissionGating.setPermissionMode(mode);
     }
-    console.log(`[Kernel] Permission mode: ${mode}`);
+    // review: removed // review: removed console.log(`[Kernel] Permission mode: ${mode}`);
 }
 
 // ============== 内置模块更新 ==============
@@ -99,7 +99,7 @@ function _registerNewBuiltins() {
                 }),
                 shutdown: async () => {
                     // 清理活跃会话
-                    console.log('[Kernel] SubagentManager shutdown');
+                    // review: removed // review: removed console.log('[Kernel] SubagentManager shutdown');
                 }
             }
         });

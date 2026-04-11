@@ -25,7 +25,7 @@ export class ModelRouterRust {
     }
 
     async initialize() {
-        console.log(`[ModelRouterRust] ${this.rustAvailable ? 'Rust' : 'JS'} implementation`);
+        // review: removed // review: removed console.log(`[ModelRouterRust] ${this.rustAvailable ? 'Rust' : 'JS'} implementation`);
     }
 
     /**

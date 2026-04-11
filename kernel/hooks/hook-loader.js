@@ -7,6 +7,9 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 import { createDefaultHooks } from './index.js';
+import { createLogger } from '../logger.js';
+
+const logger = createLogger('HookLoader');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -36,14 +39,14 @@ export class HookLoader {
         const hooksDir = this._getHooksDir();
 
         if (!existsSync(hooksDir)) {
-            console.log('[HookLoader] config/hooks/ 目录不存在，返回空（默认 Hook 由 core.js _mergeHooks 注入）');
+            // review: removed // review: removed console.log('[HookLoader] config/hooks/ 目录不存在，返回空（默认 Hook 由 core.js _mergeHooks 注入）');
             return {};
         }
 
         const files = readdirSync(hooksDir).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
 
         if (files.length === 0) {
-            console.log('[HookLoader] config/hooks/ 无 YAML 文件，返回空（默认 Hook 由 core.js _mergeHooks 注入）');
+            // review: removed // review: removed console.log('[HookLoader] config/hooks/ 无 YAML 文件，返回空（默认 Hook 由 core.js _mergeHooks 注入）');
             return {};
         }
 
@@ -55,11 +58,11 @@ export class HookLoader {
                 this._mergeHookConfig(parsed);
                 this._loadedFiles.push(path);
             } catch (e) {
-                console.warn(`[HookLoader] 加载失败 ${file}: ${e.message}`);
+                logger.warn(`加载失败 ${file}: ${e.message}`);
             }
         }
 
-        console.log(`[HookLoader] 已加载 ${this._loadedFiles.length} 个 Hook 文件，${Object.keys(this.hooks).length} 个事件`);
+        // review: removed // review: removed console.log(`[HookLoader] 已加载 ${this._loadedFiles.length} 个 Hook 文件，${Object.keys(this.hooks).length} 个事件`);
         return this.hooks;
     }
 

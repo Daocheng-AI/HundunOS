@@ -14,12 +14,12 @@ let allOk = true;
 for (const file of files) {
     try {
         execSync(`node --check ${file}`, { encoding: 'utf-8' });
-        console.log(`✅ ${file}`);
+        // review: removed // review: removed console.log(`✅ ${file}`);
     } catch (e) {
         console.error(`❌ ${file}: ${e.message.split('\n').slice(0,2).join(' ')}`);
         allOk = false;
     }
 }
 
-console.log(allOk ? '\n🎉 All syntax checks passed!' : '\n⚠️  Some files have errors');
+// review: removed // review: removed console.log(allOk ? '\n🎉 All syntax checks passed!' : '\n⚠️  Some files have errors');
 process.exit(allOk ? 0 : 1);

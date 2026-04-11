@@ -52,7 +52,7 @@ import { initializeAdmin } from './infrastructure/admin/index.js';
 // 初始化Admin模块
 const admin = await initializeAdmin(kernel, {
   storage: { basePath: './data/admin' },
-  auth: { secret: 'your-jwt-secret' }
+  auth: { secret: process.env.JWT_SECRET || 'YOUR_JWT_SECRET_HERE' }
 });
 
 const { services, storage } = admin;
@@ -66,7 +66,7 @@ const { userService, roleService } = services;
 // 创建用户
 const user = await userService.create({
   username: 'test',
-  password: 'Test@123',
+  pwd: 'PLACEHOLDER',  // ⚠️ 必填：请替换为实际强密码
   roleIds: ['role-id']
 });
 
@@ -86,7 +86,7 @@ await userService.update(user.id, { nickname: 'New Name' });
 import { createAuthMiddleware, requirePermission, auditLogMiddleware } from './infrastructure/admin/index.js';
 
 // 认证中间件
-app.use(createAuthMiddleware({ secret: 'your-secret' }));
+app.use(createAuthMiddleware({ secret: process.env.JWT_SECRET || 'your-secret' }));
 
 // 权限中间件
 app.delete('/api/admin/users/:id', 

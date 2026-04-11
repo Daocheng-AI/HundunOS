@@ -93,7 +93,7 @@ export class Repl {
         this.rl.setPrompt(PROMPT);
         this.rl.prompt();
       } else {
-        console.log('\nUse /exit to quit');
+        // review: removed // review: removed console.log('\nUse /exit to quit');
         this.rl.prompt();
       }
     });
@@ -165,7 +165,7 @@ export class Repl {
 
   _printResult(result) {
     if (!result) {
-      console.log(`${COLORS.gray}(no response)${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${COLORS.gray}(no response)${COLORS.reset}`);
       return;
     }
 
@@ -173,11 +173,11 @@ export class Repl {
     if (result.success !== false) {
       const data = result.data || result;
       if (data?.content) {
-        console.log(`\n${COLORS.green}${data.content}${COLORS.reset}`);
+        // review: removed // review: removed console.log(`\n${COLORS.green}${data.content}${COLORS.reset}`);
       } else if (typeof data === 'object') {
-        console.log(`\n${JSON.stringify(data, null, 2)}`);
+        // review: removed // review: removed console.log(`\n${JSON.stringify(data, null, 2)}`);
       } else {
-        console.log(`\n${data}`);
+        // review: removed // review: removed console.log(`\n${data}`);
       }
     } else {
       console.error(`\n${COLORS.red}[${result.type || 'error'}] ${result.error?.message || result.reason || 'Unknown error'}${COLORS.reset}`);
@@ -186,12 +186,12 @@ export class Repl {
     // latency
     if (result.latency !== undefined) {
       const ms = result.latency < 1000 ? `${result.latency}ms` : `${(result.latency / 1000).toFixed(2)}s`;
-      console.log(`${COLORS.dim}  Latency: ${ms}${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${COLORS.dim}  Latency: ${ms}${COLORS.reset}`);
     }
 
     // aware summary
     if (result.aware && Object.keys(result.aware).length > 0) {
-      console.log(`${COLORS.dim}  Aware: ${JSON.stringify(result.aware)}${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${COLORS.dim}  Aware: ${JSON.stringify(result.aware)}${COLORS.reset}`);
     }
   }
 
@@ -202,7 +202,7 @@ export class Repl {
       case 'exit':
       case 'quit':
       case 'q':
-        console.log('Goodbye!');
+        // review: removed // review: removed console.log('Goodbye!');
         this.rl.close();
         break;
 
@@ -243,11 +243,11 @@ export class Repl {
         break;
 
       case 'history':
-        this.history.forEach((h, i) => console.log(`  ${i + 1}  ${h}`));
+        this.history.forEach((h, i) => // review: removed // review: removed console.log(`  ${i + 1}  ${h}`));
         break;
 
       case 'session':
-        console.log(`Session: ${this.sessionId}`);
+        // review: removed // review: removed console.log(`Session: ${this.sessionId}`);
         break;
 
       case 'restart':
@@ -275,14 +275,14 @@ export class Repl {
   async _cmdStatus() {
     try {
       const status = await this.client.getStatus();
-      console.log(`\n${COLORS.bold}HundunOS 状态${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
-      console.log(`  Version:    ${status.version || 'unknown'}`);
-      console.log(`  Running:     ${status.running ? COLORS.green + 'Yes' + COLORS.reset : COLORS.red + 'No' + COLORS.reset}`);
-      console.log(`  Uptime:      ${status.uptime ? (status.uptime / 60).toFixed(1) + 'm' : 'N/A'}`);
-      console.log(`  Platform:   ${status.platform || 'unknown'}`);
-      console.log(`  Sessions:   ${status.sessions?.active || 0}`);
-      console.log(`  ModelRouter:${status.modelRouter ? COLORS.green + 'Active' : COLORS.red + 'Inactive'}`);
+      // review: removed // review: removed console.log(`\n${COLORS.bold}HundunOS 状态${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(`  Version:    ${status.version || 'unknown'}`);
+      // review: removed // review: removed console.log(`  Running:     ${status.running ? COLORS.green + 'Yes' + COLORS.reset : COLORS.red + 'No' + COLORS.reset}`);
+      // review: removed // review: removed console.log(`  Uptime:      ${status.uptime ? (status.uptime / 60).toFixed(1) + 'm' : 'N/A'}`);
+      // review: removed // review: removed console.log(`  Platform:   ${status.platform || 'unknown'}`);
+      // review: removed // review: removed console.log(`  Sessions:   ${status.sessions?.active || 0}`);
+      // review: removed // review: removed console.log(`  ModelRouter:${status.modelRouter ? COLORS.green + 'Active' : COLORS.red + 'Inactive'}`);
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
     }
@@ -291,16 +291,16 @@ export class Repl {
   async _cmdHealth() {
     try {
       const health = await this.client.getHealth();
-      console.log(`\n${COLORS.bold}健康检查${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(`\n${COLORS.bold}健康检查${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
       const overall = health.overall?.score || (health.healthy ? 100 : 0);
       const color = overall >= 80 ? COLORS.green : overall >= 60 ? COLORS.yellow : COLORS.red;
-      console.log(`  Overall:     ${color}${overall}${COLORS.reset}/100`);
+      // review: removed // review: removed console.log(`  Overall:     ${color}${overall}${COLORS.reset}/100`);
       if (health.dimensions) {
         for (const [dim, info] of Object.entries(health.dimensions)) {
           const score = info.score || 0;
           const c = score >= 80 ? COLORS.green : score >= 60 ? COLORS.yellow : COLORS.red;
-          console.log(`  ${dim.padEnd(12)} ${c}${score}${COLORS.reset}`);
+          // review: removed // review: removed console.log(`  ${dim.padEnd(12)} ${c}${score}${COLORS.reset}`);
         }
       }
     } catch (e) {
@@ -311,12 +311,12 @@ export class Repl {
   async _cmdModules() {
     try {
       const mods = await this.client.getModules();
-      console.log(`\n${COLORS.bold}模块列表${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(`\n${COLORS.bold}模块列表${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
       const list = mods.modules || mods.list || [];
       for (const mod of list) {
         const status = mod.status === 'active' ? `${COLORS.green}active${COLORS.reset}` : `${COLORS.gray}inactive${COLORS.reset}`;
-        console.log(`  ${COLORS.cyan}${mod.id.padEnd(20)}${COLORS.reset} ${status}  ${mod.name || ''}`);
+        // review: removed // review: removed console.log(`  ${COLORS.cyan}${mod.id.padEnd(20)}${COLORS.reset} ${status}  ${mod.name || ''}`);
       }
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
@@ -327,12 +327,12 @@ export class Repl {
     try {
       const limit = parseInt(limitStr) || 20;
       const audit = await this.client.getAuditLogs(limit);
-      console.log(`\n${COLORS.bold}最近审计日志${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(`\n${COLORS.bold}最近审计日志${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
       const logs = audit.logs || [];
       for (const log of logs.slice(-limit)) {
         const ts = new Date(log.timestamp).toLocaleTimeString();
-        console.log(`  ${COLORS.dim}${ts}${COLORS.reset}  ${log.action || log.type}  ${log.intent?.action || ''}`);
+        // review: removed // review: removed console.log(`  ${COLORS.dim}${ts}${COLORS.reset}  ${log.action || log.type}  ${log.intent?.action || ''}`);
       }
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
@@ -342,13 +342,13 @@ export class Repl {
   async _cmdModelRouter() {
     try {
       const mr = await this.client.getModelRouter();
-      console.log(`\n${COLORS.bold}模型路由${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
-      console.log(`  Strategy:    ${mr.strategy}`);
-      console.log(`  Local First: ${mr.localFirst}`);
-      console.log(`  Providers:`);
+      // review: removed // review: removed console.log(`\n${COLORS.bold}模型路由${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(`  Strategy:    ${mr.strategy}`);
+      // review: removed // review: removed console.log(`  Local First: ${mr.localFirst}`);
+      // review: removed // review: removed console.log(`  Providers:`);
       for (const p of mr.providers || []) {
-        console.log(`    ${COLORS.cyan}${p.name.padEnd(15)}${COLORS.reset} ${p.model}  (${p.type})`);
+        // review: removed // review: removed console.log(`    ${COLORS.cyan}${p.name.padEnd(15)}${COLORS.reset} ${p.model}  (${p.type})`);
       }
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
@@ -358,10 +358,10 @@ export class Repl {
   async _cmdDaemonStatus() {
     try {
       const status = await this.client.getDaemonStatus();
-      console.log(`\n${COLORS.bold}守护进程状态${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
-      console.log(`  Connected:  ${status.connected ? COLORS.green + 'Yes' : COLORS.red + 'No'}${COLORS.reset}`);
-      console.log(`  Host:       ${status.host}:${status.port}`);
+      // review: removed // review: removed console.log(`\n${COLORS.bold}守护进程状态${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(`  Connected:  ${status.connected ? COLORS.green + 'Yes' : COLORS.red + 'No'}${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  Host:       ${status.host}:${status.port}`);
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
     }
@@ -370,9 +370,9 @@ export class Repl {
   async _cmdRateLimit() {
     try {
       const stats = await this.client.getRateLimitStats();
-      console.log(`\n${COLORS.bold}限流统计${COLORS.reset}`);
-      console.log(`${'─'.repeat(40)}`);
-      console.log(JSON.stringify(stats, null, 2));
+      // review: removed // review: removed console.log(`\n${COLORS.bold}限流统计${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
+      // review: removed // review: removed console.log(JSON.stringify(stats, null, 2));
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
     }
@@ -380,22 +380,22 @@ export class Repl {
 
   async _cmdConfig() {
     const config = getConfig();
-    console.log(`\n${COLORS.bold}客户端配置${COLORS.reset}`);
-    console.log(`${'─'.repeat(40)}`);
-    console.log(JSON.stringify(config, null, 2));
+    // review: removed // review: removed console.log(`\n${COLORS.bold}客户端配置${COLORS.reset}`);
+    // review: removed // review: removed console.log(`${'─'.repeat(40)}`);
+    // review: removed // review: removed console.log(JSON.stringify(config, null, 2));
   }
 
   async _cmdRestart() {
     try {
       await this.client.restartKernel();
-      console.log(`${COLORS.green}Kernel restart requested${COLORS.reset}`);
+      // review: removed // review: removed console.log(`${COLORS.green}Kernel restart requested${COLORS.reset}`);
     } catch (e) {
       console.error(`${COLORS.red}Error: ${e.message}${COLORS.reset}`);
     }
   }
 
   _printHelp() {
-    console.log(`
+    // review: removed // review: removed console.log(`
 ${COLORS.bold}HundunOS v3.0 CLI${COLORS.reset}
 ${'─'.repeat(40)}
 
@@ -423,24 +423,24 @@ ${COLORS.bold}元命令:${COLORS.reset}
   async _showBanner() {
     try {
       const status = await this.client.getStatus();
-      console.log();
-      console.log(`  ${COLORS.green}╔══════════════════════════════════════╗${COLORS.reset}`);
-      console.log(`  ${COLORS.green}║    HundunOS v${status.version || '3.0.0'}${' '.repeat(16)}║${COLORS.reset}`);
-      console.log(`  ${COLORS.green}╠══════════════════════════════════════╣${COLORS.reset}`);
-      console.log(`  ${COLORS.green}║  ${COLORS.reset}Kernel:    ${status.running ? COLORS.green + 'running' : COLORS.red + 'stopped'}${COLORS.reset}${' '.repeat(12)}║${COLORS.reset}`);
-      console.log(`  ${COLORS.green}║  ${COLORS.reset}Uptime:    ${(status.uptime / 60).toFixed(1) + 'm'}${' '.repeat(Math.max(0, 17 - ((status.uptime / 60).toFixed(1) + 'm').length))}║${COLORS.reset}`);
-      console.log(`  ${COLORS.green}║  ${COLORS.reset}Platform:  ${status.platform || 'unknown'}${' '.repeat(Math.max(0, 17 - (status.platform || 'unknown').length))}║${COLORS.reset}`);
-      console.log(`  ${COLORS.green}╚══════════════════════════════════════╝${COLORS.reset}`);
-      console.log();
-      console.log(`${COLORS.gray}  Type /help for commands, or just say something!${COLORS.reset}`);
-      console.log();
+      // review: removed // review: removed console.log();
+      // review: removed // review: removed console.log(`  ${COLORS.green}╔══════════════════════════════════════╗${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  ${COLORS.green}║    HundunOS v${status.version || '3.0.0'}${' '.repeat(16)}║${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  ${COLORS.green}╠══════════════════════════════════════╣${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  ${COLORS.green}║  ${COLORS.reset}Kernel:    ${status.running ? COLORS.green + 'running' : COLORS.red + 'stopped'}${COLORS.reset}${' '.repeat(12)}║${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  ${COLORS.green}║  ${COLORS.reset}Uptime:    ${(status.uptime / 60).toFixed(1) + 'm'}${' '.repeat(Math.max(0, 17 - ((status.uptime / 60).toFixed(1) + 'm').length))}║${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  ${COLORS.green}║  ${COLORS.reset}Platform:  ${status.platform || 'unknown'}${' '.repeat(Math.max(0, 17 - (status.platform || 'unknown').length))}║${COLORS.reset}`);
+      // review: removed // review: removed console.log(`  ${COLORS.green}╚══════════════════════════════════════╝${COLORS.reset}`);
+      // review: removed // review: removed console.log();
+      // review: removed // review: removed console.log(`${COLORS.gray}  Type /help for commands, or just say something!${COLORS.reset}`);
+      // review: removed // review: removed console.log();
     } catch {
-      console.log(`\n  ${COLORS.yellow}HundunOS v3.0.0${COLORS.reset} — connecting...\n`);
+      // review: removed // review: removed console.log(`\n  ${COLORS.yellow}HundunOS v3.0.0${COLORS.reset} — connecting...\n`);
     }
   }
 
   _printSystem(msg) {
-    console.log(`\n${msg}\n`);
+    // review: removed // review: removed console.log(`\n${msg}\n`);
     if (this.ready) this.rl.prompt();
   }
 

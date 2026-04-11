@@ -9,7 +9,7 @@ export class PrivacyShield {
     }
 
     async initialize() {
-        console.log('[Privacy] Shield initialized, rules:', this.rules.length);
+        // review: removed // review: removed console.log('[Privacy] Shield initialized, rules:', this.rules.length);
     }
 
     _initRules() {

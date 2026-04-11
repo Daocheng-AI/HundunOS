@@ -51,10 +51,10 @@ export class DeepResearchOrchestrator {
                 context.gatheredKnowledge.push(...(cycleResult.knowledge || []));
 
                 if (cycleResult.done) {
-                    console.log(`[DeepResearch] Cycle ${i + 1}: complete (${cycleResult.reason})`);
+                    // review: removed // review: removed console.log(`[DeepResearch] Cycle ${i + 1}: complete (${cycleResult.reason})`);
                     break;
                 }
-                console.log(`[DeepResearch] Cycle ${i + 1}: ${cycleResult.summary}`);
+                // review: removed // review: removed console.log(`[DeepResearch] Cycle ${i + 1}: ${cycleResult.summary}`);
             }
 
             // === Phase 4: 生成最终报告 ===

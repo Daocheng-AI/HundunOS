@@ -79,7 +79,7 @@ export const ProcessMixin = class ProcessMixin {
 
         // v4.2: 对话压缩 — 检查上下文窗口
         if (session?.messages && estimateTokens(session.messages) > COMPACT_CONFIG.contextWindowThreshold) {
-            console.log('[ProcessMixin] Context window exceeded, triggering compaction...');
+            // review: removed // review: removed console.log('[ProcessMixin] Context window exceeded, triggering compaction...');
             const compactStart = Date.now();
             const compressedMessages = await this._compactMessages(session.messages);
             session.messages = compressedMessages;
@@ -90,7 +90,7 @@ export const ProcessMixin = class ProcessMixin {
                 originalCount: session.messages.length + (compressedMessages.length < session.messages.length ? session.messages.length - compressedMessages.length : 0),
                 newCount: compressedMessages.length,
             };
-            console.log(`[ProcessMixin] Compaction complete: ${session.compressionInfo.originalCount} → ${session.compressionInfo.newCount} messages`);
+            // review: removed // review: removed console.log(`[ProcessMixin] Compaction complete: ${session.compressionInfo.originalCount} → ${session.compressionInfo.newCount} messages`);
         }
 
         // 2. Hook: USER_PROMPT_SUBMIT

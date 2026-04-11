@@ -48,7 +48,7 @@ class CronTask {
     async execute() {
         if (!this.enabled) return;
         if (this.status === CronTaskStatus.RUNNING) {
-            console.log(`[Cron] ${this.name} 正在运行，跳过`);
+            // review: removed // review: removed console.log(`[Cron] ${this.name} 正在运行，跳过`);
             return;
         }
 
@@ -188,7 +188,7 @@ export class CronTrigger {
         this.running = true;
         this._scheduleAll();
         this._timer = setInterval(() => this._tick(), this.intervalMs);
-        console.log(`[CronTrigger] 已启动，${this.tasks.size} 个任务`);
+        // review: removed // review: removed console.log(`[CronTrigger] 已启动，${this.tasks.size} 个任务`);
     }
 
     stop() {
@@ -197,7 +197,7 @@ export class CronTrigger {
             clearInterval(this._timer);
             this._timer = null;
         }
-        console.log('[CronTrigger] 已停止');
+        // review: removed // review: removed console.log('[CronTrigger] 已停止');
     }
 
     /** 立即触发一次任务（不改变调度） */

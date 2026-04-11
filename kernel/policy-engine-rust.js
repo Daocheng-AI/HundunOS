@@ -35,9 +35,9 @@ export class PolicyEngineRust {
      */
     async initialize() {
         if (this.rustAvailable) {
-            console.log('[PolicyEngineRust] Using Rust implementation');
+            // review: removed // review: removed console.log('[PolicyEngineRust] Using Rust implementation');
         } else {
-            console.log('[PolicyEngineRust] Using JS implementation');
+            // review: removed // review: removed console.log('[PolicyEngineRust] Using JS implementation');
         }
     }
 
@@ -187,7 +187,7 @@ export class PolicyEngineRust {
      */
     _checkJS(type, params) {
         // 简化实现，实际应该调用原来的 JS policy-engine.js
-        console.log(`[PolicyEngineRust] Using JS fallback for ${type}`);
+        // review: removed // review: removed console.log(`[PolicyEngineRust] Using JS fallback for ${type}`);
         return { allowed: true };
     }
 

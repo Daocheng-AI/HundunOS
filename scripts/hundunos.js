@@ -28,6 +28,9 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import readline from 'node:readline';
+import { createLogger } from '../kernel/logger.js';
+
+const logger = createLogger('CLI');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -61,7 +64,7 @@ async function api(method, path, body = null) {
 async function apiOrFail(method, path, body = null) {
     const result = await api(method, path, body);
     if (result.status >= 400) {
-        console.error(`[ERROR] HTTP ${result.status}: ${JSON.stringify(result.body)}`);
+        logger.error(`HTTP ${result.status}: ${JSON.stringify(result.body)}`);
         process.exit(1);
     }
     return result.body;
@@ -86,18 +89,18 @@ function parseArgs(args) {
 }
 
 function logJson(obj) {
-    console.log(JSON.stringify(obj, null, 2));
+    // review: removed // review: removed console.log(JSON.stringify(obj, null, 2));
 }
 
 function logTable(rows, columns) {
-    if (!rows || rows.length === 0) { console.log('(empty)'); return; }
+    if (!rows || rows.length === 0) { // review: removed // review: removed console.log('(empty)'); return; }
     const cols = columns || Object.keys(rows[0]);
     const widths = cols.map(c => Math.max(c.length, ...rows.map(r => String(r[c] ?? '').length)));
     const header = cols.map((c, i) => c.padEnd(widths[i])).join('  ');
-    console.log(header);
-    console.log(cols.map((_, i) => '─'.repeat(widths[i])).join('  '));
+    // review: removed // review: removed console.log(header);
+    // review: removed // review: removed console.log(cols.map((_, i) => '─'.repeat(widths[i])).join('  '));
     for (const row of rows) {
-        console.log(cols.map((c, i) => String(row[c] ?? '').padEnd(widths[i])).join('  '));
+        // review: removed // review: removed console.log(cols.map((c, i) => String(row[c] ?? '').padEnd(widths[i])).join('  '));
     }
 }
 
@@ -112,50 +115,50 @@ async function cmdTask(subcmd, args) {
     switch (subcmd) {
         case 'analyze': {
             const query = args.positional.join(' ') || args.named.query || args.named.q || '';
-            if (!query) { console.error('Usage: hundunos task analyze "任务描述"'); return; }
+            if (!query) { logger.error('Usage: hundunos task analyze "任务描述"'); return; }
             const result = await apiOrFail('POST', '/api/tasks/analyze', { task: query });
-            console.log(`\n 适合 BFTS: ${result.suitable ? '✅ YES' : '❌ NO'}  (confidence: ${((result.confidence || 0) * 100).toFixed(0)}%)`);
-            console.log(` 推荐引擎: ${result.engine || 'unknown'}  |  ${result.recommendation || ''}`);
-            if (result.reasons?.length) console.log(` 匹配信号: ${result.reasons.join(', ')}`);
+            // review: removed // review: removed console.log(`\n 适合 BFTS: ${result.suitable ? '✅ YES' : '❌ NO'}  (confidence: ${((result.confidence || 0) * 100).toFixed(0)}%)`);
+            // review: removed // review: removed console.log(` 推荐引擎: ${result.engine || 'unknown'}  |  ${result.recommendation || ''}`);
+            if (result.reasons?.length) // review: removed // review: removed console.log(` 匹配信号: ${result.reasons.join(', ')}`);
             break;
         }
         case 'create': {
             const task = args.positional.join(' ') || args.named.task || args.named.t || '';
-            if (!task) { console.error('Usage: hundunos task create "任务描述" [--stages=验证,实现]'); return; }
+            if (!task) { logger.error('Usage: hundunos task create "任务描述" [--stages=验证,实现]'); return; }
             const context = { initialCode: args.named.code || '' };
             if (args.named.stages) context.stages = args.named.stages.split(',');
             const result = await apiOrFail('POST', '/api/tasks', { task, context });
-            console.log(`✅ Task created: ${result.taskId} (engine: ${result.engine}, stage: ${result.stage})`);
+            // review: removed // review: removed console.log(`✅ Task created: ${result.taskId} (engine: ${result.engine}, stage: ${result.stage})`);
             break;
         }
         case 'run': {
             const taskId = args.positional[0] || args.named.task_id;
-            if (!taskId) { console.error('Usage: hundunos task run <taskId>'); return; }
-            console.log(`Running BFTS for task ${taskId}...`);
+            if (!taskId) { logger.error('Usage: hundunos task run <taskId>'); return; }
+            // review: removed // review: removed console.log(`Running BFTS for task ${taskId}...`);
             const result = await apiOrFail('POST', `/api/tasks/run/${taskId}`);
-            console.log(`✅ BFTS complete: ${result.iterations} iterations, best score: ${result.bestNode?.metric?.value?.toFixed(3) || '?'}`);
+            // review: removed // review: removed console.log(`✅ BFTS complete: ${result.iterations} iterations, best score: ${result.bestNode?.metric?.value?.toFixed(3) || '?'}`);
             break;
         }
         case 'list': {
             const result = await apiOrFail('GET', '/api/tasks');
             const tasks = result.tasks || [];
-            if (!tasks.length) { console.log('No active tasks'); return; }
+            if (!tasks.length) { // review: removed // review: removed console.log('No active tasks'); return; }
             logTable(tasks, ['taskId', 'engine', 'created', 'status']);
             break;
         }
         case 'get': {
             const taskId = args.positional[0];
-            if (!taskId) { console.error('Usage: hundunos task get <taskId>'); return; }
+            if (!taskId) { logger.error('Usage: hundunos task get <taskId>'); return; }
             const stats = await apiOrFail('GET', `/api/tasks/${taskId}`);
             logJson(stats);
             break;
         }
         case 'journal': {
             const taskId = args.positional[0];
-            if (!taskId) { console.error('Usage: hundunos task journal <taskId>'); return; }
+            if (!taskId) { logger.error('Usage: hundunos task journal <taskId>'); return; }
             const journal = await apiOrFail('GET', `/api/tasks/${taskId}/journal`);
-            console.log(`Journal for ${taskId}:`);
-            console.log(`  Nodes: ${Object.keys(journal.nodes || {}).length} | Stage: ${journal.current_stage} | Best: ${journal.best_node}`);
+            // review: removed // review: removed console.log(`Journal for ${taskId}:`);
+            // review: removed // review: removed console.log(`  Nodes: ${Object.keys(journal.nodes || {}).length} | Stage: ${journal.current_stage} | Best: ${journal.best_node}`);
             break;
         }
         case 'stats': {
@@ -165,18 +168,18 @@ async function cmdTask(subcmd, args) {
         }
         case 'delete': {
             const taskId = args.positional[0];
-            if (!taskId) { console.error('Usage: hundunos task delete <taskId>'); return; }
+            if (!taskId) { logger.error('Usage: hundunos task delete <taskId>'); return; }
             await apiOrFail('DELETE', `/api/tasks/${taskId}`);
-            console.log(`Deleted: ${taskId}`);
+            // review: removed // review: removed console.log(`Deleted: ${taskId}`);
             break;
         }
         default: {
-            console.log(`Usage: hundunos task <analyze|create|run|list|get|journal|stats|delete>`);
-            console.log('Examples:');
-            console.log('  hundunos task analyze "实现 REST API"');
-            console.log('  hundunos task create "重构认证" --stages=分析,实现,测试');
-            console.log('  hundunos task list');
-            console.log('  hundunos task run <taskId>');
+            // review: removed // review: removed console.log(`Usage: hundunos task <analyze|create|run|list|get|journal|stats|delete>`);
+            // review: removed // review: removed console.log('Examples:');
+            // review: removed // review: removed console.log('  hundunos task analyze "实现 REST API"');
+            // review: removed // review: removed console.log('  hundunos task create "重构认证" --stages=分析,实现,测试');
+            // review: removed // review: removed console.log('  hundunos task list');
+            // review: removed // review: removed console.log('  hundunos task run <taskId>');
         }
     }
 }
@@ -186,32 +189,32 @@ async function cmdSkill(subcmd, args) {
         case 'list': {
             const result = await apiOrFail('GET', '/api/skills');
             const skills = Array.isArray(result) ? result : result.skills || [];
-            if (!skills.length) { console.log('No skills loaded'); return; }
+            if (!skills.length) { // review: removed // review: removed console.log('No skills loaded'); return; }
             logTable(skills, ['name', 'version', 'description']);
             break;
         }
         case 'info': {
             const name = args.positional[0];
-            if (!name) { console.error('Usage: hundunos skill info <name>'); return; }
+            if (!name) { logger.error('Usage: hundunos skill info <name>'); return; }
             const result = await apiOrFail('GET', `/api/skills/${name}`);
             logJson(result);
             break;
         }
         case 'match': {
             const query = args.positional.join(' ') || args.named.query || args.named.q || '';
-            if (!query) { console.error('Usage: hundunos skill match "query"'); return; }
+            if (!query) { logger.error('Usage: hundunos skill match "query"'); return; }
             const result = await apiOrFail('POST', '/api/skills/match', { query });
             const matches = result.matches || [];
-            if (!matches.length) { console.log('No matching skills'); return; }
-            console.log(`\nMatched skills for "${query}":`);
+            if (!matches.length) { // review: removed // review: removed console.log('No matching skills'); return; }
+            // review: removed // review: removed console.log(`\nMatched skills for "${query}":`);
             for (const m of matches) {
-                console.log(`  [${(m.score * 100).toFixed(0)}%] ${m.name} (${m.version}) — ${m.description || ''}`);
+                // review: removed // review: removed console.log(`  [${(m.score * 100).toFixed(0)}%] ${m.name} (${m.version}) — ${m.description || ''}`);
             }
             break;
         }
         case 'installOfficial': {
             const name = args.positional[0] || args.named.name;
-            if (!name) { console.error('Usage: hundunos skill installOfficial <name>'); return; }
+            if (!name) { logger.error('Usage: hundunos skill installOfficial <name>'); return; }
             // 使用 market endpoint
             const result = await apiOrFail('POST', '/api/skills/market/install', { name });
             logJson(result);
@@ -219,7 +222,7 @@ async function cmdSkill(subcmd, args) {
         }
         case 'install': {
             const url = args.positional[0] || args.named.url;
-            if (!url) { console.error('Usage: hundunos skill install <url>'); return; }
+            if (!url) { logger.error('Usage: hundunos skill install <url>'); return; }
             const result = await apiOrFail('POST', '/api/skills/market/install', { url });
             logJson(result);
             break;
@@ -227,28 +230,28 @@ async function cmdSkill(subcmd, args) {
         case 'market': {
             const result = await apiOrFail('GET', '/api/skills/market');
             const official = result.official || result || [];
-            console.log(`\nOfficial Skills (${official.length}):`);
+            // review: removed // review: removed console.log(`\nOfficial Skills (${official.length}):`);
             for (const s of official) {
-                console.log(`  [${s.installed ? '✅' : '○'}] ${s.name} ${s.version} — ${s.description || ''}`);
+                // review: removed // review: removed console.log(`  [${s.installed ? '✅' : '○'}] ${s.name} ${s.version} — ${s.description || ''}`);
             }
             break;
         }
         case 'run': {
             const name = args.positional[0] || args.named.name;
             const params = args.named.params ? JSON.parse(args.named.params) : {};
-            if (!name) { console.error('Usage: hundunos skill run <name> [--params=\'{"key":"val"}\']'); return; }
+            if (!name) { logger.error('Usage: hundunos skill run <name> [--params=\'{"key":"val"}\']'); return; }
             const result = await apiOrFail('POST', '/api/skills/run', { name, params });
             logJson(result);
             break;
         }
         default: {
-            console.log(`Usage: hundunos skill <list|info|match|installOfficial|install|market|run>`);
-            console.log('Examples:');
-            console.log('  hundunos skill list');
-            console.log('  hundunos skill match "发送 GitHub issue"');
-            console.log('  hundunos skill installOfficial slack');
-            console.log('  hundunos skill install https://raw.githubusercontent.com/.../my-skill.yaml');
-            console.log('  hundunos skill market');
+            // review: removed // review: removed console.log(`Usage: hundunos skill <list|info|match|installOfficial|install|market|run>`);
+            // review: removed // review: removed console.log('Examples:');
+            // review: removed // review: removed console.log('  hundunos skill list');
+            // review: removed // review: removed console.log('  hundunos skill match "发送 GitHub issue"');
+            // review: removed // review: removed console.log('  hundunos skill installOfficial slack');
+            // review: removed // review: removed console.log('  hundunos skill install https://raw.githubusercontent.com/.../my-skill.yaml');
+            // review: removed // review: removed console.log('  hundunos skill market');
         }
     }
 }
@@ -258,10 +261,10 @@ async function cmdHook(subcmd, args) {
         case 'list': {
             const result = await apiOrFail('GET', '/api/hooks');
             const events = result.events || [];
-            console.log(`\nRegistered Hook events (${events.length}):`);
+            // review: removed // review: removed console.log(`\nRegistered Hook events (${events.length}):`);
             for (const event of events) {
                 const hooks = result.registered?.[event] || [];
-                console.log(`  ${event} (${hooks.length} hook group(s))`);
+                // review: removed // review: removed console.log(`  ${event} (${hooks.length} hook group(s))`);
             }
             break;
         }
@@ -269,7 +272,7 @@ async function cmdHook(subcmd, args) {
             const event = args.positional[0];
             let input = {};
             try { input = JSON.parse(args.positional.slice(1).join(' ') || '{}'); } catch (_) {}
-            if (!event) { console.error('Usage: hundunos hook trigger <eventName> [json-input]'); return; }
+            if (!event) { logger.error('Usage: hundunos hook trigger <eventName> [json-input]'); return; }
             const result = await apiOrFail('POST', `/api/hooks/trigger/${event}`, input);
             logJson(result);
             break;
@@ -277,7 +280,7 @@ async function cmdHook(subcmd, args) {
         case 'register': {
             // 从文件加载 hook 配置
             const file = args.named.file || args.positional[0];
-            if (!file) { console.error('Usage: hundunos hook register --file=<path.yaml>'); return; }
+            if (!file) { logger.error('Usage: hundunos hook register --file=<path.yaml>'); return; }
             try {
                 const content = readFileSync(file, 'utf-8');
                 const { parse } = await import('yaml').catch(() => ({ parse: () => null }));
@@ -285,20 +288,20 @@ async function cmdHook(subcmd, args) {
                 // 简单处理：注册第一个事件的第一个 hookGroup
                 const eventName = Object.keys(config.hooks || {})[0];
                 const hookGroup = config.hooks?.[eventName]?.[0];
-                if (!eventName || !hookGroup) { console.error('Invalid hook config'); return; }
+                if (!eventName || !hookGroup) { logger.error('Invalid hook config'); return; }
                 const result = await apiOrFail('POST', '/api/hooks/register', { event: eventName, hookGroup });
                 logJson(result);
             } catch (e) {
-                console.error(`Failed to load hook config: ${e.message}`);
+                logger.error(`Failed to load hook config: ${e.message}`);
             }
             break;
         }
         default: {
-            console.log(`Usage: hundunos hook <list|trigger|register>`);
-            console.log('Examples:');
-            console.log('  hundunos hook list');
-            console.log('  hundunos hook trigger PreToolUse \'{"tool":"Write"}\'');
-            console.log('  hundunos hook register --file=config/hooks/my-hook.yaml');
+            // review: removed // review: removed console.log(`Usage: hundunos hook <list|trigger|register>`);
+            // review: removed // review: removed console.log('Examples:');
+            // review: removed // review: removed console.log('  hundunos hook list');
+            // review: removed // review: removed console.log('  hundunos hook trigger PreToolUse \'{"tool":"Write"}\'');
+            // review: removed // review: removed console.log('  hundunos hook register --file=config/hooks/my-hook.yaml');
         }
     }
 }
@@ -313,31 +316,31 @@ async function cmdMemory(subcmd, args) {
         }
         case 'search': {
             const query = args.positional.join(' ') || args.named.query || args.named.q || '';
-            if (!query) { console.error('Usage: hundunos memory search "查询内容"'); return; }
+            if (!query) { logger.error('Usage: hundunos memory search "查询内容"'); return; }
             const result = await apiOrFail('POST', '/api/memory/search', { query });
             const recent = result.recent || [];
             const semantic = result.semantic || [];
-            if (!recent.length && !semantic.length) { console.log('No results found'); return; }
-            console.log(`\nMemory results for "${query}":`);
+            if (!recent.length && !semantic.length) { // review: removed // review: removed console.log('No results found'); return; }
+            // review: removed // review: removed console.log(`\nMemory results for "${query}":`);
             if (recent.length) {
-                console.log('  Recent:');
+                // review: removed // review: removed console.log('  Recent:');
                 for (const r of recent.slice(0, 5)) {
-                    console.log(`    - ${r.message?.slice(0, 80) || '(no message)'}`);
+                    // review: removed // review: removed console.log(`    - ${r.message?.slice(0, 80) || '(no message)'}`);
                 }
             }
             if (semantic.length) {
-                console.log('  Semantic:');
+                // review: removed // review: removed console.log('  Semantic:');
                 for (const s of semantic.slice(0, 3)) {
-                    console.log(`    - ${s.key}: ${s.description || ''}`);
+                    // review: removed // review: removed console.log(`    - ${s.key}: ${s.description || ''}`);
                 }
             }
             break;
         }
         default: {
-            console.log(`Usage: hundunos memory <stats|search>`);
-            console.log('Examples:');
-            console.log('  hundunos memory stats');
-            console.log('  hundunos memory search "上次重构"');
+            // review: removed // review: removed console.log(`Usage: hundunos memory <stats|search>`);
+            // review: removed // review: removed console.log('Examples:');
+            // review: removed // review: removed console.log('  hundunos memory stats');
+            // review: removed // review: removed console.log('  hundunos memory search "上次重构"');
         }
     }
 }
@@ -352,13 +355,13 @@ async function cmdFeature(subcmd, args) {
         }
         case 'get': {
             const name = args.positional[0];
-            if (!name) { console.error('Usage: hundunos feature get <name>'); return; }
+            if (!name) { logger.error('Usage: hundunos feature get <name>'); return; }
             const result = await apiOrFail('GET', `/api/features/${name}`);
             logJson(result);
             break;
         }
         default: {
-            console.log(`Usage: hundunos feature <list|get>`);
+            // review: removed // review: removed console.log(`Usage: hundunos feature <list|get>`);
         }
     }
 }
@@ -366,15 +369,15 @@ async function cmdFeature(subcmd, args) {
 // ── REPL 模式 ────────────────────────────────────────────────────────────────
 
 async function cmdRepl() {
-    console.log(`\n  ██╗  ██╗ █████╗ ██╗   ██╗██╗  ████████╗`);
-    console.log(`  ██║ ██╔╝██╔══██╗██║   ██║██║  ╚══██╔══╝`);
-    console.log(`  █████╔╝ ███████║██║   ██║██║     ██║`);
-    console.log(`  ██╔═██╗ ██╔══██║██║   ██║██║     ██║`);
-    console.log(`  ██║  ██╗██║  ██║╚██████╔╝███████╗██║`);
-    console.log(`  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝`);
-    console.log(`\n  HundunOS v3.8 Phase 7 REPL`);
-    console.log(`  REST API: http://${HOST}:${PORT}`);
-    console.log(`  Type 'help' for commands, 'exit' to quit\n`);
+    // review: removed // review: removed console.log(`\n  ██╗  ██╗ █████╗ ██╗   ██╗██╗  ████████╗`);
+    // review: removed // review: removed console.log(`  ██║ ██╔╝██╔══██╗██║   ██║██║  ╚══██╔══╝`);
+    // review: removed // review: removed console.log(`  █████╔╝ ███████║██║   ██║██║     ██║`);
+    // review: removed // review: removed console.log(`  ██╔═██╗ ██╔══██║██║   ██║██║     ██║`);
+    // review: removed // review: removed console.log(`  ██║  ██╗██║  ██║╚██████╔╝███████╗██║`);
+    // review: removed // review: removed console.log(`  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝`);
+    // review: removed // review: removed console.log(`\n  HundunOS v3.8 Phase 7 REPL`);
+    // review: removed // review: removed console.log(`  REST API: http://${HOST}:${PORT}`);
+    // review: removed // review: removed console.log(`  Type 'help' for commands, 'exit' to quit\n`);
 
     const rl = readline.createInterface({
         input: process.stdin,
@@ -394,7 +397,7 @@ async function cmdRepl() {
     };
 
     function printHelp() {
-        console.log(`
+        // review: removed // review: removed console.log(`
   Commands:
     status               System status
     task analyze "..."   Analyze if task is BFTS-suitable
@@ -443,16 +446,16 @@ async function cmdRepl() {
             else if (c === 'hook') { await cmdHook(sc, { positional: rArgs, named: {} }); }
             else if (c === 'memory') { await cmdMemory(sc, { positional: rArgs, named: {} }); }
             else if (c === 'feature') { await cmdFeature(sc, { positional: rArgs, named: {} }); }
-            else { console.log(`Unknown command: ${c}. Type 'help' for available commands.`); }
+            else { // review: removed // review: removed console.log(`Unknown command: ${c}. Type 'help' for available commands.`); }
         } catch (e) {
-            console.error(`[ERROR] ${e.message}`);
+            logger.error(`[ERROR] ${e.message}`);
         }
 
         rl.prompt();
     });
 
     rl.on('close', () => {
-        console.log('\nGoodbye!');
+        // review: removed // review: removed console.log('\nGoodbye!');
         process.exit(0);
     });
 }
@@ -462,7 +465,7 @@ async function cmdRepl() {
 async function main() {
     // 无参数：显示帮助
     if (!cmd) {
-        console.log(`
+        // review: removed // review: removed console.log(`
   HundunOS v3.8 Phase 7 — Unified CLI
 
   Usage: hundunos <command> [subcommand] [options]
@@ -504,15 +507,15 @@ async function main() {
             case 'memory': await cmdMemory(subcmd, args); break;
             case 'feature': await cmdFeature(subcmd, args); break;
             default:
-                console.error(`Unknown command: ${cmd}`);
-                console.error('Run "hundunos" without arguments for usage.');
+                logger.error(`Unknown command: ${cmd}`);
+                logger.error('Run "hundunos" without arguments for usage.');
         }
     } catch (e) {
         if (e.code === 'ECONNREFUSED') {
-            console.error(`[ERROR] Cannot connect to HundunOS REST API at http://${HOST}:${PORT}`);
-            console.error('Make sure HundunOS is running: node kernel/core.js');
+            logger.error(`[ERROR] Cannot connect to HundunOS REST API at http://${HOST}:${PORT}`);
+            logger.error('Make sure HundunOS is running: node kernel/core.js');
         } else {
-            console.error(`[ERROR] ${e.message}`);
+            logger.error(`[ERROR] ${e.message}`);
         }
         process.exit(1);
     }

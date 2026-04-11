@@ -12,7 +12,7 @@ export class CoworkMonitor {
         if (this.kernel.messageBus?.on) {
             this.kernel.messageBus.on('permission:approved', (a) => this._onApproved(a));
         }
-        console.log('[Cowork] Initialized');
+        // review: removed // review: removed console.log('[Cowork] Initialized');
     }
 
     async monitor(intent, permission) {

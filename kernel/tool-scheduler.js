@@ -121,12 +121,12 @@ export class ToolScheduler {
 
   async _initRustBridge() {
     if (!this.toolBridge?._initRustBridge) {
-      console.log('[ToolScheduler] ToolBridge Rust bridge not available');
+      // review: removed // review: removed console.log('[ToolScheduler] ToolBridge Rust bridge not available');
       return;
     }
     try {
       await this.toolBridge._initRustBridge();
-      console.log('[ToolScheduler] Rust tool-bridge initialized');
+      // review: removed // review: removed console.log('[ToolScheduler] Rust tool-bridge initialized');
     } catch (e) {
       console.warn('[ToolScheduler] Rust bridge init failed:', e.message);
     }
@@ -231,7 +231,7 @@ export class ToolScheduler {
     const args = toolCall.args || toolCall.tool_use?.input || {};
 
     if (feature('DEBUG_MODE')) {
-      console.log(`[ToolScheduler] -> ${name}(${JSON.stringify(args).substring(0, 80)})`);
+      // review: removed // review: removed console.log(`[ToolScheduler] -> ${name}(${JSON.stringify(args).substring(0, 80)})`);
     }
 
     // 通过 toolBridge 执行

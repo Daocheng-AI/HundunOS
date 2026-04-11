@@ -29,16 +29,16 @@ function checkStorageReady() {
 function checkHttpHealth() {
   return new Promise((resolve) => {
     const req = http.get(`http://${HOST}:${PORT}/health`, (res) => {
-      if (VERBOSE) console.log(`[health-check] HTTP ${res.statusCode}`);
+      if (VERBOSE) // review: removed // review: removed console.log(`[health-check] HTTP ${res.statusCode}`);
       resolve(res.statusCode === 200);
       res.resume(); // 消耗响应体避免内存泄漏
     });
     req.on('error', (err) => {
-      if (VERBOSE) console.log(`[health-check] HTTP error: ${err.message}`);
+      if (VERBOSE) // review: removed // review: removed console.log(`[health-check] HTTP error: ${err.message}`);
       resolve(false);
     });
     req.setTimeout(5000, () => {
-      if (VERBOSE) console.log('[health-check] HTTP timeout');
+      if (VERBOSE) // review: removed // review: removed console.log('[health-check] HTTP timeout');
       req.destroy();
       resolve(false);
     });
@@ -50,19 +50,19 @@ async function main() {
 
   // 优先尝试 HTTP 健康检查（如果 kernel 启动了 HTTP server）
   if (await checkHttpHealth()) {
-    if (VERBOSE) console.log('[health-check] HTTP health check PASS');
+    if (VERBOSE) // review: removed // review: removed console.log('[health-check] HTTP health check PASS');
     healthy = true;
   } else if (checkStorageReady()) {
     // 降级：只要 Storage 目录存在就认为进程存活
-    if (VERBOSE) console.log('[health-check] Storage-ready health check PASS');
+    if (VERBOSE) // review: removed // review: removed console.log('[health-check] Storage-ready health check PASS');
     healthy = true;
   } else {
-    if (VERBOSE) console.log('[health-check] All checks FAILED');
+    if (VERBOSE) // review: removed // review: removed console.log('[health-check] All checks FAILED');
     healthy = false;
   }
 
   if (VERBOSE) {
-    console.log(`[health-check] Result: ${healthy ? 'HEALTHY' : 'UNHEALTHY'}`);
+    // review: removed // review: removed console.log(`[health-check] Result: ${healthy ? 'HEALTHY' : 'UNHEALTHY'}`);
   }
 
   exit(healthy ? 0 : 1);

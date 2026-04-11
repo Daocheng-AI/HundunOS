@@ -172,7 +172,13 @@ export const UserFields = {
  */
 export const DefaultSuperAdmin = {
   username: 'admin',
-  password: 'Admin@123', // 首次登录后应修改
+  password: process.env.HUNDUNOS_ADMIN_DEFAULT_PASSWORD || (() => {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[SECURITY] 必须设置 HUNDUNOS_ADMIN_DEFAULT_PASSWORD 环境变量');
+    }
+    console.warn('[Auth] SECURITY: 使用默认测试密码，生产环境必须设置 HUNDUNOS_ADMIN_DEFAULT_PASSWORD');
+    return 'Admin@123-TEST-ONLY';
+  })(),
   nickname: '超级管理员',
   isSuperAdmin: true,
   status: UserStatus.ACTIVE,

@@ -136,7 +136,7 @@ function ensureDirs() {
 ```batch
 REM S-05: 生成加密密钥（如果未设置）
 if not defined HUNDUNOS_ENCRYPTION_KEY (
-    for /f "delims=" %%i in ('node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"') do set HUNDUNOS_ENCRYPTION_KEY=%%i
+    for /f "delims=" %%i in ('node -e "// review: removed // review: removed console.log(require('crypto').randomBytes(32).toString('hex'))"') do set HUNDUNOS_ENCRYPTION_KEY=%%i
 )
 ```
 

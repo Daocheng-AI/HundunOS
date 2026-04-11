@@ -206,10 +206,9 @@ export class SkillRunner {
         if (typeof tool.fn === 'function') {
             fn = tool.fn;
         } else {
-            // P1 修复：移除 eval/new Function，改为 JSON parse 安全执行
-            // 旧代码: const fn = new Function('params', 'return (' + tool.fn + ')(params)');
-            // 新代码：仅允许 JSON-safe 的纯函数调用，不支持任意表达式
-            fn = new Function('params', 'return (' + tool.fn + ')(params)');
+            // SECURITY FIX: 移除 new Function — string fn 存在代码注入风险
+            // 解决方案：仅允许 function 类型的 fn，string 类型必须迁移为 function
+            throw new Error(`安全策略拒绝：function类型工具的fn属性不支持string类型（Got: ${typeof tool.fn}）。请将fn改为function类型。`);
         }
         const result = await Promise.race([
             Promise.resolve(fn(params)),

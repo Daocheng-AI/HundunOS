@@ -22,18 +22,18 @@ function test(name, fn) {
         fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        console.log(`✅ ${name}`);
+        // review: removed // review: removed console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        console.log(`❌ ${name}: ${e.message}`);
+        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
 // ========================================
 // S1.B ModelRouter 验收
 // ========================================
-console.log('\n=== S1.B ModelRouter 验收 ===\n');
+// review: removed // review: removed console.log('\n=== S1.B ModelRouter 验收 ===\n');
 
 test('S1.B.1 ModelRouter 框架文件存在', () => {
     const routerPath = path.join(__dirname, '../kernel/model-router/index.js');
@@ -58,7 +58,7 @@ test('S1.B.2 OpenAI Provider 文件存在', () => {
 // ========================================
 // S1.C 记忆系统验收
 // ========================================
-console.log('\n=== S1.C 记忆系统验收 ===\n');
+// review: removed // review: removed console.log('\n=== S1.C 记忆系统验收 ===\n');
 
 test('S1.C.1 MemoryGraph 文件存在', () => {
     const mgPath = path.join(__dirname, '../kernel/memory-graph.js');
@@ -79,7 +79,7 @@ test('S1.C.3 AwareSystem 文件存在', () => {
 // ========================================
 // S2.A 安全模块验收
 // ========================================
-console.log('\n=== S2.A 安全模块验收 ===\n');
+// review: removed // review: removed console.log('\n=== S2.A 安全模块验收 ===\n');
 
 test('S2.A.1 PermissionGating 文件存在', () => {
     const pgPath = path.join(__dirname, '../stable-modules/permission-gating/index.js');
@@ -104,7 +104,7 @@ test('S2.A.4 PrivacyShield 文件存在', () => {
 // ========================================
 // 配置验收
 // ========================================
-console.log('\n=== 配置验收 ===\n');
+// review: removed // review: removed console.log('\n=== 配置验收 ===\n');
 
 test('Config system.json 存在', () => {
     const configPath = path.join(__dirname, '../config/system.json');
@@ -122,11 +122,11 @@ test('Config 包含必要字段', () => {
 // ========================================
 // 输出结果
 // ========================================
-console.log('\n========================================');
-console.log('Phase 1 验收测试结果');
-console.log('========================================');
-console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
-console.log('========================================\n');
+// review: removed // review: removed console.log('\n========================================');
+// review: removed // review: removed console.log('Phase 1 验收测试结果');
+// review: removed // review: removed console.log('========================================');
+// review: removed // review: removed console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
+// review: removed // review: removed console.log('========================================\n');
 
 // 保存结果
 const report = {

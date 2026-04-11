@@ -158,7 +158,7 @@ export class CronJob {
      */
     async run() {
         if (this.status === 'running') {
-            console.log(`[CronJob] ${this.name} already running, skip`);
+            // review: removed // review: removed console.log(`[CronJob] ${this.name} already running, skip`);
             return { skipped: true };
         }
 
@@ -171,7 +171,7 @@ export class CronJob {
             this.runCount++;
             this.status = 'success';
 
-            console.log(`[CronJob] ${this.name} completed in ${Date.now() - startTime}ms`);
+            // review: removed // review: removed console.log(`[CronJob] ${this.name} completed in ${Date.now() - startTime}ms`);
 
             return { success: true, result, duration: Date.now() - startTime };
         } catch (error) {
@@ -217,7 +217,7 @@ export class CronScheduler extends EventEmitter {
         this.checkInterval = 1000;     // 兜底精度（到期前后各查 1 秒窗口）
         this._nextTickAt = null;       // 当前 setTimeout 的到期时间
 
-        console.log('[CronScheduler] Initialized');
+        // review: removed // review: removed console.log('[CronScheduler] Initialized');
     }
 
     /**
@@ -231,7 +231,7 @@ export class CronScheduler extends EventEmitter {
         const job = new CronJob(name, expression, handler, options);
         this.jobs.set(name, job);
 
-        console.log(`[CronScheduler] Added job: ${name} (${expression})`);
+        // review: removed // review: removed console.log(`[CronScheduler] Added job: ${name} (${expression})`);
 
         // 立即执行
         if (options.runImmediately) {
@@ -247,7 +247,7 @@ export class CronScheduler extends EventEmitter {
     removeJob(name) {
         const removed = this.jobs.delete(name);
         if (removed) {
-            console.log(`[CronScheduler] Removed job: ${name}`);
+            // review: removed // review: removed console.log(`[CronScheduler] Removed job: ${name}`);
         }
         return removed;
     }
@@ -287,7 +287,7 @@ export class CronScheduler extends EventEmitter {
         this._running = true;
         this._scheduleNext();  // 优化：直接跳到最近一次到期时间
 
-        console.log(`[CronScheduler] Started (next-run driven), watching ${this.jobs.size} jobs`);
+        // review: removed // review: removed console.log(`[CronScheduler] Started (next-run driven), watching ${this.jobs.size} jobs`);
         this.emit('started');
     }
 
@@ -304,7 +304,7 @@ export class CronScheduler extends EventEmitter {
             this._nextTickAt = null;
         }
 
-        console.log('[CronScheduler] Stopped');
+        // review: removed // review: removed console.log('[CronScheduler] Stopped');
         this.emit('stopped');
     }
 
@@ -334,7 +334,7 @@ export class CronScheduler extends EventEmitter {
             const ms = job.nextRun.getTime();
             if (ms - now <= this.checkInterval + 100 && ms >= now - 1000) {
                 // 到期窗口内（含过去 1 秒容差），触发
-                console.log(`[CronScheduler] Triggering (due): ${job.name}`);
+                // review: removed // review: removed console.log(`[CronScheduler] Triggering (due): ${job.name}`);
                 job.run().catch(err => {
                     console.error(`[CronScheduler] Job ${job.name} error:`, err);
                 });

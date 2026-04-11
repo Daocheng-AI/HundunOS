@@ -94,12 +94,12 @@ export class SkillManager {
 
     async initialize() {
         if (this._initialized) return;
-        console.log('[SkillManager] Initializing Phase 3 Skill System (lazy loading)...');
+        // review: removed // review: removed console.log('[SkillManager] Initializing Phase 3 Skill System (lazy loading)...');
 
         // 1. Phase 3: Level 1 元数据加载（冷启动，只加载 name/description/tags）
         const loadResult = await this.loader.loadLevel1All();
-        console.log(`[SkillManager] L1 loaded: ${loadResult.loaded} skills (${loadResult.failed} failed)`);
-        console.log(`[SkillManager] Stats: ${JSON.stringify(this.loader.getStats())}`);
+        // review: removed // review: removed console.log(`[SkillManager] L1 loaded: ${loadResult.loaded} skills (${loadResult.failed} failed)`);
+        // review: removed // review: removed console.log(`[SkillManager] Stats: ${JSON.stringify(this.loader.getStats())}`);
 
         // 2. 加载远程安装的 skills
         try {
@@ -120,7 +120,7 @@ export class SkillManager {
         }
 
         this._initialized = true;
-        console.log(`[SkillManager] Ready. Skills: ${this.registry.getSkillNames().join(', ')}`);
+        // review: removed // review: removed console.log(`[SkillManager] Ready. Skills: ${this.registry.getSkillNames().join(', ')}`);
     }
 
     // ================================================================

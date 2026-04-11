@@ -86,7 +86,7 @@ tools:
   # ── CHECK: 环境检查 ───────────────────────────────────
   - id: pdf_check_deps
     type: shell
-    command: python -c "import reportlab; print('OK: reportlab')" 2>&1; python -c "import pypdf; print('OK: pypdf')" 2>&1; node -e "try{require('playwright');console.log('OK: playwright')}catch(e){console.log('MISSING: playwright')}" 2>&1
+    command: python -c "import reportlab; print('OK: reportlab')" 2>&1; python -c "import pypdf; print('OK: pypdf')" 2>&1; node -e "try{require('playwright');// review: removed // review: removed console.log('OK: playwright')}catch(e){// review: removed // review: removed console.log('MISSING: playwright')}" 2>&1
     description: 检查 Python/Node 依赖是否安装完整
     isolation: process
     timeout: 15000

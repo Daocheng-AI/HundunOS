@@ -22,7 +22,7 @@ hooks:
             ];
             for (const d of dangerous) {
               if (d.pattern.test(cmd)) {
-                console.log(JSON.stringify({ block: true, reason: `危险命令: ${d.reason}`, cmd: cmd.slice(0, 50) }));
+                // review: removed // review: removed console.log(JSON.stringify({ block: true, reason: `危险命令: ${d.reason}`, cmd: cmd.slice(0, 50) }));
                 process.exit(2);
               }
             }
@@ -48,7 +48,7 @@ hooks:
             ];
             for (const l of leaks) {
               if (l.pattern.test(content)) {
-                console.log(JSON.stringify({
+                // review: removed // review: removed console.log(JSON.stringify({
                   hookSpecificOutput: {
                     additionalContext: `⚠️ Security: potential ${l.label} detected in written content`
                   }

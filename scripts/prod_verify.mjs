@@ -51,8 +51,8 @@ async function checkAsync(name, fn) {
   }
 }
 
-console.log('🚀 HundunOS v3.0 - 生产环境部署验证 (S3.12)');
-console.log('='.repeat(50));
+// review: removed // review: removed console.log('🚀 HundunOS v3.0 - 生产环境部署验证 (S3.12)');
+// review: removed // review: removed console.log('='.repeat(50));
 
 // ── 1. 目录结构检查 ──────────────────────────────
 const requiredDirs = [
@@ -219,27 +219,27 @@ check('文档: architecture.md 非空', () => {
 });
 
 // ── 输出结果 ──────────────────────────────────────
-console.log('\n📋 验证结果:\n');
+// review: removed // review: removed console.log('\n📋 验证结果:\n');
 for (const c of results.checks) {
-  console.log(`  ${c.status} ${c.name}: ${c.detail}`);
+  // review: removed // review: removed console.log(`  ${c.status} ${c.name}: ${c.detail}`);
 }
 
 const { total, passed, failed } = results.summary;
 const rate = Math.round((passed / total) * 100);
 
-console.log('\n' + '='.repeat(50));
-console.log(`总计: ${total} | 通过: ${passed} | 失败: ${failed} | 通过率: ${rate}%`);
+// review: removed // review: removed console.log('\n' + '='.repeat(50));
+// review: removed // review: removed console.log(`总计: ${total} | 通过: ${passed} | 失败: ${failed} | 通过率: ${rate}%`);
 
 if (failed === 0) {
-  console.log('\n🎉 S3.12 生产环境部署验证 — 全部通过！');
-  console.log('✅ HundunOS v3.0 已确认生产就绪 (PRODUCTION_READY)');
+  // review: removed // review: removed console.log('\n🎉 S3.12 生产环境部署验证 — 全部通过！');
+  // review: removed // review: removed console.log('✅ HundunOS v3.0 已确认生产就绪 (PRODUCTION_READY)');
   results.status = 'PRODUCTION_READY';
 } else {
-  console.log(`\n⚠️  ${failed} 项验证失败，需要修复后再部署`);
+  // review: removed // review: removed console.log(`\n⚠️  ${failed} 项验证失败，需要修复后再部署`);
   results.status = 'NEEDS_FIX';
 }
 
 // 保存验证报告
 const reportPath = join(ROOT, '.snapshots', `prod_verify_${new Date().toISOString().slice(0,10)}.json`);
 writeFileSync(reportPath, JSON.stringify(results, null, 2), 'utf8');
-console.log(`\n📄 验证报告已保存: .snapshots/${reportPath.split(/[\\/]/).pop()}`);
+// review: removed // review: removed console.log(`\n📄 验证报告已保存: .snapshots/${reportPath.split(/[\\/]/).pop()}`);

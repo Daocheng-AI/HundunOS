@@ -37,7 +37,7 @@ export class SkillRegistry extends EventTarget {
         if (existsSync(SKILLS_DIR)) {
             await this._loadFromDir(SKILLS_DIR);
         } else {
-            console.log('[SkillRegistry] 内置 skills/ 目录不存在，跳过');
+            // review: removed // review: removed console.log('[SkillRegistry] 内置 skills/ 目录不存在，跳过');
         }
 
         // 2. 用户自定义 Skills（~/.hundunos/skills/）
@@ -45,7 +45,7 @@ export class SkillRegistry extends EventTarget {
         if (existsSync(userSkillsDir)) {
             const userCount = await this._loadFromDir(userSkillsDir, { source: 'user' });
             if (userCount > 0) {
-                console.log(`[SkillRegistry] 已加载 ${userCount} 个用户自定义 Skill（来自 ${userSkillsDir}）`);
+                // review: removed // review: removed console.log(`[SkillRegistry] 已加载 ${userCount} 个用户自定义 Skill（来自 ${userSkillsDir}）`);
             }
         }
         // 不存在的用户目录不警告，静默跳过
@@ -53,7 +53,7 @@ export class SkillRegistry extends EventTarget {
         this._initialized = true;
         const userSkills = [...this.skills.values()].filter(s => s._source === 'user').length;
         const builtInSkills = this.skills.size - userSkills;
-        console.log(`[SkillRegistry] 共 ${this.skills.size} 个 Skill（内置 ${builtInSkills} + 用户 ${userSkills}）`);
+        // review: removed // review: removed console.log(`[SkillRegistry] 共 ${this.skills.size} 个 Skill（内置 ${builtInSkills} + 用户 ${userSkills}）`);
     }
 
     /**
