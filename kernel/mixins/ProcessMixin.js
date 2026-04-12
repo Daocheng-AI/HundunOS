@@ -5,10 +5,12 @@
 // v4.2: 集成 OpenHarness 风格对话压缩机制
 
 import { feature } from '../feature-flags.js';
+import { buildSystemPrompt } from '../prompts/prompt-parts.js';
 
 /**
  * 对话压缩配置
  * v4.2: 参考 OpenHarness engine/query.py CompactProgressEvent
+ * v4.3: 参考 learn-claude-code s06 三层压缩机制
  */
 const COMPACT_CONFIG = {
   // 上下文窗口阈值（token 估算）
@@ -17,6 +19,10 @@ const COMPACT_CONFIG = {
   summaryModel: 'glm-4-flash',   // 用于摘要的轻量模型
   maxSummaryTokens: 500,        // 摘要最大 token 数
   compressionStrategy: 'llm',   // llm | truncate | hybrid
+
+  // v4.3: 微压缩配置（参考 learn-claude-code s06）
+  microCompactEnabled: true,
+  keepRecentToolResults: 3,      // 保留最近 N 个工具结果
 };
 
 /**
@@ -33,6 +39,59 @@ function estimateTokens(messages) {
     if (msg.role === 'system') total += 100;
   }
   return total;
+}
+
+/**
+ * 微压缩：保留最近 N 个工具结果
+ * v4.3: 参考 learn-claude-code s06 microcompact()
+ */
+function microcompact(messages) {
+  if (!COMPACT_CONFIG.microCompactEnabled) return messages;
+
+  const toolResults = [];
+  const nonToolResults = [];
+
+  // 分离工具结果和非工具结果
+  for (const msg of messages) {
+    if (msg.role === 'tool' || (msg.role === 'user' && Array.isArray(msg.content))) {
+      toolResults.push(msg);
+    } else {
+      nonToolResults.push(msg);
+    }
+  }
+
+  // 保留最近 N 个工具结果
+  const recentToolResults = toolResults.slice(-COMPACT_CONFIG.keepRecentToolResults);
+  const oldToolResults = toolResults.slice(0, -COMPACT_CONFIG.keepRecentToolResults);
+
+  // 旧工具结果替换为摘要
+  const summaryMessages = oldToolResults.map(msg => ({
+    role: 'user',
+    content: `[Previous tool result: ${Array.isArray(msg.content)
+      ? msg.content.map(c => c.tool_name || c.name || 'unknown').join(', ')
+      : 'tool call'}]`,
+    _microcompacted: true,
+  }));
+
+  // 重新组装消息（按原始顺序）
+  const result = [];
+  let toolIndex = 0;
+  let summaryIndex = 0;
+
+  for (const msg of messages) {
+    if (msg.role === 'tool' || (msg.role === 'user' && Array.isArray(msg.content))) {
+      if (toolIndex < oldToolResults.length) {
+        result.push(summaryMessages[summaryIndex++]);
+      } else {
+        result.push(recentToolResults[toolIndex - oldToolResults.length]);
+      }
+      toolIndex++;
+    } else {
+      result.push(msg);
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -77,7 +136,20 @@ export const ProcessMixin = class ProcessMixin {
         // 1.5. 会话（由 SessionMixin 提供）
         const session = await this._getOrCreateSession(message);
 
+        // v4.3: Todo reminder（参考 learn-claude-code s03）
+        const todoReminder = this.todoManager?.reminder?.() || null;
+        if (todoReminder) {
+            session?.messages?.push({ role: 'user', content: todoReminder });
+        }
+
+        // v4.3: 三层压缩机制（参考 learn-claude-code s06）
+        // 第1层: 微压缩（保留最近 3 个工具结果）
+        if (session?.messages) {
+            session.messages = microcompact(session.messages);
+        }
+
         // v4.2: 对话压缩 — 检查上下文窗口
+        // 第2层: Token 估算 → 自动压缩
         if (session?.messages && estimateTokens(session.messages) > COMPACT_CONFIG.contextWindowThreshold) {
             // review: removed // review: removed console.log('[ProcessMixin] Context window exceeded, triggering compaction...');
             const compactStart = Date.now();
@@ -288,6 +360,8 @@ export const ProcessMixin = class ProcessMixin {
 
     /**
      * LLM 摘要策略 — 使用轻量模型摘要早期对话
+     * v4.3: 优先保留 user type memories（参考 learn-claude-code s09）
+     * v4.3: 使用 PromptParts 重新组装 prompt（参考 learn-claude-code s10）
      */
     async _compactLLMSummary(messages) {
         const systemMessage = messages.find(m => m.role === 'system');
@@ -299,6 +373,14 @@ export const ProcessMixin = class ProcessMixin {
         }
 
         try {
+            // v4.3: 使用 PromptParts 重新组装 prompt（恢复 skill/memory 上下文）
+            const newSystemPrompt = await buildSystemPrompt(this, {
+                includeMemory: true,
+                includeSkills: true,
+                includeToolList: true,
+                maxSkills: 5,
+            });
+
             // 使用轻量模型生成摘要
             const summaryPrompt = this._buildSummaryPrompt(oldMessages);
             const response = await this.modelRouter?.route({
@@ -316,7 +398,10 @@ export const ProcessMixin = class ProcessMixin {
                            'Earlier conversation summarized.';
 
             const result = [];
-            if (systemMessage) result.push(systemMessage);
+            result.push({
+                role: 'system',
+                content: newSystemPrompt,
+            });
             result.push({
                 role: 'user',
                 content: `[Earlier conversation summarized]: ${summary}`,

@@ -53,8 +53,9 @@ class CompactionUnit {
 
   /**
    * 执行压缩：生成摘要 + 保留关键消息
+   * v4.3: 支持异步 LLM 摘要
    */
-  compact(options = {}) {
+  async compact(options = {}) {
     const { model, apiClient } = options;
     const recent = this.messages.slice(-this.config.keepRecent);
 
@@ -62,8 +63,14 @@ class CompactionUnit {
     const preservable = this.messages.slice(0, -this.config.keepRecent);
     const preservedMessages = this._filterPreservable(preservable);
 
+    // 使用 LLM 生成摘要（如果可用）
+    const summary = await this._generateLLMSummary(preservedMessages, {
+      model: model || this.config.summarizeModel,
+      maxTokens: this.config.maxSummaryLength,
+    });
+
     return {
-      summary: this._generateSummaryPlaceholder(preservedMessages),
+      summary,
       preservedMessages,
       recent,
       stats: {
@@ -98,6 +105,62 @@ class CompactionUnit {
       content: `[Earlier conversation summary: ${count} messages processed, including ${toolCount} tool calls. Key context preserved in earlier turns.]`,
       _isSummary: true,
     };
+  }
+
+  /**
+   * 使用 LLM 生成真实摘要（v4.3 新增）
+   * @param {Array} messages - 需要摘要的消息
+   * @param {Object} options - { model, maxTokens }
+   * @returns {Promise<Object>} - 摘要消息对象
+   */
+  async _generateLLMSummary(messages, options = {}) {
+    const { model = 'gpt-4o-mini', maxTokens = 500 } = options;
+
+    if (!this.kernel?.modelRouter) {
+      // 降级到占位符
+      return this._generateSummaryPlaceholder(messages);
+    }
+
+    try {
+      const summaryPrompt = this._buildSummaryPrompt(messages);
+      const response = await this.kernel.modelRouter.route({
+        messages: [
+          { role: 'system', content: 'Summarize the following conversation concisely. Focus on key decisions, context, and outcomes.' },
+          { role: 'user', content: summaryPrompt },
+        ],
+        model,
+        maxTokens,
+        strategy: 'COST_OPTIMIZED',
+      });
+
+      const summary = response?.content?.[0]?.text ||
+                     response?.choices?.[0]?.message?.content ||
+                     'Earlier conversation summarized.';
+
+      return {
+        role: 'user',
+        content: `[Earlier conversation summarized]: ${summary}`,
+        _isSummary: true,
+        _llmGenerated: true,
+      };
+    } catch (e) {
+      console.warn('[Compactor] LLM summary failed, falling back to placeholder:', e.message);
+      return this._generateSummaryPlaceholder(messages);
+    }
+  }
+
+  /**
+   * 构建摘要提示
+   */
+  _buildSummaryPrompt(messages) {
+    const lines = messages.map(m => {
+      const role = m.role || 'unknown';
+      const content = typeof m.content === 'string'
+        ? m.content
+        : JSON.stringify(m.content).slice(0, 200);
+      return `${role}: ${content.slice(0, 500)}`;
+    });
+    return lines.join('\n---\n');
   }
 }
 
@@ -137,10 +200,11 @@ export class ReactiveCompactor {
 
   /**
    * 执行压缩
+   * v4.3: 支持异步 LLM 摘要
    */
-  compact(messages, options = {}) {
+  async compact(messages, options = {}) {
     const unit = new CompactionUnit(messages, this.config);
-    const result = unit.compact(options);
+    const result = await unit.compact(options);
     this.compactionCount++;
     return result;
   }
@@ -252,6 +316,7 @@ export class SessionCompactor {
 
   /**
    * 获取压缩后的上下文
+   * v4.3: 支持异步 LLM 摘要
    */
   async getCompressedContext(options = {}) {
     let messages = [...this.messageHistory];
@@ -266,7 +331,7 @@ export class SessionCompactor {
       const usage = options.usage || { usedTokens: 0, maxTokens: 8192 };
       const unit = new CompactionUnit(messages);
       if (unit.shouldCompact(usage)) {
-        const result = unit.compact(options);
+        const result = await unit.compact(options);
         messages = [result.summary, ...result.preservedMessages, ...result.recent];
       }
     }

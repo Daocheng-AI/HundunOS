@@ -1,0 +1,18 @@
+{
+  "name": "@hundunos/mobile-sdk",
+  "version": "4.3.0",
+  "description": "HundunOS v4.3 Mobile SDK",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hundunos",
+    "mobile",
+    "sdk"
+  ],
+  "author": "HundunOS Team",
+  "license": "MIT",
+  "dependencies": {}
+}

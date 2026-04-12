@@ -9,9 +9,46 @@
 import { spawn } from 'child_process';
 import { join, dirname, isAbsolute, normalize } from 'path';
 import { fileURLToPath } from 'url';
-import { existsSync, readdirSync, readFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * 持久化输出配置
+ * v4.3: 参考 learn-claude-code s02/s06
+ */
+const PERSIST_OUTPUT_CONFIG = {
+  enabled: true,
+  threshold: 50000,        // 触发持久化的字符数
+  preview: 2000,           // 预览字符数
+  outputDir: '.hundunos/tool-outputs',
+  keepRecent: 3,           // 保留最近 N 个工具结果
+};
+
+/**
+ * 持久化输出标记
+ * v4.3: 参考 learn-claude-code s02
+ */
+function maybePersistedOutput(toolUseId, output, kernel) {
+  if (!kernel?.config?.projectRoot) return output;
+  if (!PERSIST_OUTPUT_CONFIG.enabled) return output;
+  if (output.length <= PERSIST_OUTPUT_CONFIG.threshold) return output;
+
+  try {
+    const outputDir = join(kernel.config.projectRoot, PERSIST_OUTPUT_CONFIG.outputDir);
+    mkdirSync(outputDir, { recursive: true });
+
+    const filename = `tool_${toolUseId}_${Date.now()}.txt`;
+    const filepath = join(outputDir, filename);
+    writeFileSync(filepath, output, 'utf8');
+
+    const preview = output.slice(0, PERSIST_OUTPUT_CONFIG.preview);
+    return `<persisted-output>\nFull output saved to: ${filename}\nPreview:\n${preview}\n</persisted-output>`;
+  } catch (e) {
+    console.warn('[ToolBridge] Persisted output failed:', e.message);
+    return output;
+  }
+}
 
 export class ToolBridge {
     constructor(kernel) {
@@ -43,6 +80,14 @@ export class ToolBridge {
         this.trajectoryMemory = new ToolTrajectoryMemory({
             maxSize: kernel?.config?.system?.toolBridge?.trajectorySize || 500,
         });
+
+        // P0-2: 工具调用计数防死循环机制
+        this.toolCallLimiter = {
+            maxCalls: kernel?.config?.system?.toolBridge?.maxCallsPerMinute || 20,
+            windowSize: 60000, // 1分钟窗口
+            callCounts: new Map(), // toolId -> {count, windowStart}
+            blockedTools: new Set(), // 被阻止的工具ID
+        };
     }
 
     /**
@@ -256,6 +301,158 @@ export class ToolBridge {
     _registerHardcodedTools() {
         // 核心工具映射表（已有工具不受文件发现影响）
         const toolDefs = [
+            // v4.3: Todo 工具
+            { id: 'todo', category: 'planning',
+              desc: 'Rewrite the current session plan for multi-step work.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        content: { type: 'string' },
+                        status: {
+                          type: 'string',
+                          enum: ['pending', 'in_progress', 'completed'],
+                        },
+                        activeForm: {
+                          type: 'string',
+                          description: 'Optional present-continuous label.',
+                        },
+                      },
+                      required: ['content', 'status'],
+                    },
+                  },
+                },
+                required: ['items'],
+              },
+              handler: async (args) => {
+                const { items } = args;
+                const todoManager = this.kernel?.todoManager;
+                if (!todoManager) {
+                  return { success: false, error: 'TodoManager not available' };
+                }
+                try {
+                  const result = todoManager.update(items);
+                  return { success: true, output: `<result>${result}</result>` };
+                } catch (e) {
+                  return { success: false, error: e.message };
+                }
+              },
+              source: 'hardcoded' },
+            // v4.3: Task 工具
+            { id: 'task_create', category: 'planning',
+              desc: 'Create a new task.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  subject: { type: 'string' },
+                  description: { type: 'string' },
+                },
+                required: ['subject'],
+              },
+              handler: async (args) => {
+                const { subject, description = '' } = args;
+                const taskGraph = this.kernel?.taskGraph;
+                if (!taskGraph) {
+                  return { success: false, error: 'TaskGraph not available' };
+                }
+                try {
+                  const task = await taskGraph.create(subject, description);
+                  return { success: true, output: `<result>Created task ${task.id}</result>` };
+                } catch (e) {
+                  return { success: false, error: e.message };
+                }
+              },
+              source: 'hardcoded' },
+            { id: 'task_update', category: 'planning',
+              desc: 'Update a task status, owner, or dependencies.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  task_id: { type: 'integer' },
+                  status: {
+                    type: 'string',
+                    enum: ['pending', 'in_progress', 'completed', 'deleted'],
+                  },
+                  owner: { type: 'string', description: 'Set when a teammate claims the task' },
+                  addBlockedBy: { type: 'array', items: { type: 'integer' } },
+                  addBlocks: { type: 'array', items: { type: 'integer' } },
+                },
+                required: ['task_id'],
+              },
+              handler: async (args) => {
+                const { task_id, status, owner, addBlockedBy, addBlocks } = args;
+                const taskGraph = this.kernel?.taskGraph;
+                if (!taskGraph) {
+                  return { success: false, error: 'TaskGraph not available' };
+                }
+                try {
+                  const task = await taskGraph.update(task_id, status, owner, addBlockedBy, addBlocks);
+                  return { success: true, output: `<result>Updated task ${task.id}</result>` };
+                } catch (e) {
+                  return { success: false, error: e.message };
+                }
+              },
+              source: 'hardcoded' },
+            { id: 'task_list', category: 'planning',
+              desc: 'List all tasks with status summary.',
+              inputSchema: {
+                type: 'object',
+                properties: {},
+              },
+              handler: async () => {
+                const taskGraph = this.kernel?.taskGraph;
+                if (!taskGraph) {
+                  return { success: false, error: 'TaskGraph not available' };
+                }
+                try {
+                  const tasks = await taskGraph.listAll();
+                  const lines = [];
+                  for (const task of tasks) {
+                    lines.push(`${task.id}. [${task.status}] ${task.subject} (owner: ${task.owner || 'none'})`);
+                  }
+                  return { success: true, output: `<result>${lines.join('\n')}</result>` };
+                } catch (e) {
+                  return { success: false, error: e.message };
+                }
+              },
+              source: 'hardcoded' },
+            { id: 'task_get', category: 'planning',
+              desc: 'Get full details of a task by ID.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  task_id: { type: 'integer' },
+                },
+                required: ['task_id'],
+              },
+              handler: async (args) => {
+                const { task_id } = args;
+                const taskGraph = this.kernel?.taskGraph;
+                if (!taskGraph) {
+                  return { success: false, error: 'TaskGraph not available' };
+                }
+                try {
+                  const task = await taskGraph.get(task_id);
+                  if (!task) {
+                    return { success: false, error: `Task ${task_id} not found` };
+                  }
+                  const lines = [
+                    `${task.id}. [${task.status}] ${task.subject}`,
+                    `  Description: ${task.description}`,
+                    `  Owner: ${task.owner || 'none'}`,
+                    `  Blocked by: [${task.blockedBy.join(', ') || 'none'}]`,
+                    `  Blocks: [${task.blocks.join(', ') || 'none'}]`,
+                  ];
+                  return { success: true, output: `<result>${lines.join('\n')}</result>` };
+                } catch (e) {
+                  return { success: false, error: e.message };
+                }
+              },
+              source: 'hardcoded' },
             // 进化中枢
             { id: 'evolution_hub', category: 'evolution', 
               script: 'intelligence_evolution_hub.py', 
@@ -323,6 +520,24 @@ export class ToolBridge {
         ];
 
         for (const def of toolDefs) {
+            // v4.3: 支持 handler 函数（非脚本工具）
+            if (def.handler) {
+                const tool = {
+                    ...def,
+                    available: true,
+                    handler: def.handler,
+                    inputSchema: def.inputSchema || null,
+                };
+                this.tools.set(def.id, tool);
+                
+                if (!this.categories.has(def.category)) {
+                    this.categories.set(def.category, []);
+                }
+                this.categories.get(def.category).push(def.id);
+                continue;
+            }
+            
+            // 原有脚本工具逻辑
             const tool = {
                 ...def,
                 path: this._getToolPath(def.script),
@@ -395,11 +610,101 @@ export class ToolBridge {
         return result;
     }
 
+    // P0-2: 工具调用计数防死循环检查
+    _checkToolCallLimit(toolId) {
+        const limiter = this.toolCallLimiter;
+        const now = Date.now();
+        
+        // 检查是否被阻止
+        if (limiter.blockedTools.has(toolId)) {
+            const blockedTime = limiter.callCounts.get(toolId)?.blockedSince;
+            if (blockedTime && now - blockedTime < limiter.windowSize * 5) { // 5分钟冷却期
+                return {
+                    allowed: false,
+                    reason: `Tool ${toolId} is blocked due to excessive calls. Cooling down...`
+                };
+            } else {
+                // 冷却期结束，解除阻止
+                limiter.blockedTools.delete(toolId);
+                limiter.callCounts.delete(toolId);
+            }
+        }
+
+        // 获取或初始化计数器
+        let counter = limiter.callCounts.get(toolId);
+        if (!counter) {
+            counter = { count: 0, windowStart: now };
+            limiter.callCounts.set(toolId, counter);
+        }
+
+        // 检查时间窗口
+        if (now - counter.windowStart > limiter.windowSize) {
+            // 时间窗口重置
+            counter.count = 0;
+            counter.windowStart = now;
+        }
+
+        // 检查调用次数限制
+        if (counter.count >= limiter.maxCalls) {
+            // 超过限制，阻止工具
+            limiter.blockedTools.add(toolId);
+            counter.blockedSince = now;
+            return {
+                allowed: false,
+                reason: `Tool ${toolId} exceeded maximum calls (${limiter.maxCalls}) per minute. Tool blocked for 5 minutes.`
+            };
+        }
+
+        // 增加计数
+        counter.count++;
+        return { allowed: true, count: counter.count };
+    }
+
     // 执行工具
     async execute(toolId, args = '') {
         const tool = this.tools.get(toolId);
         if (!tool) return { success: false, error: `Tool not found: ${toolId}` };
         if (!tool.available) return { success: false, error: `Tool not available: ${toolId}` };
+
+        // P0-2: 防死循环检查
+        const limitCheck = this._checkToolCallLimit(toolId);
+        if (!limitCheck.allowed) {
+            return { 
+                success: false, 
+                error: `Tool call limit exceeded: ${limitCheck.reason}`,
+                blocked: true
+            };
+        }
+
+        // v4.3: 支持 handler 函数（非脚本工具）
+        if (tool.handler) {
+            const start = Date.now();
+            try {
+                const parsedArgs = typeof args === 'string' ? this._parseArgs(args) : args;
+                const result = await tool.handler(parsedArgs);
+                this.trajectoryMemory.record({
+                    toolId,
+                    toolName: tool.id,
+                    args: args || '',
+                    success: result.success !== false,
+                    duration: Date.now() - start,
+                    error: result.error || null,
+                    timestamp: Date.now(),
+                });
+                return result;
+            } catch (e) {
+                this.trajectoryMemory.record({
+                    toolId,
+                    toolName: tool.id,
+                    args: args || '',
+                    success: false,
+                    duration: Date.now() - start,
+                    error: e.message,
+                    timestamp: Date.now(),
+                });
+                return { success: false, error: e.message };
+            }
+        }
 
         const pythonPath = this.kernel?.env?.python?.path || this.pythonPath;
 
@@ -424,6 +729,14 @@ export class ToolBridge {
             if (settled) return;
             settled = true;
             clearTimeout(timer);
+
+            // v4.3: 持久化输出（参考 learn-claude-code s02）
+            if (result.success && result.stdout) {
+                const fullOutput = stdout + (result.stderr ? `\n${result.stderr}` : '');
+                result.stdout = maybePersistedOutput(toolId, fullOutput, this.kernel);
+                result.stderr = '';
+            }
+
             // v3.8: 记录工具轨迹
             this.trajectoryMemory.record({
                 toolId,
@@ -486,6 +799,54 @@ export class ToolBridge {
                     result: { success: false, error: `Tool not found or unavailable: ${call.toolId}` }, latency: 0 };
             }
 
+            // P0-2: 防死循环检查
+            const limitCheck = this._checkToolCallLimit(call.toolId);
+            if (!limitCheck.allowed) {
+                return { 
+                    callId: call.callId || call.toolId, 
+                    success: false,
+                    result: { 
+                        success: false, 
+                        error: `Tool call limit exceeded: ${limitCheck.reason}`,
+                        blocked: true 
+                    }, 
+                    latency: 0 
+                };
+            }
+
+            // v4.3: 支持 handler 函数（非脚本工具）
+            if (tool.handler) {
+                const start = Date.now();
+                try {
+                    const parsedArgs = typeof call.args === 'string' ? this._parseArgs(call.args) : call.args;
+                    const result = await tool.handler(parsedArgs);
+                    this.trajectoryMemory.record({
+                        toolId: call.toolId,
+                        toolName: call.toolId,
+                        args: call.args || '',
+                        success: result.success !== false,
+                        duration: Date.now() - start,
+                        error: result.error || null,
+                        timestamp: Date.now(),
+                        parallel: true,
+                    });
+                    return { callId: call.callId || call.toolId, success: result.success, result, latency: Date.now() - start };
+                } catch (e) {
+                    this.trajectoryMemory.record({
+                        toolId: call.toolId,
+                        toolName: call.toolId,
+                        args: call.args || '',
+                        success: false,
+                        duration: Date.now() - start,
+                        error: e.message,
+                        timestamp: Date.now(),
+                        parallel: true,
+                    });
+                    return { callId: call.callId || call.toolId, success: false,
+                        result: { success: false, error: e.message }, latency: Date.now() - start };
+                }
+            }
+
             return new Promise((resolve) => {
                 const start = Date.now();
                 const procArgs = [tool.path];
@@ -505,6 +866,14 @@ export class ToolBridge {
                     if (done) return;
                     done = true;
                     clearTimeout(timer);
+
+                    // v4.3: 持久化输出（参考 learn-claude-code s02）
+                    if (result.success && result.stdout) {
+                        const fullOutput = stdout + (result.stderr ? `\n${result.stderr}` : '');
+                        result.stdout = maybePersistedOutput(call.toolId, fullOutput, this.kernel);
+                        result.stderr = '';
+                    }
+
                     // v3.8: 记录工具轨迹
                     recordToolCall(call, result.latency, result.success, result.result?.error);
                     resolve(result);
@@ -567,8 +936,32 @@ export class ToolBridge {
         return Array.from(this.tools.values());
     }
 
+    // v4.3: 获取工具的 input_schema
+    getInputSchema(toolId) {
+        const tool = this.tools.get(toolId);
+        if (!tool) return null;
+        return tool.inputSchema || null;
+    }
+
     // 获取统计
     getStats() {
+        // P0-2: 防死循环统计
+        const callLimitStats = {};
+        for (const [toolId, counter] of this.toolCallLimiter.callCounts.entries()) {
+            const timeLeft = this.toolCallLimiter.windowSize - (Date.now() - counter.windowStart);
+            const isBlocked = this.toolCallLimiter.blockedTools.has(toolId);
+            
+            callLimitStats[toolId] = {
+                count: counter.count,
+                maxCalls: this.toolCallLimiter.maxCalls,
+                windowStart: new Date(counter.windowStart).toISOString(),
+                timeLeft: Math.max(0, timeLeft),
+                blocked: isBlocked,
+                blockedSince: isBlocked ? new Date(counter.blockedSince || 0).toISOString() : null,
+                remainingCalls: Math.max(0, this.toolCallLimiter.maxCalls - counter.count)
+            };
+        }
+
         return {
             total: this.tools.size,
             available: Array.from(this.tools.values()).filter(t => t.available).length,
@@ -580,6 +973,15 @@ export class ToolBridge {
             } : { enabled: false },
             // v3.8: 工具轨迹记忆统计
             trajectory: this.trajectoryMemory.getStats(),
+            // P0-2: 防死循环统计
+            callLimiter: {
+                maxCallsPerMinute: this.toolCallLimiter.maxCalls,
+                windowSize: this.toolCallLimiter.windowSize,
+                blockedTools: Array.from(this.toolCallLimiter.blockedTools),
+                callCounts: callLimitStats,
+                totalBlocked: this.toolCallLimiter.blockedTools.size,
+                totalTracked: this.toolCallLimiter.callCounts.size
+            }
         };
     }
 

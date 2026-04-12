@@ -320,6 +320,18 @@ export const ModuleMixin = class ModuleMixin {
             k.rust = null;
             k.rustHealth = { allHealthy: false, error: e.message };
         }
+
+        // Supermemory 集成
+        if (k.config.system.supermemory?.enabled) {
+            try {
+                const { SupermemoryMixin } = await import(_r('kernel/supermemory/supermemory-mixin.js'));
+                const supermemoryMixin = new SupermemoryMixin();
+                await supermemoryMixin.init_supermemory(k);
+                k._modules.supermemory = supermemoryMixin;
+            } catch (e) {
+                console.warn('[Kernel] Supermemory integration failed:', e.message);
+            }
+        }
     }
 
     // ── Phase 7: 任务系统 ─────────────────────────────────────────
@@ -417,6 +429,15 @@ export const ModuleMixin = class ModuleMixin {
             }
         }
 
+        // DebateTeamManager (P0-3: 辩论团队架构)
+        try {
+            const { _initDebateTeamManager } = await import(_r('kernel/integrations.js'));
+            await _initDebateTeamManager.call(k);
+            // review: removed // review: removed console.log('[Kernel] DebateTeamManager initialized');
+        } catch (e) {
+            console.warn('[Kernel] DebateTeamManager init failed:', e.message);
+        }
+
         // MCP Manager
         try {
             const { McpClientManager } = await import(_r('mcp/index.js'));
@@ -461,6 +482,41 @@ export const ModuleMixin = class ModuleMixin {
             console.warn('[Kernel] SessionCompactor init failed:', e.message);
         }
 
+        // IntelligentConversationCompressor (P1-3: 智能对话压缩)
+        try {
+            const { IntelligentConversationCompressor } = await import(_r('kernel/intelligent-conversation-compressor.js'));
+            k.conversationCompressor = new IntelligentConversationCompressor(k, {
+                strategy: 'adaptive', // adaptive, aggressive, balanced, conservative
+                compressionThreshold: 0.7,
+                keepRecentMessages: 10,
+                keepImportantMessages: true,
+                minImportantScore: 0.8,
+                semanticClustering: true,
+                clusterThreshold: 0.75,
+                maxClusterSize: 10,
+                enableSummarization: true,
+                summaryLength: 150,
+                preserveContext: true,
+                maxMessages: 1000,
+                batchSize: 50,
+                useTurboQuant: true,
+                turboQuantConfig: {
+                    maxTokens: 8192,
+                    keepRecent: 6,
+                    importanceThreshold: 0.65,
+                    fallbackToLLM: false,
+                    clusterThreshold: 0.80,
+                    embeddingDim: 384,
+                    bitsPerChannel: 3.5,
+                    useOutlierSplit: false,
+                    useTwoStage: false,
+                },
+            });
+            // review: removed // review: removed console.log('[Kernel] IntelligentConversationCompressor initialized');
+        } catch (e) {
+            console.warn('[Kernel] IntelligentConversationCompressor init failed:', e.message);
+        }
+
         // AgentTeam Tools
         try {
             const { registerAgentTeamTools } = await import(_r('agent-teams/agent-tools.js'));
@@ -498,6 +554,309 @@ export const ModuleMixin = class ModuleMixin {
                 console.warn('[Kernel] ToolBridge init failed:', e.message));
         } catch (e) {
             console.warn('[Kernel] ToolBridge init failed:', e.message);
+        }
+
+        // v4.3: TodoManager
+        try {
+            const { TodoManager } = await import(_r('kernel/planning/todo-manager.js'));
+            k.todoManager = new TodoManager(k);
+        } catch (e) {
+            console.warn('[Kernel] TodoManager init failed:', e.message);
+        }
+
+        // v4.3: ConditionalTaskGraph (P1-2: 有向图条件边支持)
+        try {
+            const { ConditionalTaskGraph } = await import(_r('kernel/conditional-task-graph.js'));
+            k.taskGraph = new ConditionalTaskGraph(k, {
+                maxHistorySize: 1000,
+                enableStatistics: true,
+            });
+            // review: removed // review: removed console.log('[Kernel] ConditionalTaskGraph initialized');
+        } catch (e) {
+            console.warn('[Kernel] ConditionalTaskGraph init failed:', e.message);
+            // 回退到旧的 TaskGraph
+            try {
+                const { TaskGraph } = await import(_r('kernel/task-graph.js'));
+                k.taskGraph = new TaskGraph(k);
+                // review: removed // review: removed console.log('[Kernel] Fallback to legacy TaskGraph');
+            } catch (fallbackError) {
+                console.warn('[Kernel] Legacy TaskGraph also failed:', fallbackError.message);
+            }
+        }
+
+        // v4.3: AutonomousAgentManager
+        try {
+            const { AutonomousAgentManager } = await import(_r('kernel/autonomous/autonomous-agent-manager.js'));
+            k.autonomousAgentManager = new AutonomousAgentManager(k);
+            await k.autonomousAgentManager.initialize();
+        } catch (e) {
+            console.warn('[Kernel] AutonomousAgentManager init failed:', e.message);
+        }
+
+        // v4.3: MCP Manager
+        try {
+            const { McpClientManager } = await import(_r('mcp/index.js'));
+            k.mcpManager = new McpClientManager(k);
+            await k.mcpManager.initialize();
+        } catch (e) {
+            console.warn('[Kernel] McpManager init failed:', e.message);
+        }
+
+        // v4.3: Error Handler
+        try {
+            const { ErrorHandler, FallbackManager, RetryManager } = await import(_r('kernel/error-handler.js'));
+            k.errorHandler = new ErrorHandler(k);
+            k.fallbackManager = new FallbackManager(k);
+            k.retryManager = new RetryManager(k);
+        } catch (e) {
+            console.warn('[Kernel] ErrorHandler init failed:', e.message);
+        }
+
+        // v4.3: Monitoring
+        try {
+            const { MetricsCollector, HealthChecker, Tracer, createMetricsServer } = await import(_r('kernel/monitoring.js'));
+            k.metrics = new MetricsCollector();
+            k.healthChecker = new HealthChecker(k);
+            k.tracer = new Tracer();
+            
+            // Start metrics server if enabled
+            if (k.config.system?.monitoring?.enabled) {
+                const metricsPort = k.config.system.monitoring.port || 9090;
+                k.metricsServer = createMetricsServer(metricsPort, k.metrics);
+            }
+        } catch (e) {
+            console.warn('[Kernel] Monitoring init failed:', e.message);
+        }
+
+        // v4.3: I18n
+        try {
+            const I18nManager = await import(_r('kernel/i18n.js'));
+            k.i18n = new I18nManager.default();
+            k.i18n.setLocale(k.config.system?.locale || 'zh');
+        } catch (e) {
+            console.warn('[Kernel] I18n init failed:', e.message);
+        }
+
+        // v4.3: Security
+        try {
+            const { ApiKeyManager, AccessControlManager, AuditLogger } = await import(_r('kernel/security.js'));
+            k.apiKeyManager = new ApiKeyManager(k);
+            k.accessControl = new AccessControlManager(k);
+            k.auditLogger = new AuditLogger(k);
+        } catch (e) {
+            console.warn('[Kernel] Security init failed:', e.message);
+        }
+
+        // v4.3: Multi-Level Cache Manager (P1-1: 多级缓存系统)
+        try {
+            const { MultiLevelCache } = await import(_r('kernel/multi-level-cache.js'));
+            k.cacheManager = new MultiLevelCache({
+                l1: {
+                    maxSize: 1000,
+                    maxMemoryMB: 100, // 100MB 内存缓存
+                    ttl: 300000, // 5分钟
+                    enabled: true,
+                },
+                l2: {
+                    baseDir: join(k.config.storageDir, 'cache'),
+                    maxSizeMB: 1024, // 1GB 磁盘缓存
+                    ttl: 86400000, // 24小时
+                    enabled: true,
+                    compression: true,
+                },
+                l3: {
+                    enabled: false, // 默认禁用分布式缓存
+                    provider: 'redis',
+                    config: {
+                        host: 'localhost',
+                        port: 6379,
+                    },
+                },
+                prefetchEnabled: true,
+                writeThrough: true,
+                readThrough: true,
+            });
+            // review: removed // review: removed console.log('[Kernel] MultiLevelCache initialized');
+        } catch (e) {
+            console.warn('[Kernel] MultiLevelCache init failed:', e.message);
+            // 回退到旧的缓存管理器
+            try {
+                const { CacheManager } = await import(_r('kernel/cache.js'));
+                k.cacheManager = new CacheManager({
+                    maxSize: 1000,
+                    ttl: 3600000,
+                });
+                // review: removed // review: removed console.log('[Kernel] Fallback to legacy CacheManager');
+            } catch (fallbackError) {
+                console.warn('[Kernel] Legacy CacheManager also failed:', fallbackError.message);
+            }
+        }
+
+        // v4.3: Redis Pool
+        try {
+            const { RedisPoolManager } = await import(_r('kernel/pool.js'));
+            k.redisPool = new RedisPoolManager({
+                host: 'localhost',
+                port: 6379,
+            });
+            await k.redisPool.initialize();
+        } catch (e) {
+            console.warn('[Kernel] RedisPool init failed:', e.message);
+        }
+
+        // v4.3: Postgres Pool
+        try {
+            const { PostgresPoolManager } = await import(_r('kernel/pool.js'));
+            k.postgresPool = new PostgresPoolManager({
+                host: 'localhost',
+                port: 5432,
+                database: 'hundunos',
+                user: 'hundunos',
+                password: '',
+            });
+            await k.postgresPool.initialize();
+        } catch (e) {
+            console.warn('[Kernel] PostgresPool init failed:', e.message);
+        }
+
+        // v4.3: Rate Limit Manager
+        try {
+            const { RateLimitManager } = await import(_r('kernel/rate-limit.js'));
+            k.rateLimitManager = new RateLimitManager(k, {
+                enabled: true,
+            });
+        } catch (e) {
+            console.warn('[Kernel] RateLimitManager init failed:', e.message);
+        }
+
+        // v4.3: WAF Manager
+        try {
+            const { WAFManager } = await import(_r('kernel/waf.js'));
+            k.wafManager = new WAFManager(k, {
+                enabled: true,
+                whitelist: [
+                    '/api/health',
+                    '/api/status',
+                    '/metrics',
+                ],
+            });
+        } catch (e) {
+            console.warn('[Kernel] WAFManager init failed:', e.message);
+        }
+
+        // v4.3: Jaeger Tracer
+        try {
+            const { JaegerTracer } = await import(_r('kernel/jaeger-tracer.js'));
+            k.jaegerTracer = new JaegerTracer({
+                endpoint: 'http://localhost:14268/api/traces',
+                serviceName: 'hundunos',
+            });
+            await k.jaegerTracer.initialize();
+        } catch (e) {
+            console.warn('[Kernel] JaegerTracer init failed:', e.message);
+        }
+
+        // v4.3: ELK Stack
+        try {
+            const { ELKStackManager } = await import(_r('kernel/elk-stack.js'));
+            k.elkStack = new ELKStackManager(k, {
+                node: 'http://localhost:9200',
+                username: 'elastic',
+                password: '',
+            });
+            await k.elkStack.initialize();
+            await k.elkStack.createIndex('logs');
+            await k.elkStack.createIndex('errors');
+            await k.elkStack.createIndex('audit');
+        } catch (e) {
+            console.warn('[Kernel] ELKStack init failed:', e.message);
+        }
+
+        // v4.3: Plugin Market
+        try {
+            const { PluginMarketManager } = await import(_r('kernel/plugin-market.js'));
+            k.pluginMarket = new PluginMarketManager(k, {
+                registryUrl: 'https://plugins.hundunos.ai',
+            });
+        } catch (e) {
+            console.warn('[Kernel] PluginMarket init failed:', e.message);
+        }
+
+        // v4.3: Plugin Sandbox
+        try {
+            const { PluginSandbox } = await import(_r('kernel/plugin-sandbox.js'));
+            k.pluginSandbox = new PluginSandbox({
+                timeout: 30000,
+                memoryLimit: 128 * 1024 * 1024,
+                cpuLimit: 1,
+                blockedModules: ['fs', 'child_process', 'net', 'http', 'https'],
+            });
+        } catch (e) {
+            console.warn('[Kernel] PluginSandbox init failed:', e.message);
+        }
+
+        // v4.3: Tenant Manager
+        try {
+            const { TenantManager } = await import(_r('kernel/multi-tenant.js'));
+            k.tenantManager = new TenantManager(k, {
+                storageDir: '.hundunos/tenants',
+            });
+        } catch (e) {
+            console.warn('[Kernel] TenantManager init failed:', e.message);
+        }
+
+        // v4.3: Billing Manager
+        try {
+            const { BillingManager } = await import(_r('kernel/multi-tenant.js'));
+            k.billingManager = new BillingManager(k, {
+                storageDir: '.hundunos/billing',
+            });
+        } catch (e) {
+            console.warn('[Kernel] BillingManager init failed:', e.message);
+        }
+
+        // v4.3: Mobile API
+        try {
+            const { MobileAPIManager } = await import(_r('kernel/mobile-api.js'));
+            k.mobileAPI = new MobileAPIManager(k);
+            k.mobileAPI.initializeRoutes();
+        } catch (e) {
+            console.warn('[Kernel] MobileAPI init failed:', e.message);
+        }
+
+        // v4.3: RAG Manager
+        try {
+            const { RAGManager } = await import(_r('kernel/rag.js'));
+            k.ragManager = new RAGManager(k, {
+                embeddingModel: 'text-embedding-3-small',
+                retrievalTopK: 5,
+                similarityThreshold: 0.7,
+            });
+        } catch (e) {
+            console.warn('[Kernel] RAGManager init failed:', e.message);
+        }
+
+        // v4.3: Agent Chain of Thought
+        try {
+            const { AgentChainOfThought } = await import(_r('kernel/agent-cot.js'));
+            k.agentChainOfThought = new AgentChainOfThought(k, {
+                maxSteps: 10,
+                temperature: 0.7,
+            });
+        } catch (e) {
+            console.warn('[Kernel] AgentChainOfThought init failed:', e.message);
+        }
+
+        // v4.3: Agent Tree of Thoughts
+        try {
+            const { AgentTreeOfThoughts } = await import(_r('kernel/agent-cot.js'));
+            k.agentTreeOfThoughts = new AgentTreeOfThoughts(k, {
+                maxDepth: 3,
+                branchingFactor: 3,
+                temperature: 0.7,
+            });
+        } catch (e) {
+            console.warn('[Kernel] AgentTreeOfThoughts init failed:', e.message);
         }
     }
 
@@ -593,6 +952,501 @@ export const ModuleMixin = class ModuleMixin {
                 instance: {
                     execute: async (intent) => this.toolBridge?.execute?.(intent?.tool, intent?.args),
                     shutdown: async () => this.toolBridge?.shutdown?.(),
+                },
+            },
+            {
+                id: 'todoManager',
+                name: 'Todo Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async () => ({ success: true, stats: this.todoManager?.getStats?.() || {} }),
+                },
+            },
+            {
+                id: 'taskGraph',
+                name: 'Conditional Task Graph',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        // 向后兼容的 API
+                        if (intent?.action === 'create') {
+                            if (intent.options) {
+                                // 新的条件任务图 API
+                                return this.taskGraph?.create?.(intent.subject, intent.description, intent.options);
+                            } else {
+                                // 旧的 API
+                                return this.taskGraph?.create?.(intent.subject, intent.description);
+                            }
+                        }
+                        if (intent?.action === 'update') {
+                            if (intent.updates) {
+                                // 新的条件任务图 API
+                                return this.taskGraph?.update?.(intent.taskId, intent.updates);
+                            } else {
+                                // 旧的 API
+                                return this.taskGraph?.update?.(intent.taskId, intent.status, intent.owner, intent.addBlockedBy, intent.addBlocks);
+                            }
+                        }
+                        if (intent?.action === 'get') return this.taskGraph?.get?.(intent.taskId);
+                        if (intent?.action === 'listAll') return this.taskGraph?.listAll?.();
+                        if (intent?.action === 'delete') return this.taskGraph?.delete?.(intent.taskId);
+                        if (intent?.action === 'getStats') return this.taskGraph?.getStats?.();
+                        if (intent?.action === 'getDependencyGraph') return this.taskGraph?.getDependencyGraph?.();
+                        
+                        // 新的条件任务图 API
+                        if (intent?.action === 'execute') return this.taskGraph?.execute?.(intent.taskId, intent.context || {});
+                        if (intent?.action === 'executeGraph') return this.taskGraph?.executeGraph?.(intent.context || {}, intent.onTaskExecuted);
+                        if (intent?.action === 'getExecutableTasks') return this.taskGraph?.getExecutableTasks?.(intent.context || {});
+                        if (intent?.action === 'getExecutionPlan') return this.taskGraph?.getExecutionPlan?.(intent.context || {});
+                        if (intent?.action === 'getDependencyPath') return this.taskGraph?.getDependencyPath?.(intent.startTaskId, intent.endTaskId, intent.context || {});
+                        if (intent?.action === 'clear') return this.taskGraph?.clear?.();
+                        if (intent?.action === 'export') return this.taskGraph?.export?.();
+                        if (intent?.action === 'import') return this.taskGraph?.import?.(intent.data);
+                        
+                        // 默认返回统计信息
+                        const stats = this.taskGraph?.getStats?.();
+                        return { success: true, stats: stats || {}, message: 'Conditional Task Graph is running' };
+                    },
+                },
+            },
+            {
+                id: 'autonomousAgentManager',
+                name: 'Autonomous Agent Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'registerAgent') return this.autonomousAgentManager?.registerAgent?.(intent.config);
+                        if (intent?.action === 'submitTask') return this.autonomousAgentManager?.submitTask?.(intent.task);
+                        if (intent?.action === 'getStats') return this.autonomousAgentManager?.getStats?.();
+                        return { success: true, stats: this.autonomousAgentManager?.getStats?.() || {} };
+                    },
+                    shutdown: async () => this.autonomousAgentManager?.shutdown?.(),
+                },
+            },
+            {
+                id: 'mcpManager',
+                name: 'MCP Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'callTool') return this.mcpManager?.callTool?.(intent.toolName, intent.args);
+                        if (intent?.action === 'listTools') return this.mcpManager?.listTools?.();
+                        return { success: true, tools: this.mcpManager?.listTools?.() || [] };
+                    },
+                    shutdown: async () => {
+                        for (const client of this.mcpManager?.clients?.values() || []) {
+                            await client.close?.();
+                        }
+                    },
+                },
+            },
+            {
+                id: 'errorHandler',
+                name: 'Error Handler',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'getErrorStats') return this.errorHandler?.getErrorStats?.();
+                        return { success: true, stats: this.errorHandler?.getErrorStats?.() || {} };
+                    },
+                },
+            },
+            {
+                id: 'fallbackManager',
+                name: 'Fallback Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'listStrategies') return this.fallbackManager?.listStrategies?.();
+                        if (intent?.action === 'execute') return this.fallbackManager?.execute?.(intent.name, intent.context);
+                        return { success: true, strategies: this.fallbackManager?.listStrategies?.() || [] };
+                    },
+                },
+            },
+            {
+                id: 'retryManager',
+                name: 'Retry Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'configure') this.retryManager?.configure?.(intent.options);
+                        return { success: true, message: 'Retry manager configured' };
+                    },
+                },
+            },
+            {
+                id: 'healthChecker',
+                name: 'Health Checker',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'checkAll') return this.healthChecker?.checkAll?.();
+                        if (intent?.action === 'check') return this.healthChecker?.check?.(intent.name);
+                        return { success: true, status: 'healthy' };
+                    },
+                },
+            },
+            {
+                id: 'metrics',
+                name: 'Metrics Collector',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'getMetrics') return this.metrics?.getMetrics?.();
+                        return { success: true, message: 'Use /metrics endpoint' };
+                    },
+                },
+            },
+            {
+                id: 'tracer',
+                name: 'Tracer',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'startSpan') return this.tracer?.startSpan?.(intent.name, intent.parentSpanId);
+                        if (intent?.action === 'endSpan') this.tracer?.endSpan?.(intent.spanId, intent.status, intent.metadata);
+                        if (intent?.action === 'getSpan') return this.tracer?.getSpan?.(intent.spanId);
+                        if (intent?.action === 'getSpanTree') return this.tracer?.getSpanTree?.(intent.spanId);
+                        return { success: true, currentSpan: this.tracer?.getCurrentSpan?.() };
+                    },
+                },
+            },
+            {
+                id: 'i18n',
+                name: 'I18n Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'setLocale') this.i18n?.setLocale?.(intent.locale);
+                        if (intent?.action === 'getLocale') return { locale: this.i18n?.getLocale?.() };
+                        if (intent?.action === 't') return { translation: this.i18n?.t?.(intent.key, intent.params) };
+                        return { success: true, locale: this.i18n?.getLocale?.() };
+                    },
+                },
+            },
+            {
+                id: 'apiKeyManager',
+                name: 'API Key Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'addKey') return this.apiKeyManager?.addKey?.(intent.name, intent.key, intent.provider);
+                        if (intent?.action === 'getKey') return this.apiKeyManager?.getKey?.(intent.name);
+                        if (intent?.action === 'removeKey') return this.apiKeyManager?.removeKey?.(intent.name);
+                        if (intent?.action === 'listKeys') return this.apiKeyManager?.listKeys?.();
+                        return { success: true, keys: this.apiKeyManager?.listKeys?.() || [] };
+                    },
+                },
+            },
+            {
+                id: 'accessControl',
+                name: 'Access Control Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'check') return this.accessControl?.check?.(intent.resource, intent.action, intent.roles);
+                        if (intent?.action === 'checkPath') return this.accessControl?.checkPath?.(intent.path, intent.whitelist);
+                        if (intent?.action === 'listPolicies') return this.accessControl?.listPolicies?.();
+                        return { success: true, policies: this.accessControl?.listPolicies?.() || {} };
+                    },
+                },
+            },
+            {
+                id: 'auditLogger',
+                name: 'Audit Logger',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'log') return this.auditLogger?.log?.(intent.action, intent.data, intent.context);
+                        if (intent?.action === 'query') return this.auditLogger?.query?.(intent.filters);
+                        if (intent?.action === 'getStats') return this.auditLogger?.getStats?.();
+                        return { success: true, stats: this.auditLogger?.getStats?.() || {} };
+                    },
+                    shutdown: async () => this.auditLogger?.shutdown?.(),
+                },
+            },
+            {
+                id: 'cacheManager',
+                name: 'Multi-Level Cache Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'get') {
+                            const value = await this.cacheManager?.get?.(intent.key, intent.options);
+                            return { success: true, value, found: value !== null };
+                        }
+                        if (intent?.action === 'set') {
+                            const success = await this.cacheManager?.set?.(intent.key, intent.value, intent.options);
+                            return { success: success !== false, message: success ? 'Cache set successfully' : 'Cache set failed' };
+                        }
+                        if (intent?.action === 'delete' || intent?.action === 'del') {
+                            const success = await this.cacheManager?.delete?.(intent.key, intent.options);
+                            return { success: success !== false, message: success ? 'Cache deleted successfully' : 'Cache delete failed' };
+                        }
+                        if (intent?.action === 'clear') {
+                            await this.cacheManager?.clear?.();
+                            return { success: true, message: 'Cache cleared' };
+                        }
+                        if (intent?.action === 'has') {
+                            const exists = await this.cacheManager?.has?.(intent.key);
+                            return { success: true, exists };
+                        }
+                        if (intent?.action === 'stats') {
+                            const stats = this.cacheManager?.getStats?.();
+                            return { success: true, stats: stats || {} };
+                        }
+                        if (intent?.action === 'warmup') {
+                            await this.cacheManager?.warmup?.(intent.keys || []);
+                            return { success: true, message: 'Cache warmup completed' };
+                        }
+                        if (intent?.action === 'mget') {
+                            const { results, missingKeys } = await this.cacheManager?.mget?.(intent.keys || [], intent.options || {});
+                            return { success: true, results, missingKeys };
+                        }
+                        if (intent?.action === 'mset') {
+                            const results = await this.cacheManager?.mset?.(intent.items || {}, intent.options || {});
+                            return { success: true, results };
+                        }
+                        // 默认返回统计信息
+                        const stats = this.cacheManager?.getStats?.();
+                        return { success: true, stats: stats || {}, message: 'Multi-Level Cache Manager is running' };
+                    },
+                },
+            },
+            {
+                id: 'redisPool',
+                name: 'Redis Pool Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'healthCheck') return this.redisPool?.healthCheck?.();
+                        return { success: true };
+                    },
+                    shutdown: async () => this.redisPool?.close?.(),
+                },
+            },
+            {
+                id: 'postgresPool',
+                name: 'Postgres Pool Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'healthCheck') return this.postgresPool?.healthCheck?.();
+                        if (intent?.action === 'query') return this.postgresPool?.query?.(intent.text, intent.params);
+                        if (intent?.action === 'getStats') return this.postgresPool?.getStats?.();
+                        return { success: true };
+                    },
+                    shutdown: async () => this.postgresPool?.close?.(),
+                },
+            },
+            {
+                id: 'rateLimitManager',
+                name: 'Rate Limit Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'check') return this.rateLimitManager?.check?.(intent.key, intent.options);
+                        if (intent?.action === 'getStats') return this.rateLimitManager?.getStats?.();
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'wafManager',
+                name: 'WAF Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'filterInput') return this.wafManager?.filterInput?.(intent.input);
+                        if (intent?.action === 'detectSQLInjection') return this.wafManager?.detectSQLInjection?.(intent.input);
+                        if (intent?.action === 'checkPathWhitelist') return this.wafManager?.checkPathWhitelist?.(intent.path);
+                        if (intent?.action === 'addPathWhitelist') this.wafManager?.addPathWhitelist?.(intent.pattern);
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'jaegerTracer',
+                name: 'Jaeger Tracer',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'getTracer') return this.jaegerTracer?.getTracer?.(intent.name);
+                        return { success: true };
+                    },
+                    shutdown: async () => this.jaegerTracer?.shutdown?.(),
+                },
+            },
+            {
+                id: 'elkStack',
+                name: 'ELK Stack Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'log') this.elkStack?.log?.(intent.index, intent.level, intent.message, intent.metadata);
+                        if (intent?.action === 'query') return this.elkStack?.query?.(intent.index, intent.query);
+                        if (intent?.action === 'aggregate') return this.elkStack?.aggregate?.(intent.index, intent.aggregations);
+                        if (intent?.action === 'deleteIndex') this.elkStack?.deleteIndex?.(intent.index);
+                        return { success: true };
+                    },
+                    shutdown: async () => this.elkStack?.close?.(),
+                },
+            },
+            {
+                id: 'pluginMarket',
+                name: 'Plugin Market Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'search') return this.pluginMarket?.search?.(intent.query);
+                        if (intent?.action === 'getPluginInfo') return this.pluginMarket?.getPluginInfo?.(intent.pluginId);
+                        if (intent?.action === 'installPlugin') return this.pluginMarket?.installPlugin?.(intent.pluginId, intent.version);
+                        if (intent?.action === 'uninstallPlugin') return this.pluginMarket?.uninstallPlugin?.(intent.pluginId);
+                        if (intent?.action === 'updatePlugin') return this.pluginMarket?.updatePlugin?.(intent.pluginId);
+                        if (intent?.action === 'getInstalledVersion') return this.pluginMarket?.getInstalledVersion?.(intent.pluginId);
+                        if (intent?.action === 'listInstalledPlugins') return this.pluginMarket?.listInstalledPlugins?.();
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'pluginSandbox',
+                name: 'Plugin Sandbox',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'execute') return this.pluginSandbox?.execute?.(intent.code, intent.input);
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'tenantManager',
+                name: 'Tenant Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'createTenant') return this.tenantManager?.createTenant?.(intent.name, intent.plan);
+                        if (intent?.action === 'getTenant') return this.tenantManager?.getTenant?.(intent.tenantId);
+                        if (intent?.action === 'updateTenant') return this.tenantManager?.updateTenant?.(intent.tenantId, intent.updates);
+                        if (intent?.action === 'deleteTenant') return this.tenantManager?.deleteTenant?.(intent.tenantId);
+                        if (intent?.action === 'checkQuota') return this.tenantManager?.checkQuota?.(intent.tenantId, intent.resource, intent.amount);
+                        if (intent?.action === 'useQuota') return this.tenantManager?.useQuota?.(intent.tenantId, intent.resource, intent.amount);
+                        if (intent?.action === 'listTenants') return this.tenantManager?.listTenants?.();
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'billingManager',
+                name: 'Billing Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'createInvoice') return this.billingManager?.createInvoice?.(intent.tenantId, intent.month);
+                        if (intent?.action === 'getInvoice') return this.billingManager?.getInvoice?.(intent.invoiceId);
+                        if (intent?.action === 'addInvoiceItem') return this.billingManager?.addInvoiceItem?.(intent.invoiceId, intent.item);
+                        if (intent?.action === 'calculateInvoice') return this.billingManager?.calculateInvoice?.(intent.tenantId, intent.month);
+                        if (intent?.action === 'payInvoice') return this.billingManager?.payInvoice?.(intent.invoiceId, intent.paymentMethod);
+                        if (intent?.action === 'listInvoices') return this.billingManager?.listInvoices?.(intent.tenantId);
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'mobileAPI',
+                name: 'Mobile API Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        return this.mobileAPI?.handleRequest?.(intent.method, intent.path, intent.body, intent.headers);
+                    },
+                },
+            },
+            {
+                id: 'ragManager',
+                name: 'RAG Manager',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'addDocument') return this.ragManager?.addDocument?.(intent.id, intent.text, intent.metadata);
+                        if (intent?.action === 'getDocument') return this.ragManager?.getDocument?.(intent.id);
+                        if (intent?.action === 'deleteDocument') return this.ragManager?.deleteDocument?.(intent.id);
+                        if (intent?.action === 'retrieve') return this.ragManager?.retrieve?.(intent.query);
+                        if (intent?.action === 'generateAugmentedPrompt') return this.ragManager?.generateAugmentedPrompt?.(intent.query, intent.contextWindow);
+                        if (intent?.action === 'listDocuments') return this.ragManager?.listDocuments?.();
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'agentChainOfThought',
+                name: 'Agent Chain of Thought',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'execute') return this.agentChainOfThought?.execute?.(intent.task, intent.context);
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'agentTreeOfThoughts',
+                name: 'Agent Tree of Thoughts',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'execute') return this.agentTreeOfThoughts?.execute?.(intent.task);
+                        return { success: true };
+                    },
+                },
+            },
+            {
+                id: 'conversationCompressor',
+                name: 'Intelligent Conversation Compressor',
+                type: 'kernel',
+                instance: {
+                    execute: async (intent) => {
+                        if (intent?.action === 'compress') {
+                            const result = await this.conversationCompressor?.compress?.(intent.messages || [], intent.options || {});
+                            return { success: true, ...result };
+                        }
+                        if (intent?.action === 'getStats') {
+                            const stats = this.conversationCompressor?.getStats?.();
+                            return { success: true, stats: stats || {} };
+                        }
+                        if (intent?.action === 'getConfig') {
+                            const config = this.conversationCompressor?.getConfig?.();
+                            return { success: true, config: config || {} };
+                        }
+                        if (intent?.action === 'updateConfig') {
+                            this.conversationCompressor?.updateConfig?.(intent.config || {});
+                            return { success: true, message: 'Configuration updated' };
+                        }
+                        if (intent?.action === 'resetStats') {
+                            this.conversationCompressor?.resetStats?.();
+                            return { success: true, message: 'Statistics reset' };
+                        }
+                        if (intent?.action === 'analyze') {
+                            const analyzer = this.conversationCompressor?.analyzer;
+                            if (analyzer) {
+                                const conversationType = analyzer.analyzeConversationType?.(intent.messages || []);
+                                const structure = analyzer.analyzeConversationStructure?.(intent.messages || []);
+                                return { 
+                                    success: true, 
+                                    analysis: { conversationType, structure } 
+                                };
+                            }
+                            return { success: false, error: 'Analyzer not available' };
+                        }
+                        // 默认返回统计信息
+                        const stats = this.conversationCompressor?.getStats?.();
+                        return { 
+                            success: true, 
+                            stats: stats || {}, 
+                            message: 'Intelligent Conversation Compressor is running' 
+                        };
+                    },
                 },
             },
         ];

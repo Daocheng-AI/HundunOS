@@ -35,11 +35,14 @@ export const RecoveryStatus = {
 // ============================================================================
 
 export const RecoveryAction = {
-    RESTART:    'restart',     // 重启模块
-    ROLLBACK:   'rollback',    // 回滚快照
-    RELOAD:     'reload',      // 重新加载
-    ESCALATE:   'escalate',    // 升级处理
-    IGNORE:     'ignore'       // 忽略
+    RESTART:           'restart',              // 重启模块
+    ROLLBACK:          'rollback',             // 回滚快照
+    RELOAD:            'reload',               // 重新加载
+    ESCALATE:          'escalate',             // 升级处理
+    IGNORE:            'ignore',               // 忽略
+    // v4.3: Agent 级恢复（参考 learn-claude-code s11）
+    CONTINUE:          'continue',             // 续写截断输出
+    COMPACT_AND_RETRY: 'compact_and_retry',    // 压缩后重试
 };
 
 // ============================================================================

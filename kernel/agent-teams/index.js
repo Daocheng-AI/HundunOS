@@ -8,6 +8,7 @@
 
 import { randomUUID } from 'crypto';
 import { getWorktreeManager } from './worktree-manager.js';
+import { WorktreeTaskBinding } from './worktree-task-binding.js';
 
 /**
  * 团队角色类型
@@ -60,6 +61,9 @@ export class AgentTeam {
     this.isolation = config.isolation || 'worktree';
     /** WorktreeManager 实例（worktree 模式下使用） */
     this._worktreeManager = null;
+    
+    /** WorktreeTaskBinding 实例（v4.3: 任务双向绑定） */
+    this._worktreeTaskBinding = null;
     
     // 注册默认成员
     this._registerDefaultMembers();
@@ -130,6 +134,7 @@ export class AgentTeam {
 
   /**
    * 执行团队任务
+   * v4.3: 集成 WorktreeTaskBinding（任务双向绑定）
    */
   async executeTask(task, context = {}) {
     const taskId = randomUUID();
@@ -144,6 +149,11 @@ export class AgentTeam {
         console.warn(`[AgentTeam:${this.name}] Git not available, downgrading to fork isolation`);
         this.isolation = 'fork';
       }
+    }
+
+    // v4.3: 初始化 WorktreeTaskBinding
+    if (this.isolation === 'worktree' && this._worktreeManager?.available && !this._worktreeTaskBinding) {
+      this._worktreeTaskBinding = new WorktreeTaskBinding({ kernel: this.kernel });
     }
 
     // 1. 任务分解 (由 Leader 执行)

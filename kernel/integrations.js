@@ -26,6 +26,26 @@ async function _initSubagentManager() {
  * 位置: 在 initialize() 中，在 subagentManager 之后
  */
 async function _initSkillLoader() {
+
+// ============== Debate Teams 集成 ==============
+
+/**
+ * 初始化 DebateTeamManager
+ * 位置: 在 initialize() 中，在 skillLoader 之后
+ */
+async function _initDebateTeamManager() {
+    const { DebateTeamManager } = await import('./agent-debate.js');
+    this.debateTeamManager = new DebateTeamManager(this);
+    // review: removed // review: removed console.log('[Kernel] DebateTeamManager initialized');
+}
+
+// ============== Skills 集成 ==============
+
+/**
+ * 初始化 SkillLoader
+ * 位置: 在 initialize() 中，在 subagentManager 之后
+ */
+async function _initSkillLoader() {
     const { SkillLoader, SkillExecutor } = await import('./skills/index.js');
     
     // 从配置获取 skill 目录
@@ -139,6 +159,49 @@ function _registerNewBuiltins() {
             }
         });
     }
+
+    // 添加 DebateTeamManager 内置模块
+    if (this.debateTeamManager && !this.moduleRegistry.has('debateTeamManager')) {
+        this.moduleRegistry.register({
+            id: 'debateTeamManager',
+            name: 'Debate Team Manager',
+            type: 'kernel',
+            instance: {
+                execute: async (intent) => {
+                    const { action, teamId, topic, options } = intent.params || {};
+                    
+                    switch (action) {
+                        case 'createTeam':
+                            const team = this.debateTeamManager.createTeam(options);
+                            return { success: true, teamId: team.id, teamName: team.name };
+                        
+                        case 'startDebate':
+                            const result = await this.debateTeamManager.startDebate(teamId, topic, options);
+                            return { success: true, ...result };
+                        
+                        case 'getTeams':
+                            const teams = this.debateTeamManager.getTeams();
+                            return { success: true, teams };
+                        
+                        case 'getActiveDebates':
+                            const activeDebates = this.debateTeamManager.getActiveDebates();
+                            return { success: true, activeDebates };
+                        
+                        case 'getDebateHistory':
+                            const history = this.debateTeamManager.getDebateHistory(teamId);
+                            return { success: true, history };
+                        
+                        default:
+                            return { success: false, error: `Unknown action: ${action}` };
+                    }
+                },
+                shutdown: async () => {
+                    // 清理辩论团队
+                    // review: removed // review: removed console.log('[Kernel] DebateTeamManager shutdown');
+                }
+            }
+        });
+    }
 }
 
 // ============== 更新 process() 添加 Hook 支持 ==============
@@ -179,6 +242,7 @@ export {
     _initSubagentManager,
     _initSkillLoader,
     _initHookExecutor,
+    _initDebateTeamManager,
     _configurePermissionMode,
     _registerNewBuiltins,
     _processPreHook,
