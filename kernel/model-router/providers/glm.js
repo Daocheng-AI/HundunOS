@@ -11,7 +11,7 @@ import { BaseProvider } from './base.js';
 // GLM 模型配置
 // ============================================================================
 
-export const export const GLMModels = {
+export const GLMModels = {
     // GLM-4 Series (Latest)
     GLM_4_PLUS: {
         id: 'glm-4-plus', name: 'GLM-4-Plus',
@@ -94,8 +94,9 @@ export const export const GLMModels = {
 // ============================================================================
 
 export class GLMProvider extends BaseProvider {
-    constructor(config = {}) {
+    constructor(kernel, config = {}) {
         super(config);
+        this.kernel = kernel;
         
         this.name = 'glm';
         this.type = 'cloud';
@@ -103,9 +104,10 @@ export class GLMProvider extends BaseProvider {
         
         this.config = {
             ...this.config,
-            apiKey: config.apiKey || process.env.ZHIPU_API_KEY,
+            apiKey: config.apiKey || process.env.ZHIPU_API_KEY || '',
             baseUrl: config.baseUrl || 'https://open.bigmodel.cn/api/paas/v4',
-            defaultModel: config.defaultModel || 'glm-4-flash',
+            model: config.model || 'glm-4-flash',
+            timeout: config.timeout || 60000,
         };
 
         this.circuitBreaker = {
@@ -124,141 +126,67 @@ export class GLMProvider extends BaseProvider {
     // ========================================================================
 
     /**
-     * 聊天补全
+     * 聊天补全 - ModelRouter 兼容接口
      */
-    async chat(messages, options = {}) {
+    async call(messages, opts = {}) {
+        const start = Date.now();
+        this.stats.requests++;
+
         if (!this.config.apiKey) {
-            throw new Error('GLM API key not configured');
+            this.stats.errors++;
+            return { success: false, error: 'ZHIPU_API_KEY not configured' };
         }
 
         this._checkCircuitBreaker();
 
-        const model = options.model || this.config.defaultModel;
-        const modelConfig = this.models[model.toUpperCase().replace('-', '_')];
+        const model = opts.model || this.config.model;
 
         const requestBody = {
             model,
             messages: this._formatMessages(messages),
-            temperature: options.temperature ?? 0.7,
-            top_p: options.top_p ?? 0.9,
-            max_tokens: options.max_tokens ?? 4096,
+            temperature: opts.temperature ?? 0.7,
+            max_tokens: opts.max_tokens ?? 2048,
+            top_p: opts.top_p ?? 0.9,
             stream: false
         };
 
         // 函数调用支持
-        if (options.tools) {
-            requestBody.tools = options.tools;
-            requestBody.tool_choice = options.tool_choice || 'auto';
+        if (opts.tools) {
+            requestBody.tools = opts.tools;
+            requestBody.tool_choice = opts.tool_choice || 'auto';
         }
-
-        const startTime = Date.now();
 
         try {
             const response = await this._request('/chat/completions', requestBody);
             
-            this.stats.requests++;
-            this.stats.tokens.input += response.usage?.prompt_tokens || 0;
-            this.stats.tokens.output += response.usage?.completion_tokens || 0;
-            this.stats.lastRequest = new Date().toISOString();
-
+            this.stats.tokens += response.usage?.total_tokens || 0;
+            this.stats.latency += Date.now() - start;
+            
             this._recordSuccess();
-
+            
             return {
                 success: true,
-                model,
-                content: response.choices[0]?.message?.content,
-                toolCalls: response.choices[0]?.message?.tool_calls,
+                content: response.choices?.[0]?.message?.content || '',
                 usage: response.usage,
-                latency: Date.now() - startTime
+                latency: Date.now() - start,
+                model
             };
-        } catch (error) {
-            this._recordFailure(error);
-            throw error;
+        } catch (e) {
+            this._recordFailure(e);
+            return { success: false, error: e.message };
         }
     }
 
     /**
-     * 流式聊天
+     * 聊天补全 - 兼容旧接口
      */
-    async *chatStream(messages, options = {}) {
-        if (!this.config.apiKey) {
-            throw new Error('GLM API key not configured');
-        }
-
-        const model = options.model || this.config.defaultModel;
-
-        const requestBody = {
-            model,
-            messages: this._formatMessages(messages),
-            temperature: options.temperature ?? 0.7,
-            stream: true
-        };
-
-        const response = await this._requestStream('/chat/completions', requestBody);
-
-        for await (const chunk of response) {
-            const data = this._parseStreamChunk(chunk);
-            if (data) {
-                yield data;
-            }
-        }
+    async chat(messages, options = {}) {
+        return this.call(messages, options);
     }
 
-    /**
-     * Embedding 向量
-     */
-    async embed(texts, options = {}) {
-        const requestBody = {
-            model: options.model || 'embedding-2',
-            input: Array.isArray(texts) ? texts : [texts]
-        };
 
-        const response = await this._request('/embeddings', requestBody);
 
-        return {
-            embeddings: response.data.map(d => d.embedding),
-            model: requestBody.model,
-            usage: response.usage
-        };
-    }
 
-    // ========================================================================
-    // 模型信息
-    // ========================================================================
-
-    /**
-     * 获取可用模型列表
-     */
-    listModels() {
-        return Object.values(this.models).map(m => ({
-            id: m.id,
-            name: m.name,
-            maxTokens: m.maxTokens,
-            costPer1M: m.costPer1M,
-            capabilities: m.capabilities
-        }));
-    }
-
-    /**
-     * 获取模型配置
-     */
-    getModel(modelId) {
-        const key = modelId.toUpperCase().replace('-', '_');
-        return this.models[key];
-    }
-
-    /**
-     * 估算成本
-     */
-    estimateCost(inputTokens, outputTokens, model = 'glm-4-flash') {
-        const config = this.getModel(model);
-        if (!config) return 0;
-
-        const inputCost = (inputTokens / 1000000) * config.costPer1M;
-        const outputCost = (outputTokens / 2000000) * config.costPer1M; // 输出通常 2x
-
-        return inputCost + outputCost;
-    }
 
     // ========================================================================
     // 状态与统计
@@ -291,68 +219,90 @@ export class GLMProvider extends BaseProvider {
     // 内部方法
     // ========================================================================
 
-    _formatMessages(messages) {
-        return messages.map(msg => {
-            if (typeof msg === 'string') {
-                return { role: 'user', content: msg };
+
+
+    async _chat(messages, opts) {
+        const url = `${this.config.baseUrl}/chat/completions`;
+        const body = {
+            model: opts.model || this.config.model,
+            messages: messages.map(m => ({ 
+                role: m.role, 
+                content: m.content 
+            })),
+            temperature: opts.temperature ?? 0.7,
+            max_tokens: opts.max_tokens ?? 2048,
+            top_p: opts.top_p ?? 0.9,
+            stream: false
+        };
+
+        // 函数调用支持
+        if (opts.tools) {
+            body.tools = opts.tools;
+            body.tool_choice = opts.tool_choice || 'auto';
+        }
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), this.config.timeout);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.config.apiKey}`
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeout);
+
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(`GLM error ${response.status}: ${err}`);
             }
-            return msg;
-        });
-    }
 
-    async _request(endpoint, body) {
-        const url = `${this.config.baseUrl}${endpoint}`;
-        
-        const response = await this._fetchWithTimeout(url, {
-            method: 'POST',
-            headers: this._buildHeaders(this.config.apiKey),
-            body: JSON.stringify(body),
-        });
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error?.message || `GLM API error: ${response.status}`);
-        }
-
-        return response.json();
-    }
-
-    async *_requestStream(endpoint, body) {
-        const url = `${this.config.baseUrl}${endpoint}`;
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.config.apiKey}`
-            },
-            body: JSON.stringify({ ...body, stream: true })
-        });
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            yield decoder.decode(value);
+            return await response.json();
+        } catch (e) {
+            clearTimeout(timeout);
+            throw e;
         }
     }
 
-    _parseStreamChunk(chunk) {
-        const lines = chunk.split('\n');
-        for (const line of lines) {
-            if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                if (data === '[DONE]') return null;
-                try {
-                    return JSON.parse(data);
-                } catch {
-                    return null;
-                }
-            }
+
+
+    /**
+     * 获取 Provider 信息
+     */
+    getInfo() {
+        return { 
+            type: 'CLOUD', 
+            model: this.config.model, 
+            endpoint: this.config.baseUrl 
+        };
+    }
+
+    /**
+     * 获取统计信息
+     */
+    getStats() {
+        return {
+            ...this.stats,
+            circuitBreaker: this.circuitBreaker.state,
+            available: this.config.apiKey ? true : false
+        };
+    }
+
+    /**
+     * 健康检查
+     */
+    async healthCheck() {
+        try {
+            await this.call([{ role: 'user', content: 'ping' }], { max_tokens: 10 });
+            return { healthy: true };
+        } catch (error) {
+            return { healthy: false, error: error.message };
         }
-        return null;
     }
 
     _checkCircuitBreaker() {

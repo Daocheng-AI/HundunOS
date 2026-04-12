@@ -2,11 +2,17 @@
 // 多 Team 生命周期管理
 
 import { AgentTeam } from './index.js';
+import { MessageBus } from './message-bus.js';
+import { PlanApprovalManager } from './plan-approval.js';
 
 export class AgentTeamManager {
   constructor(kernel) {
     this.kernel = kernel;
     this.teams = new Map(); // teamId -> AgentTeam
+    
+    // v4.3: 消息总线和计划审批管理器
+    this.messageBus = new MessageBus(kernel);
+    this.planApprovalManager = new PlanApprovalManager(kernel);
   }
 
   async initialize() {

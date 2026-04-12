@@ -112,3 +112,10 @@ config/system.production.json
 # 测试临时输出
 test_mr_out.txt
 scripts/test-out.txt
+
+# 评估脚本（临时文件）
+multi-role-assessment.js
+simple-assessment.js
+test-tradingagents-optimizations.js
+test-simple-verification.js
+final-integration-test.js

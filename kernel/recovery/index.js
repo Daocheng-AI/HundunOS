@@ -2,10 +2,20 @@
  * HundunOS v3.0 - Auto Recovery 自动恢复模块
  * S2.B.3 任务
  * 监听崩溃、自动回滚、异常后自动修复
+ * v4.3: 添加 Agent 级恢复（参考 learn-claude-code s11）
  */
 
 // 统一常量（来自 kernel/constants.js，消除重复定义）
 export { RecoveryAction, RecoveryStatus } from '../constants.js';
+
+/**
+ * 对话压缩配置（从 ProcessMixin 导入）
+ * v4.3: 用于 COMPACT_AND_RETRY 动作
+ */
+const COMPACT_CONFIG = {
+  summaryModel: 'glm-4-flash',
+  maxSummaryTokens: 500,
+};
 
 /**
  * 异常事件记录
@@ -123,6 +133,40 @@ export class AutoRecovery {
             cooldown: 120000
         });
 
+        // v4.3: Agent 级错误（参考 learn-claude-code s11）
+        // max_tokens 截断 → 续写
+        this.addPolicy({
+            module: 'model-router',
+            errorPattern: /max_tokens|truncate|incomplete/i,
+            maxRetries: 3,
+            retryInterval: 1000,
+            action: RecoveryAction.CONTINUE,
+            fallbackAction: RecoveryAction.ESCALATE,
+            cooldown: 5000
+        });
+
+        // 上下文超限 → 压缩后重试
+        this.addPolicy({
+            module: 'model-router',
+            errorPattern: /context.*exceeded|prompt.*too.*long|token.*limit/i,
+            maxRetries: 2,
+            retryInterval: 2000,
+            action: RecoveryAction.COMPACT_AND_RETRY,
+            fallbackAction: RecoveryAction.ESCALATE,
+            cooldown: 10000
+        });
+
+        // 429 限流 → 指数退避重试
+        this.addPolicy({
+            module: 'model-router',
+            errorPattern: /429|rate.*limit|too.*many.*requests/i,
+            maxRetries: 5,
+            retryInterval: 5000,
+            action: RecoveryAction.RESTART,
+            fallbackAction: RecoveryAction.ESCALATE,
+            cooldown: 30000
+        });
+
         // 未知错误 → 升级
         this.addPolicy({
             module: '*',
@@ -228,6 +272,13 @@ export class AutoRecovery {
                 case RecoveryAction.ESCALATE:
                     result = await this._actionEscalate(event);
                     break;
+                // v4.3: Agent 级恢复（参考 learn-claude-code s11）
+                case RecoveryAction.CONTINUE:
+                    result = await this._actionContinue(event);
+                    break;
+                case RecoveryAction.COMPACT_AND_RETRY:
+                    result = await this._actionCompactAndRetry(event);
+                    break;
                 default:
                     result = { ok: false, error: `unknown action: ${action}` };
             }
@@ -308,6 +359,70 @@ export class AutoRecovery {
     async _actionEscalate(event) {
         this._escalate({ event: event.toJSON(), stats: this.getStats() });
         return { ok: true, message: '已升级处理' };
+    }
+
+    // v4.3: Agent 级恢复（参考 learn-claude-code s11）
+
+    /**
+     * 续写截断输出
+     * 用于 max_tokens 截断场景
+     */
+    async _actionContinue(event) {
+        const sessionId = event.context?.sessionId;
+        if (!sessionId) {
+            return { ok: false, error: 'no session id' };
+        }
+
+        const session = this.kernel?.state?.sessions?.get(sessionId);
+        if (!session) {
+            return { ok: false, error: 'session not found' };
+        }
+
+        // 注入续写提示
+        session.messages.push({
+            role: 'user',
+            content: '[Please continue from where you left off. I will wait for you to complete your thought.]',
+        });
+
+        return { ok: true, message: '已注入续写提示' };
+    }
+
+    /**
+     * 压缩后重试
+     * 用于上下文超限场景
+     */
+    async _actionCompactAndRetry(event) {
+        const sessionId = event.context?.sessionId;
+        if (!sessionId) {
+            return { ok: false, error: 'no session id' };
+        }
+
+        const session = this.kernel?.state?.sessions?.get(sessionId);
+        if (!session) {
+            return { ok: false, error: 'session not found' };
+        }
+
+        // 使用 compactor 压缩消息
+        const compactor = this.kernel?.compactor;
+        if (!compactor) {
+            return { ok: false, error: 'no compactor available' };
+        }
+
+        try {
+            const result = await compactor.compact(session.messages, {
+                model: COMPACT_CONFIG.summaryModel,
+            });
+
+            session.messages = [result.summary, ...result.preservedMessages, ...result.recent];
+
+            return {
+                ok: true,
+                message: `已压缩消息: ${result.stats.originalCount} → ${result.stats.compressedCount}`,
+                stats: result.stats,
+            };
+        } catch (e) {
+            return { ok: false, error: `压缩失败: ${e.message}` };
+        }
     }
 
     _escalate(data) {

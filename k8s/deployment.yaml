@@ -1,0 +1,184 @@
+# Kubernetes Deployment for HundunOS v4.3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hundunos
+  labels:
+    app: hundunos
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hundunos
+  template:
+    metadata:
+      labels:
+        app: hundunos
+    spec:
+      containers:
+      - name: hundunos
+        image: hundunos/hundunos:latest
+        ports:
+        - containerPort: 38080
+          name: api
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: HUNDUNOS_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hundunos-secrets
+              key: encryption-key
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hundunos-secrets
+              key: openai-api-key
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hundunos-secrets
+              key: anthropic-api-key
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: POSTGRES_HOST
+          value: "postgres"
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_DB
+          value: "hundunos"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: hundunos-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: hundunos-secrets
+              key: postgres-password
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 38080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 38080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: data
+          mountPath: /app/.hundunos
+        - name: workspace
+          mountPath: /app/workspace
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: hundunos-data
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: hundunos-workspace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hundunos
+  labels:
+    app: hundunos
+spec:
+  selector:
+    app: hundunos
+  ports:
+  - port: 38080
+    targetPort: 38080
+    name: api
+  - port: 9090
+    targetPort: 9090
+    name: metrics
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hundunos-lb
+  labels:
+    app: hundunos
+spec:
+  selector:
+    app: hundunos
+  ports:
+  - port: 80
+    targetPort: 38080
+    name: api
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hundunos-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.hundunos.ai
+    secretName: hundunos-tls
+  rules:
+  - host: api.hundunos.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hundunos-lb
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hundunos-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hundunos-workspace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: hundunos-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: hundunos

@@ -236,5 +236,89 @@
       "policy":    "required",
       "scientist": "optional"
     }
+  },
+  "compact": {
+    "enabled": true,
+    "contextWindowThreshold": 8000,
+    "summaryModel": "gpt-4o-mini",
+    "maxSummaryTokens": 500,
+    "microCompactEnabled": true,
+    "keepRecentToolResults": 3,
+    "maxHistoryRounds": 10
+  },
+  "todo": {
+    "enabled": true,
+    "planReminderInterval": 3,
+    "maxItems": 12
+  },
+  "taskGraph": {
+    "enabled": true,
+    "storageDir": ".hundunos/tasks"
+  },
+  "autonomousAgents": {
+    "enabled": true,
+    "pollInterval": 5000,
+    "maxConcurrency": 5
+  },
+  "worktree": {
+    "enabled": true,
+    "baseDir": ".hundunos/teams",
+    "cleanupOnComplete": true,
+    "mergeStrategy": "cherry-pick"
+  },
+  "monitoring": {
+    "enabled": false,
+    "port": 9090
+  },
+  "locale": "zh",
+  "supermemory": {
+    "enabled": false,
+    "apiKey": "${SUPERMEMORY_API_KEY}",
+    "baseUrl": "https://api.supermemory.ai/v3",
+    "apiVersion": "v3",
+    "containerTagStrategy": "user",
+    "customContainerTag": "",
+    "cache": {
+      "enabled": true,
+      "ttl": 600000,
+      "maxSize": 1000,
+      "persistent": false
+    },
+    "retry": {
+      "maxAttempts": 3,
+      "delay": 1000,
+      "backoffMultiplier": 2
+    },
+    "timeout": {
+      "connect": 5000,
+      "read": 5000
+    },
+    "batch": {
+      "enabled": true,
+      "maxBatchSize": 100,
+      "maxConcurrentBatches": 5
+    },
+    "sync": {
+      "enabled": false,
+      "interval": 3600000,
+      "autoResolveConflicts": false
+    },
+    "autoSave": {
+      "enabled": true,
+      "mode": "smart"
+    },
+    "offline": {
+      "enabled": true,
+      "autoReconnect": true,
+      "reconnectInterval": 30000
+    },
+    "monitoring": {
+      "enabled": true,
+      "logLevel": "info",
+      "alertThreshold": {
+        "errorRate": 0.1,
+        "responseTime": 5000
+      }
+    }
   }
 }

@@ -1,0 +1,26 @@
+# Kubernetes Ingress for HundunOS v4.3
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hundunos-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.hundunos.ai
+    secretName: hundunos-tls
+  rules:
+  - host: api.hundunos.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hundunos-lb
+            port:
+              number: 80

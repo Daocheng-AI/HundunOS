@@ -52,15 +52,23 @@ function getGitRoot(cwd) {
 
 /**
  * Worktree 信息
+ * v4.3: 添加任务双向绑定（参考 learn-claude-code s18）
  */
 export class WorktreeInfo {
-  constructor({ teamId, memberName, path, branch, created }) {
+  constructor({ teamId, memberName, path, branch, created, taskId }) {
     this.teamId = teamId;
     this.memberName = memberName;
     this.path = path;
     this.branch = branch;
     this.created = created || Date.now();
-    this.status = 'active'; // active | merged | removed
+    
+    // v4.3: 任务绑定字段
+    this.taskId = taskId || null;
+    this.worktreeState = 'active'; // active | kept | removed | unbound
+    this.closeout = null; // { action: 'keep'|'remove', reason: string, timestamp }
+    this.lastEnteredAt = null;
+    this.lastCommandAt = null;
+    this.lastCommandPreview = null;
   }
 }
 

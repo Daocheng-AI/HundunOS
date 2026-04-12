@@ -85,6 +85,30 @@ export const SUPPORTED_PROVIDERS = [
         logo: '/logo/openai.svg',
         docsUrl: 'https://github.com/ollama/ollama/blob/main/docs/openai.md',
     },
+    {
+        key: 'glm',
+        label: '智谱 AI (GLM)',
+        configKey: 'glm',
+        apiKeyName: 'ZHIPU_API_KEY',
+        modelName: 'GLM_MODEL',
+        defaultModel: 'glm-4-flash',
+        baseUrlName: 'GLM_BASE_URL',
+        defaultBaseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+        logo: '/logo/glm.svg',
+        docsUrl: 'https://open.bigmodel.cn/dev/api',
+    },
+    {
+        key: 'dashscope',
+        label: '阿里百炼 (DashScope)',
+        configKey: 'dashscope',
+        apiKeyName: 'DASHSCOPE_API_KEY',
+        modelName: 'DASHSCOPE_MODEL',
+        defaultModel: 'qwen-max',
+        baseUrlName: 'DASHSCOPE_BASE_URL',
+        defaultBaseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        logo: '/logo/dashscope.svg',
+        docsUrl: 'https://help.aliyun.com/zh/model-studio/getting-started/models',
+    },
 ];
 
 class ModelRouter {
@@ -143,11 +167,13 @@ class ModelRouter {
             localMaxTokens: config.localMaxTokens || 8192,
             requestTimeout: config.requestTimeout || 30000,
             // Provider 启停开关
-            providers: new Set(config.providers || ['ollama', 'openai', 'anthropic', 'google', 'mistral', 'custom']),
+            providers: new Set(config.providers || ['ollama', 'openai', 'anthropic', 'google', 'mistral', 'glm', 'dashscope', 'custom']),
             openai: config.openai || {},
             anthropic: config.anthropic || {},
             google: config.google || {},
             mistral: config.mistral || {},
+            glm: config.glm || {},
+            dashscope: config.dashscope || {},
             custom: config.custom || {},
         };
     }
@@ -175,6 +201,8 @@ class ModelRouter {
             'anthropic',
             'google',
             'mistral',
+            'glm',
+            'dashscope',
             'custom',
         ];
 
@@ -298,6 +326,48 @@ class ModelRouter {
                         costPer1M: mistral.config.costPer1M || 0,
                         meta: SUPPORTED_PROVIDERS.find(p => p.key === 'mistral'),
                     });
+                }
+                return;
+            }
+
+            if (id === 'glm') {
+                const { GLMProvider, GLMModels } = await import('./providers/glm.js');
+                const glm = new GLMProvider(this.kernel, this.routerConfig.glm);
+                if (glm.config.apiKey) {
+                    this.providerInstances.set('glm', glm);
+                    for (const [modelId, modelMeta] of Object.entries(GLMModels)) {
+                        this._registerProviderMeta(`glm_${modelMeta.id}`, {
+                            id: `glm_${modelMeta.id}`,
+                            name: modelMeta.name,
+                            type: 'CLOUD',
+                            model: modelMeta.id,
+                            capabilities: modelMeta.capabilities || ['chat'],
+                            maxTokens: modelMeta.maxTokens,
+                            costPer1M: modelMeta.costPer1M,
+                            meta: SUPPORTED_PROVIDERS.find(p => p.key === 'glm'),
+                        });
+                    }
+                }
+                return;
+            }
+
+            if (id === 'dashscope') {
+                const { DashScopeProvider, MODELS } = await import('./providers/dashscope.js');
+                const dashscope = new DashScopeProvider(this.kernel, this.routerConfig.dashscope);
+                if (dashscope.config.apiKey) {
+                    this.providerInstances.set('dashscope', dashscope);
+                    for (const [modelId, modelMeta] of Object.entries(MODELS)) {
+                        this._registerProviderMeta(`dashscope_${modelId}`, {
+                            id: `dashscope_${modelId}`,
+                            name: modelMeta.name,
+                            type: 'CLOUD',
+                            model: modelId,
+                            capabilities: modelMeta.capabilities || ['chat'],
+                            maxTokens: modelMeta.context,
+                            costPer1M: modelMeta.costPer1M,
+                            meta: SUPPORTED_PROVIDERS.find(p => p.key === 'dashscope'),
+                        });
+                    }
                 }
                 return;
             }
@@ -526,6 +596,9 @@ class ModelRouter {
         // v4.0: Multi-Provider Failover
         const result = await this._failoverCall(providerIds, { messages: compression.compressed ? compression.messages : messages, intent, session });
 
+        // v4.3: 检测 todo 工具调用（参考 learn-claude-code s03）
+        this._detectTodoUpdate(result);
+
         return {
             ...result,
             latency: result.latency || 0,
@@ -538,6 +611,18 @@ class ModelRouter {
                 engine: this.turboCompressor ? 'turboquant_v1' : 'llm_summarization',
             } : null,
         };
+    }
+
+    // v4.3: 检测 todo 工具调用（参考 learn-claude-code s03）
+    _detectTodoUpdate(result) {
+        const content = result?.content?.[0]?.text || result?.choices?.[0]?.message?.content || '';
+        const hasTodoTool = content.includes('tool_calls') && content.includes('"function": {"name": "todo"');
+        if (hasTodoTool) {
+            // todo 已更新，重置计数器
+        } else {
+            // 未更新，记录一轮
+            this.kernel?.todoManager?.noteRoundWithoutUpdate?.();
+        }
     }
 
     // ================================================================

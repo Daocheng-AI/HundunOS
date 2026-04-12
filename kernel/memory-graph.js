@@ -131,8 +131,11 @@ export class MemoryGraph {
     }
 
     // 检索记忆
-    async recall(query) {
+    // v4.3: 添加 type/scope 过滤（参考 learn-claude-code s09）
+    async recall(query, options = {}) {
         this.stats.reads++;
+        
+        const { type, scope, limit = 10 } = options;
         
         const results = {
             working: [],
@@ -143,21 +146,46 @@ export class MemoryGraph {
         
         // 搜索 Recent
         const q = query.toLowerCase();
-        results.recent = this.recent.filter(e => 
-            e.message.toLowerCase().includes(q) || e.intent.includes(q)
-        ).slice(0, 10);
+        results.recent = this.recent.filter(e => {
+            const matchesQuery = e.message.toLowerCase().includes(q) || e.intent.includes(q);
+            if (!matchesQuery) return false;
+            
+            // type 过滤
+            if (type && e.type !== type) return false;
+            
+            // scope 过滤
+            if (scope && e.scope !== scope) return false;
+            
+            return true;
+        }).slice(0, limit);
         
         // 搜索 Semantic
         for (const [key, value] of this.semantic) {
-            if (key.includes(q) || value.description?.includes(q)) {
-                results.semantic.push({ key, ...value });
-            }
+            const matchesQuery = key.includes(q) || value.description?.includes(q);
+            if (!matchesQuery) continue;
+            
+            // type 过滤
+            if (type && value.type !== type) continue;
+            
+            // scope 过滤
+            if (scope && value.scope !== scope) continue;
+            
+            results.semantic.push({ key, ...value });
         }
         
         // 搜索 Episodic
-        results.episodic = this.episodic.filter(e => 
-            e.message.toLowerCase().includes(q)
-        ).slice(0, 5);
+        results.episodic = this.episodic.filter(e => {
+            const matchesQuery = e.message.toLowerCase().includes(q);
+            if (!matchesQuery) return false;
+            
+            // type 过滤
+            if (type && e.type !== type) return false;
+            
+            // scope 过滤
+            if (scope && e.scope !== scope) return false;
+            
+            return true;
+        }).slice(0, Math.floor(limit / 2));
         
         return results;
     }

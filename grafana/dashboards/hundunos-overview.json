@@ -1,0 +1,82 @@
+{
+  "dashboard": {
+    "title": "HundunOS v4.3 - Overview",
+    "tags": ["hundunos"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 36,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "Tool Executions",
+        "targets": [
+          {
+            "expr": "rate(hundunos_tool_executions_total[5m])",
+            "legendFormat": "{{tool_name}}",
+            "refId": "A"
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "id": 2,
+        "title": "LLM Requests",
+        "targets": [
+          {
+            "expr": "rate(hundunos_llm_requests_total[5m])",
+            "legendFormat": "{{provider}}/{{model}}",
+            "refId": "B"
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "id": 3,
+        "title": "Active Sessions",
+        "targets": [
+          {
+            "expr": "hundunos_active_sessions",
+            "refId": "C"
+          }
+        ],
+        "type": "stat"
+      },
+      {
+        "id": 4,
+        "title": "Pending Tasks",
+        "targets": [
+          {
+            "expr": "hundunos_pending_tasks",
+            "refId": "D"
+          }
+        ],
+        "type": "stat"
+      },
+      {
+        "id": 5,
+        "title": "Errors",
+        "targets": [
+          {
+            "expr": "rate(hundunos_errors_total[5m])",
+            "legendFormat": "{{module}}/{{error_type}}",
+            "refId": "E"
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "id": 6,
+        "title": "Token Usage",
+        "targets": [
+          {
+            "expr": "rate(hundunos_token_usage_sum[5m])",
+            "legendFormat": "{{provider}}/{{model}}",
+            "refId": "F"
+          }
+        ],
+        "type": "timeseries"
+      }
+    ]
+  }
+}
