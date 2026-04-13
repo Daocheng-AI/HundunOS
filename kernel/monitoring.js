@@ -4,6 +4,7 @@
  */
 
 import { createServer } from 'http';
+import { existsSync } from 'fs';
 import { register, Counter, Histogram, Gauge, Summary } from 'prom-client';
 
 /**
@@ -208,9 +209,8 @@ export class HealthChecker {
     });
 
     this.register('storage', async () => {
-      const fs = require('fs');
       const storageDir = this.kernel.config?.storageDir || '.hundunos';
-      const exists = fs.existsSync(storageDir);
+      const exists = existsSync(storageDir);
       return {
         status: exists ? 'healthy' : 'unhealthy',
         path: storageDir,

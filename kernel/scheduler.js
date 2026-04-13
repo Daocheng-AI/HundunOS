@@ -8,6 +8,7 @@
 
 import { EventEmitter } from 'events';
 import { randomUUID } from 'crypto';
+import { execSync } from 'child_process';
 
 // 简易 cron 解析（不引入外部依赖）
 const CRON_FIELDS = ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'];
@@ -226,7 +227,6 @@ class Scheduler extends EventEmitter {
         try {
             // 使用 Windows PowerShell toast
             // 安全修复：使用 XML 模板参数化赋值，避免命令注入
-            const { execSync } = require('child_process');
             
             // 转义 XML 特殊字符
             const escapeXml = (str) => {

@@ -9,7 +9,7 @@
  */
 
 import { LRUCache } from 'lru-cache';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync, statSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -253,7 +253,7 @@ class L2DiskCache {
             this.stats.writes++;
             
             // 更新大小统计
-            const fileStats = existsSync(filePath) ? require('fs').statSync(filePath) : { size: 0 };
+            const fileStats = existsSync(filePath) ? statSync(filePath) : { size: 0 };
             this.stats.size += fileStats.size;
             
             // 检查是否超过大小限制
@@ -314,13 +314,13 @@ class L2DiskCache {
         const files = [];
         const scanDir = (dir) => {
             try {
-                const entries = require('fs').readdirSync(dir, { withFileTypes: true });
+                const entries = readdirSync(dir, { withFileTypes: true });
                 for (const entry of entries) {
                     const fullPath = join(dir, entry.name);
                     if (entry.isDirectory()) {
                         scanDir(fullPath);
                     } else if (entry.isFile() && entry.name.endsWith('.json')) {
-                        const stats = require('fs').statSync(fullPath);
+                        const stats = statSync(fullPath);
                         files.push({
                             path: fullPath,
                             size: stats.size,
@@ -344,7 +344,7 @@ class L2DiskCache {
         
         try {
             if (existsSync(filePath)) {
-                const stats = require('fs').statSync(filePath);
+                const stats = statSync(filePath);
                 unlinkSync(filePath);
                 this.stats.size -= stats.size;
                 this.stats.deletes++;

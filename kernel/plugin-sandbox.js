@@ -5,6 +5,7 @@
 
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import { cpus } from 'os';
+import { createRequire } from 'module';
 
 /**
  * 插件沙箱
@@ -72,6 +73,7 @@ export class PluginSandbox {
  */
 if (!isMainThread) {
   const { code, input, options } = workerData;
+  const require = createRequire(import.meta.url);
 
   try {
     // 模块拦截
@@ -88,8 +90,38 @@ if (!isMainThread) {
       return originalRequire.apply(this, arguments);
     };
 
-    // 执行代码
-    const fn = new Function('input', code);
+    // 安全执行：使用 vm.compileFunction 替代 new Function
+    // new Function() 可访问全局作用域，vm.compileFunction 在受限 scope 中执行
+    const vm = await import('vm');
+    const fn = vm.compileFunction(code, ['input'], {
+      parsingContext: vm.createContext({
+        input,
+        console,
+        Math,
+        JSON,
+        Array,
+        Object,
+        String,
+        Number,
+        Boolean,
+        Date,
+        RegExp,
+        Map,
+        Set,
+        Promise,
+        Error,
+        TypeError,
+        RangeError,
+        SyntaxError,
+        ReferenceError,
+        encodeURIComponent,
+        decodeURIComponent,
+        isNaN,
+        isFinite,
+        parseInt,
+        parseFloat,
+      }),
+    });
     const result = fn(input);
 
     parentPort.postMessage({ data: result });
