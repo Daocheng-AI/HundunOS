@@ -109,6 +109,30 @@ export const SUPPORTED_PROVIDERS = [
         logo: '/logo/dashscope.svg',
         docsUrl: 'https://help.aliyun.com/zh/model-studio/getting-started/models',
     },
+    {
+        key: 'wenxin',
+        label: '百度文心 (ERNIE)',
+        configKey: 'wenxin',
+        apiKeyName: 'WENXIN_API_KEY',
+        modelName: 'WENXIN_MODEL',
+        defaultModel: 'ernie-bot-turbo',
+        baseUrlName: 'WENXIN_BASE_URL',
+        defaultBaseUrl: 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop',
+        logo: '/logo/wenxin.svg',
+        docsUrl: 'https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html',
+    },
+    {
+        key: 'hunyuan',
+        label: '腾讯混元 (Hunyuan)',
+        configKey: 'hunyuan',
+        apiKeyName: 'HUNYUAN_SECRET_ID',
+        modelName: 'HUNYUAN_MODEL',
+        defaultModel: 'hunyuan-standard',
+        baseUrlName: 'HUNYUAN_BASE_URL',
+        defaultBaseUrl: 'https://hunyuan.tencentcloudapi.com',
+        logo: '/logo/hunyuan.svg',
+        docsUrl: 'https://cloud.tencent.com/document/product/1729',
+    },
 ];
 
 class ModelRouter {

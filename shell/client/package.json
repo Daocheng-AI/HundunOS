@@ -18,10 +18,6 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    // FIX-R2: 移除冗余依赖
-    //   - connect: 未使用，express 已内置中间件机制
-    //   - node-fetch: Node.js 18+ 已内置 global fetch，无需此包
-    //   - cors: 未使用，REST API 已在 kernel/core.js 统一处理 CORS
     "electron": "^28.0.0",
     "node-windows": "^0.1.6",
     "chalk": "^5.3.0",

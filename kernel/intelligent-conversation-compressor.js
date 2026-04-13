@@ -31,6 +31,42 @@ export const CompressionStrategy = {
     BALANCED: 'balanced',          // 平衡压缩：保持重要信息
     CONSERVATIVE: 'conservative',  // 保守压缩：最小信息损失
     ADAPTIVE: 'adaptive',          // 自适应压缩：根据对话类型调整
+    SEMANTIC: 'semantic',          // 语义压缩：基于语义相似度
+    HIERARCHICAL: 'hierarchical',  // 层次压缩：按重要性分层
+    SLIDING_WINDOW: 'sliding_window', // 滑动窗口：保留最近N条
+    TOPIC_BASED: 'topic_based',    // 主题压缩：按主题分组
+    TEMPORAL: 'temporal',          // 时间压缩：按时间衰减
+};
+
+/**
+ * 压缩算法
+ */
+export const CompressionAlgorithm = {
+    // 基础算法
+    TRUNCATE: 'truncate',          // 截断：直接截断历史消息
+    SUMMARIZE: 'summarize',        // 摘要：生成摘要替换历史
+    
+    // 语义算法
+    SEMANTIC_CLUSTER: 'semantic_cluster', // 语义聚类：相似消息聚类
+    SEMANTIC_SIMILARITY: 'semantic_similarity', // 语义相似度：保留代表性消息
+    
+    // 重要性算法
+    IMPORTANCE_RANKING: 'importance_ranking', // 重要性排序：保留重要消息
+    TF_IDF: 'tf_idf',              // TF-IDF：基于词频重要性
+    KEYWORD_EXTRACTION: 'keyword_extraction', // 关键词提取：保留关键词
+    
+    // 结构化算法
+    HIERARCHICAL_SUMMARY: 'hierarchical_summary', // 层次摘要：多层摘要
+    TOPIC_MODELING: 'topic_modeling', // 主题建模：LDA主题模型
+    ENTITY_EXTRACTION: 'entity_extraction', // 实体提取：保留关键实体
+    
+    // 时间算法
+    TEMPORAL_DECAY: 'temporal_decay', // 时间衰减：旧消息权重降低
+    RECENCY_WEIGHTED: 'recency_weighted', // 新近加权：新消息权重更高
+    
+    // 混合算法
+    HYBRID_SEMANTIC_IMPORTANCE: 'hybrid_semantic_importance', // 混合语义重要性
+    HYBRID_TEMPORAL_SEMANTIC: 'hybrid_temporal_semantic', // 混合时间语义
 };
 
 /**

@@ -18,7 +18,6 @@ export class RedisPoolManager {
       maxRetriesPerRequest: config.maxRetriesPerRequest || 3,
       retryStrategy: config.retryStrategy || (times) => Math.min(times * 50, 2000),
       enableReadyCheck: true,
-      maxRetriesPerRequest: 3,
     };
     this.pool = null;
   }
@@ -154,7 +153,7 @@ export class PostgresPoolManager {
    */
   async getStats() {
     try {
-      const result = await this.query('SELECT count(*) as total, count(*) FILTER (state != \'idle\') as active FROM pg_stat_activity');
+      const result = await this.query("SELECT count(*) as total, count(*) FILTER (state != 'idle') as active FROM pg_stat_activity");
       return {
         total: result.rows[0].total,
         active: result.rows[0].active,

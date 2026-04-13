@@ -1,90 +1,204 @@
 /**
  * kernel/agent-debate.js
- * 辩论团队架构基础框架
+ * 辩论团队架构基础框架（普适设计）
  * 
  * 借鉴 TradingAgents-CN 的多智能体辩论架构
- * 支持：分析师、研究员、交易员、风险经理的协作辩论
+ * 支持多种领域的协作辩论，不局限于金融
  */
 
 import { randomUUID } from 'crypto';
 
 /**
- * 辩论角色类型
+ * 辩论角色类型（普适设计）
  */
 export const DebateRole = {
-    ANALYST: 'analyst',      // 分析师：分析市场数据
-    RESEARCHER: 'researcher', // 研究员：收集和研究信息
-    TRADER: 'trader',        // 交易员：执行交易决策
-    RISK_MANAGER: 'risk_manager', // 风险经理：评估和管理风险
-    MODERATOR: 'moderator',  // 主持人：协调辩论，总结结论
+    // 核心角色
+    ANALYST: 'analyst',           // 分析师：分析数据和问题
+    RESEARCHER: 'researcher',     // 研究员：收集和研究信息
+    CRITIC: 'critic',             // 批评家：提出质疑和反驳
+    SUPPORTER: 'supporter',       // 支持者：提供支持和论证
+    MODERATOR: 'moderator',       // 主持人：协调辩论，总结结论
+    
+    // 专业角色
+    EXPERT: 'expert',             // 专家：提供专业见解
+    SKEPTIC: 'skeptic',           // 怀疑者：质疑假设和结论
+    OPTIMIST: 'optimist',         // 乐观者：寻找积极面
+    PESSIMIST: 'pessimist',       // 悲观者：识别潜在问题
+    PRAGMATIST: 'pragmatist',     // 实用主义者：关注可行性
+    
+    // 领域特定角色（可扩展）
+    TECHNICAL: 'technical',       // 技术专家：技术角度分析
+    CREATIVE: 'creative',         // 创意专家：提供创新视角
+    ETHICAL: 'ethical',           // 伦理专家：道德和伦理角度
+    LEGAL: 'legal',               // 法律专家：合规和法律角度
+    FINANCIAL: 'financial',       // 财务专家：成本和收益角度
+};
+
+/**
+ * 辩论领域类型
+ */
+export const DebateDomain = {
+    GENERAL: 'general',           // 通用领域
+    TECHNICAL: 'technical',       // 技术领域
+    BUSINESS: 'business',         // 商业领域
+    ACADEMIC: 'academic',         // 学术领域
+    CREATIVE: 'creative',         // 创意领域
+    POLICY: 'policy',             // 政策领域
+    ETHICAL: 'ethical',           // 伦理领域
+    SCIENTIFIC: 'scientific',     // 科学领域
+};
+
+/**
+ * 辩论策略类型
+ */
+export const DebateStrategy = {
+    ADVERSARIAL: 'adversarial',   // 对抗式：正反方辩论
+    COLLABORATIVE: 'collaborative', // 协作式：共同探索
+    DIALECTICAL: 'dialectical',   // 辩证式：正反合
+    EXPLORATORY: 'exploratory',   // 探索式：发散思维
+    STRUCTURED: 'structured',     // 结构化：按步骤进行
 };
 
 /**
  * 辩论回合状态
  */
 export const DebateRoundState = {
-    INITIAL: 'initial',      // 初始状态
-    ANALYZING: 'analyzing',   // 分析阶段
-    DEBATING: 'debating',    // 辩论阶段
-    VOTING: 'voting',        // 投票阶段
-    CONCLUDING: 'concluding', // 结论阶段
-    COMPLETED: 'completed',  // 完成
+    INITIAL: 'initial',           // 初始状态
+    ANALYZING: 'analyzing',       // 分析阶段
+    DEBATING: 'debating',         // 辩论阶段
+    VOTING: 'voting',             // 投票阶段
+    CONCLUDING: 'concluding',     // 结论阶段
+    COMPLETED: 'completed',       // 完成
 };
 
 /**
- * 辩论团队成员
+ * 辩论团队成员（普适设计）
  */
 export class DebateMember {
     constructor(config = {}) {
         this.id = config.id || randomUUID();
         this.name = config.name || 'debate_member';
         this.role = config.role || DebateRole.ANALYST;
+        this.domain = config.domain || DebateDomain.GENERAL;
         this.capabilities = config.capabilities || [];
-        this.persona = config.persona || this._getDefaultPersona(config.role);
+        this.persona = config.persona || this._getDefaultPersona(config.role, config.domain);
         this.confidence = config.confidence || 0.7; // 自信度 0-1
         this.aggressiveness = config.aggressiveness || 0.5; // 攻击性 0-1
         this.reasoningDepth = config.reasoningDepth || 3; // 推理深度
+        this.expertise = config.expertise || []; // 专业领域
+        this.bias = config.bias || 'neutral'; // 倾向性：neutral, optimistic, pessimistic, critical
     }
 
-    _getDefaultPersona(role) {
-        const personas = {
-            [DebateRole.ANALYST]: `你是一位经验丰富的市场分析师，擅长数据分析和模式识别。
+    _getDefaultPersona(role, domain = DebateDomain.GENERAL) {
+        // 通用角色人格
+        const generalPersonas = {
+            [DebateRole.ANALYST]: `你是一位经验丰富的分析师，擅长数据分析和问题诊断。
 你的特点是：
-1. 严谨、客观，基于数据说话
-2. 擅长发现趋势和异常
-3. 关注技术指标和基本面分析
+1. 严谨、客观，基于事实和数据说话
+2. 擅长发现模式、趋势和异常
+3. 关注细节和逻辑一致性
 4. 提供数据驱动的见解和建议`,
 
             [DebateRole.RESEARCHER]: `你是一位细致的研究员，擅长信息收集和深度研究。
 你的特点是：
 1. 好奇心强，喜欢探索未知
-2. 擅长从多个来源收集信息
-3. 注重事实和证据
+2. 擅长从多个来源收集和验证信息
+3. 注重事实、证据和可靠性
 4. 提供全面、深入的研究报告`,
 
-            [DebateRole.TRADER]: `你是一位果断的交易员，擅长执行交易决策。
+            [DebateRole.CRITIC]: `你是一位敏锐的批评家，擅长发现问题和提出质疑。
 你的特点是：
-1. 行动迅速，决策果断
-2. 关注市场时机和流动性
-3. 有丰富的实战经验
-4. 注重风险回报比和执行力`,
+1. 批判性思维强，不轻易接受结论
+2. 擅长发现逻辑漏洞和潜在问题
+3. 关注假设的合理性和证据的充分性
+4. 提出建设性的批评和改进建议`,
 
-            [DebateRole.RISK_MANAGER]: `你是一位谨慎的风险经理，擅长风险评估和管理。
+            [DebateRole.SUPPORTER]: `你是一位积极的支持者，擅长提供论证和支持。
 你的特点是：
-1. 保守、谨慎，注重风险控制
-2. 擅长识别潜在风险
-3. 关注最大回撤和波动率
-4. 提供风险缓解建议`,
+1. 建设性思维，寻找解决方案
+2. 擅长提供支持证据和论证
+3. 关注优点和可行性
+4. 提供积极的建议和替代方案`,
 
             [DebateRole.MODERATOR]: `你是一位公正的主持人，负责协调辩论和总结结论。
 你的特点是：
 1. 公正、中立，不偏袒任何一方
-2. 擅长引导讨论和总结要点
-3. 关注共识和决策质量
-4. 确保辩论有序进行`
+2. 擅长引导讨论、平衡观点和总结要点
+3. 关注共识、决策质量和时间效率
+4. 确保辩论有序、高效进行`,
+
+            [DebateRole.EXPERT]: `你是一位领域专家，提供专业见解和深度分析。
+你的特点是：
+1. 专业知识深厚，经验丰富
+2. 擅长从专业角度分析问题
+3. 关注行业最佳实践和专业标准
+4. 提供权威的专业意见`,
+
+            [DebateRole.SKEPTIC]: `你是一位怀疑者，质疑假设和结论。
+你的特点是：
+1. 怀疑精神强，不盲从权威
+2. 擅长挑战常规思维和既有假设
+3. 关注证据的充分性和逻辑的严密性
+4. 提出质疑和反例`,
+
+            [DebateRole.OPTIMIST]: `你是一位乐观者，寻找积极面和机会。
+你的特点是：
+1. 积极乐观，看到可能性
+2. 擅长发现机会和优势
+3. 关注潜在收益和正面影响
+4. 提供乐观的视角和建议`,
+
+            [DebateRole.PESSIMIST]: `你是一位悲观者，识别潜在问题和风险。
+你的特点是：
+1. 谨慎保守，关注风险
+2. 擅长发现潜在问题和隐患
+3. 关注最坏情况和负面影响
+4. 提供风险警示和预防建议`,
+
+            [DebateRole.PRAGMATIST]: `你是一位实用主义者，关注可行性和实用性。
+你的特点是：
+1. 务实、实际，关注落地
+2. 擅长评估可行性和资源需求
+3. 关注成本效益和实施难度
+4. 提供切实可行的建议`,
         };
 
-        return personas[role] || personas[DebateRole.ANALYST];
+        // 领域特定人格扩展
+        const domainExtensions = {
+            [DebateDomain.TECHNICAL]: {
+                [DebateRole.TECHNICAL]: `你是一位技术专家，从技术角度分析问题。
+你的特点是：
+1. 技术功底深厚，熟悉技术栈
+2. 擅长技术方案设计和架构分析
+3. 关注技术可行性、性能和可维护性
+4. 提供技术实现建议和最佳实践`,
+            },
+            [DebateDomain.CREATIVE]: {
+                [DebateRole.CREATIVE]: `你是一位创意专家，提供创新视角和想法。
+你的特点是：
+1. 创意丰富，思维活跃
+2. 擅长跳出框架思考和创新
+3. 关注新颖性、独特性和用户体验
+4. 提供创新方案和设计建议`,
+            },
+            [DebateDomain.ETHICAL]: {
+                [DebateRole.ETHICAL]: `你是一位伦理专家，从道德和伦理角度分析。
+你的特点是：
+1. 道德敏感性强，关注伦理问题
+2. 擅长识别伦理风险和道德困境
+3. 关注社会责任和价值观
+4. 提供伦理评估和建议`,
+            },
+        };
+
+        // 合并通用和领域特定人格
+        let persona = generalPersonas[role] || generalPersonas[DebateRole.ANALYST];
+        
+        if (domainExtensions[domain] && domainExtensions[domain][role]) {
+            persona = domainExtensions[domain][role];
+        }
+
+        return persona;
     }
 
     toConfig() {
@@ -92,10 +206,13 @@ export class DebateMember {
             id: this.id,
             name: this.name,
             role: this.role,
+            domain: this.domain,
             capabilities: this.capabilities,
             confidence: this.confidence,
             aggressiveness: this.aggressiveness,
             reasoningDepth: this.reasoningDepth,
+            expertise: this.expertise,
+            bias: this.bias,
         };
     }
 }

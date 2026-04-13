@@ -400,48 +400,445 @@ class L2DiskCache {
 class L3DistributedCache {
     constructor(options = {}) {
         this.enabled = options.enabled || false;
-        this.provider = options.provider || 'redis'; // redis, memcached, etc.
-        this.config = options.config || {};
+        this.provider = options.provider || 'redis'; // redis, memcached, memory-cluster
+        this.config = {
+            host: options.host || 'localhost',
+            port: options.port || 6379,
+            password: options.password || null,
+            db: options.db || 0,
+            keyPrefix: options.keyPrefix || 'hundunos:cache:',
+            ttl: options.ttl || 3600000, // 默认1小时
+            maxRetries: options.maxRetries || 3,
+            retryDelay: options.retryDelay || 1000,
+            timeout: options.timeout || 5000,
+            ...options.config
+        };
+        
+        this.client = null;
+        this.isConnected = false;
         
         this.stats = {
             hits: 0,
             misses: 0,
+            sets: 0,
+            deletes: 0,
+            errors: 0,
             enabled: this.enabled,
         };
+        
+        // 如果启用，初始化连接
+        if (this.enabled) {
+            this._initializeClient();
+        }
     }
 
-    get(key) {
-        if (!this.enabled) return null;
-        // 占位符实现，未来可以集成 Redis 等
-        this.stats.misses++;
-        return null;
+    /**
+     * 初始化客户端连接
+     */
+    async _initializeClient() {
+        try {
+            if (this.provider === 'redis') {
+                // 动态导入 Redis 客户端
+                const { createClient } = await import('redis');
+                
+                this.client = createClient({
+                    url: this.config.password 
+                        ? `redis://:${this.config.password}@${this.config.host}:${this.config.port}/${this.config.db}`
+                        : `redis://${this.config.host}:${this.config.port}/${this.config.db}`,
+                    socket: {
+                        connectTimeout: this.config.timeout,
+                        retryStrategy: (retries) => {
+                            if (retries > this.config.maxRetries) {
+                                console.error('[L3DistributedCache] Redis connection failed after max retries');
+                                return new Error('Redis connection failed');
+                            }
+                            return Math.min(retries * this.config.retryDelay, 3000);
+                        }
+                    }
+                });
+                
+                this.client.on('error', (err) => {
+                    console.error('[L3DistributedCache] Redis Client Error:', err);
+                    this.stats.errors++;
+                });
+                
+                this.client.on('connect', () => {
+                    console.log('[L3DistributedCache] Redis connected');
+                    this.isConnected = true;
+                });
+                
+                this.client.on('disconnect', () => {
+                    console.log('[L3DistributedCache] Redis disconnected');
+                    this.isConnected = false;
+                });
+                
+                await this.client.connect();
+                
+            } else if (this.provider === 'memcached') {
+                // 动态导入 Memcached 客户端
+                const Memcached = await import('memcached');
+                
+                this.client = new Memcached.default(
+                    `${this.config.host}:${this.config.port}`,
+                    {
+                        retries: this.config.maxRetries,
+                        timeout: this.config.timeout,
+                        poolSize: 10
+                    }
+                );
+                
+                this.isConnected = true;
+                
+            } else if (this.provider === 'memory-cluster') {
+                // 内存集群模式（用于测试或小规模部署）
+                this.client = new Map();
+                this.isConnected = true;
+            }
+            
+        } catch (error) {
+            console.error('[L3DistributedCache] Failed to initialize client:', error);
+            this.enabled = false;
+            this.stats.errors++;
+        }
     }
 
-    set(key, value, metadata = {}) {
-        if (!this.enabled) return false;
-        // 占位符实现
-        return false;
+    /**
+     * 获取缓存值
+     */
+    async get(key) {
+        if (!this.enabled || !this.isConnected) return null;
+        
+        const fullKey = this.config.keyPrefix + key;
+        
+        try {
+            let value = null;
+            
+            if (this.provider === 'redis') {
+                const data = await this.client.get(fullKey);
+                if (data) {
+                    value = JSON.parse(data);
+                    this.stats.hits++;
+                } else {
+                    this.stats.misses++;
+                }
+                
+            } else if (this.provider === 'memcached') {
+                value = await new Promise((resolve, reject) => {
+                    this.client.get(fullKey, (err, data) => {
+                        if (err) reject(err);
+                        else resolve(data ? JSON.parse(data) : null);
+                    });
+                });
+                
+                if (value) {
+                    this.stats.hits++;
+                } else {
+                    this.stats.misses++;
+                }
+                
+            } else if (this.provider === 'memory-cluster') {
+                const data = this.client.get(fullKey);
+                if (data && (!data.expiresAt || Date.now() < data.expiresAt)) {
+                    value = data.value;
+                    this.stats.hits++;
+                } else {
+                    if (data) this.client.delete(fullKey); // 清理过期数据
+                    this.stats.misses++;
+                }
+            }
+            
+            return value;
+            
+        } catch (error) {
+            console.error(`[L3DistributedCache] Failed to get key ${key}:`, error);
+            this.stats.errors++;
+            this.stats.misses++;
+            return null;
+        }
     }
 
-    delete(key) {
-        if (!this.enabled) return false;
-        return false;
+    /**
+     * 设置缓存值
+     */
+    async set(key, value, metadata = {}) {
+        if (!this.enabled || !this.isConnected) return false;
+        
+        const fullKey = this.config.keyPrefix + key;
+        const ttl = metadata.ttl || this.config.ttl;
+        const expiresAt = ttl > 0 ? Date.now() + ttl : null;
+        
+        const data = {
+            value,
+            metadata: {
+                ...metadata,
+                createdAt: Date.now(),
+                expiresAt,
+            }
+        };
+        
+        try {
+            if (this.provider === 'redis') {
+                const serialized = JSON.stringify(data);
+                if (ttl > 0) {
+                    await this.client.setEx(fullKey, Math.floor(ttl / 1000), serialized);
+                } else {
+                    await this.client.set(fullKey, serialized);
+                }
+                
+            } else if (this.provider === 'memcached') {
+                await new Promise((resolve, reject) => {
+                    this.client.set(fullKey, JSON.stringify(data), ttl > 0 ? Math.floor(ttl / 1000) : 0, (err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+                
+            } else if (this.provider === 'memory-cluster') {
+                this.client.set(fullKey, data);
+                if (ttl > 0) {
+                    // 设置过期清理
+                    setTimeout(() => {
+                        this.client.delete(fullKey);
+                    }, ttl);
+                }
+            }
+            
+            this.stats.sets++;
+            return true;
+            
+        } catch (error) {
+            console.error(`[L3DistributedCache] Failed to set key ${key}:`, error);
+            this.stats.errors++;
+            return false;
+        }
     }
 
-    clear() {
-        // 占位符实现
+    /**
+     * 删除缓存值
+     */
+    async delete(key) {
+        if (!this.enabled || !this.isConnected) return false;
+        
+        const fullKey = this.config.keyPrefix + key;
+        
+        try {
+            if (this.provider === 'redis') {
+                await this.client.del(fullKey);
+                
+            } else if (this.provider === 'memcached') {
+                await new Promise((resolve, reject) => {
+                    this.client.del(fullKey, (err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+                
+            } else if (this.provider === 'memory-cluster') {
+                this.client.delete(fullKey);
+            }
+            
+            this.stats.deletes++;
+            return true;
+            
+        } catch (error) {
+            console.error(`[L3DistributedCache] Failed to delete key ${key}:`, error);
+            this.stats.errors++;
+            return false;
+        }
     }
 
-    has(key) {
-        return false;
+    /**
+     * 清空缓存
+     */
+    async clear() {
+        if (!this.enabled || !this.isConnected) return;
+        
+        try {
+            if (this.provider === 'redis') {
+                // 删除所有匹配前缀的键
+                const keys = await this.client.keys(this.config.keyPrefix + '*');
+                if (keys.length > 0) {
+                    await this.client.del(keys);
+                }
+                
+            } else if (this.provider === 'memcached') {
+                // Memcached 不支持按前缀删除，需要 flush
+                await new Promise((resolve, reject) => {
+                    this.client.flush((err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+                
+            } else if (this.provider === 'memory-cluster') {
+                this.client.clear();
+            }
+            
+        } catch (error) {
+            console.error('[L3DistributedCache] Failed to clear cache:', error);
+            this.stats.errors++;
+        }
     }
 
+    /**
+     * 检查键是否存在
+     */
+    async has(key) {
+        if (!this.enabled || !this.isConnected) return false;
+        
+        const fullKey = this.config.keyPrefix + key;
+        
+        try {
+            if (this.provider === 'redis') {
+                return await this.client.exists(fullKey) === 1;
+                
+            } else if (this.provider === 'memcached') {
+                return await new Promise((resolve, reject) => {
+                    this.client.get(fullKey, (err, data) => {
+                        if (err) reject(err);
+                        else resolve(data !== undefined);
+                    });
+                });
+                
+            } else if (this.provider === 'memory-cluster') {
+                const data = this.client.get(fullKey);
+                return data && (!data.expiresAt || Date.now() < data.expiresAt);
+            }
+            
+        } catch (error) {
+            console.error(`[L3DistributedCache] Failed to check key ${key}:`, error);
+            return false;
+        }
+    }
+
+    /**
+     * 批量获取
+     */
+    async mget(keys) {
+        if (!this.enabled || !this.isConnected) {
+            return { results: {}, missingKeys: keys };
+        }
+        
+        const results = {};
+        const missingKeys = [];
+        
+        try {
+            if (this.provider === 'redis') {
+                const fullKeys = keys.map(k => this.config.keyPrefix + k);
+                const values = await this.client.mGet(fullKeys);
+                
+                for (let i = 0; i < keys.length; i++) {
+                    if (values[i]) {
+                        const data = JSON.parse(values[i]);
+                        results[keys[i]] = data.value;
+                        this.stats.hits++;
+                    } else {
+                        missingKeys.push(keys[i]);
+                        this.stats.misses++;
+                    }
+                }
+                
+            } else {
+                // 其他provider逐个获取
+                for (const key of keys) {
+                    const value = await this.get(key);
+                    if (value !== null) {
+                        results[key] = value;
+                    } else {
+                        missingKeys.push(key);
+                    }
+                }
+            }
+            
+        } catch (error) {
+            console.error('[L3DistributedCache] Failed to mget:', error);
+            this.stats.errors++;
+            return { results: {}, missingKeys: keys };
+        }
+        
+        return { results, missingKeys };
+    }
+
+    /**
+     * 批量设置
+     */
+    async mset(items, metadata = {}) {
+        if (!this.enabled || !this.isConnected) return false;
+        
+        try {
+            if (this.provider === 'redis') {
+                const multi = this.client.multi();
+                
+                for (const [key, value] of Object.entries(items)) {
+                    const fullKey = this.config.keyPrefix + key;
+                    const ttl = metadata.ttl || this.config.ttl;
+                    const data = {
+                        value,
+                        metadata: {
+                            ...metadata,
+                            createdAt: Date.now(),
+                            expiresAt: ttl > 0 ? Date.now() + ttl : null,
+                        }
+                    };
+                    
+                    const serialized = JSON.stringify(data);
+                    if (ttl > 0) {
+                        multi.setEx(fullKey, Math.floor(ttl / 1000), serialized);
+                    } else {
+                        multi.set(fullKey, serialized);
+                    }
+                }
+                
+                await multi.exec();
+                this.stats.sets += Object.keys(items).length;
+                
+            } else {
+                // 其他provider逐个设置
+                for (const [key, value] of Object.entries(items)) {
+                    await this.set(key, value, metadata);
+                }
+            }
+            
+            return true;
+            
+        } catch (error) {
+            console.error('[L3DistributedCache] Failed to mset:', error);
+            this.stats.errors++;
+            return false;
+        }
+    }
+
+    /**
+     * 获取统计信息
+     */
     getStats() {
         return {
             ...this.stats,
             provider: this.provider,
             configured: this.enabled,
+            connected: this.isConnected,
         };
+    }
+
+    /**
+     * 关闭连接
+     */
+    async close() {
+        if (!this.client) return;
+        
+        try {
+            if (this.provider === 'redis') {
+                await this.client.quit();
+            } else if (this.provider === 'memcached') {
+                this.client.end();
+            }
+            
+            this.isConnected = false;
+            console.log('[L3DistributedCache] Connection closed');
+            
+        } catch (error) {
+            console.error('[L3DistributedCache] Failed to close connection:', error);
+        }
     }
 }
 
