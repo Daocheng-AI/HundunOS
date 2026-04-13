@@ -405,4 +405,4 @@ class SupermemoryMixin {
   }
 }
 
-module.exports = { SupermemoryMixin };
+export { SupermemoryMixin };

@@ -87,7 +87,7 @@ Use tools to accomplish tasks. Think step by step.`;
  * @param {Object} options - { taskContext, includeMemory, includeSkills, includeToolList }
  * @returns {Promise<string>} 系统提示
  */
-export async buildSystemPrompt(kernel, options = {}) {
+export async function buildSystemPrompt(kernel, options = {}) {
   const {
     taskContext = '',
     includeMemory = true,

@@ -297,7 +297,7 @@ class ErrorHandler {
   }
 }
 
-module.exports = {
+export {
   ErrorHandler,
   SupermemoryError,
   NetworkError,

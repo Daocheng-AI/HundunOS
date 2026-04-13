@@ -405,4 +405,4 @@ class SupermemoryContextEnhancerIntegration {
   }
 }
 
-module.exports = { SupermemoryContextEnhancerIntegration };
+export { SupermemoryContextEnhancerIntegration };

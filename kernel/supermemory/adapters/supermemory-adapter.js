@@ -357,4 +357,4 @@ class SupermemoryAdapter {
   }
 }
 
-module.exports = { SupermemoryAdapter };
+export { SupermemoryAdapter };

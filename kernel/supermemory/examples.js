@@ -270,12 +270,12 @@ async function main() {
 }
 
 // 如果直接运行此文件，执行主函数
-if (require.main === module) {
+// if (import.meta.url === `file://${__filename}`) {
   main();
 }
 
 // 导出示例函数供其他模块使用
-module.exports = {
+export {
   example1_basicUsage,
   example2_bulkOperations,
   example3_cacheManagement,

@@ -567,4 +567,4 @@ class BulkOperator {
   }
 }
 
-module.exports = { BulkOperator, BatchProgress };
+export { BulkOperator, BatchProgress };

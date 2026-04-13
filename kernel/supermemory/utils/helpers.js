@@ -404,7 +404,7 @@ function createLogger(name, level = 'info') {
   return new Logger(name, level);
 }
 
-module.exports = {
+export {
   Logger,
   ConfigValidator,
   Helpers,

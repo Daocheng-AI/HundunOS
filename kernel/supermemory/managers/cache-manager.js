@@ -357,4 +357,4 @@ class CacheManager {
   }
 }
 
-module.exports = { CacheManager, CacheEntry };
+export { CacheManager, CacheEntry };

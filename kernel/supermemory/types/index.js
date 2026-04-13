@@ -433,7 +433,7 @@
  * @property {number} size - 文件大小
  */
 
-module.exports = {
+export {
   // 导出类型定义（用于 JSDoc）
   UserProfile,
   Fact,

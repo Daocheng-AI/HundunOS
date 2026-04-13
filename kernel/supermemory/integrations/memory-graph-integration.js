@@ -519,7 +519,7 @@ class SupermemoryMemoryGraphIntegration {
   }
 }
 
-module.exports = {
+export {
   MemoryBridge,
   SupermemoryMemoryGraphIntegration
 };

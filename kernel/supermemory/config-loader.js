@@ -294,7 +294,7 @@ function isSupermemoryEnabled(kernel) {
   return config && config.enabled !== false;
 }
 
-module.exports = {
+export {
   loadSupermemoryConfig,
   validateSupermemoryConfig,
   getSupermemoryConfig,
