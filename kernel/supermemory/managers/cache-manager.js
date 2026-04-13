@@ -73,9 +73,20 @@ class CacheManager {
       prunes: 0
     };
 
-    // 如果启用持久化，初始化数据库
+    // 初始化缓存（非持久化模式立即完成）
+    this._initPromise = null;
     if (this.config.persistent) {
-      await this.initPersistentCache();
+      this._initPromise = this.initPersistentCache();
+    }
+  }
+
+  /**
+   * 确保缓存已初始化（持久化模式需 await）
+   */
+  async ensureInit() {
+    if (this._initPromise) {
+      await this._initPromise;
+      this._initPromise = null;
     }
   }
 
@@ -194,6 +205,7 @@ class CacheManager {
    * @returns {Promise<void>}
    */
   async invalidatePattern(pattern) {
+    await this.ensureInit();
     const regex = new RegExp(pattern);
 
     // 清除内存缓存
@@ -227,6 +239,7 @@ class CacheManager {
    * @returns {Promise<void>}
    */
   async prune() {
+    await this.ensureInit();
     const now = Date.now();
 
     // 清理过期的内存缓存

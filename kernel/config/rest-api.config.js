@@ -1,64 +1,54 @@
 // hundunos/kernel/config/rest-api.config.js
 // REST API 配置类
 
-import { Config, Env, Nested } from './decorators.js';
-
 /**
  * CORS 配置
  */
-@Config
 export class CorsConfig {
-  /** 允许的源 */
-  @Env('CORS_ALLOWED_ORIGINS')
   allowedOrigins = ['http://localhost:38080', 'http://127.0.0.1:38080'];
-
-  /** 是否允许凭证 */
-  @Env('CORS_ALLOW_CREDENTIALS')
   allowCredentials = false;
-
-  /** 预检请求缓存时间（秒） */
-  @Env('CORS_MAX_AGE')
   maxAge = 86400;
-
-  /** 允许的 HTTP 方法 */
-  @Env('CORS_ALLOWED_METHODS')
   allowedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
-
-  /** 允许的请求头 */
-  @Env('CORS_ALLOWED_HEADERS')
   allowedHeaders = ['Content-Type', 'Authorization', 'X-API-Key'];
+  constructor() {
+    if (process.env.CORS_ALLOWED_ORIGINS) {
+      this.allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',').map(s => s.trim());
+    }
+    if (process.env.CORS_ALLOW_CREDENTIALS === 'true') this.allowCredentials = true;
+    const ma = parseInt(process.env.CORS_MAX_AGE, 10);
+    if (!isNaN(ma)) this.maxAge = ma;
+    if (process.env.CORS_ALLOWED_METHODS) {
+      this.allowedMethods = process.env.CORS_ALLOWED_METHODS.split(',').map(s => s.trim());
+    }
+    if (process.env.CORS_ALLOWED_HEADERS) {
+      this.allowedHeaders = process.env.CORS_ALLOWED_HEADERS.split(',').map(s => s.trim());
+    }
+  }
 }
 
 /**
  * REST API 配置类
  */
-@Config
 export class RestApiConfig {
-  /** API 端口 */
-  @Env('REST_API_PORT')
   port = 38080;
-
-  /** API 密钥列表 */
-  @Env('REST_API_KEYS')
   apiKeys = [];
-
-  /** CORS 配置 */
-  @Nested
   cors = new CorsConfig();
-
-  /** 是否启用速率限制 */
-  @Env('REST_API_RATE_LIMIT_ENABLED')
   rateLimitEnabled = true;
-
-  /** 速率限制窗口（毫秒） */
-  @Env('REST_API_RATE_LIMIT_WINDOW')
   rateLimitWindow = 60000;
-
-  /** 速率限制最大请求数 */
-  @Env('REST_API_RATE_LIMIT_MAX')
   rateLimitMax = 60;
-
-  /** 速率限制突发最大请求数 */
-  @Env('REST_API_RATE_LIMIT_BURST_MAX')
   rateLimitBurstMax = 10;
+  constructor() {
+    const p = parseInt(process.env.REST_API_PORT, 10);
+    if (!isNaN(p)) this.port = p;
+    if (process.env.REST_API_KEYS) {
+      this.apiKeys = process.env.REST_API_KEYS.split(',').map(s => s.trim());
+    }
+    if (process.env.REST_API_RATE_LIMIT_ENABLED === 'false') this.rateLimitEnabled = false;
+    const rw = parseInt(process.env.REST_API_RATE_LIMIT_WINDOW, 10);
+    if (!isNaN(rw)) this.rateLimitWindow = rw;
+    const rm = parseInt(process.env.REST_API_RATE_LIMIT_MAX, 10);
+    if (!isNaN(rm)) this.rateLimitMax = rm;
+    const rb = parseInt(process.env.REST_API_RATE_LIMIT_BURST_MAX, 10);
+    if (!isNaN(rb)) this.rateLimitBurstMax = rb;
+  }
 }

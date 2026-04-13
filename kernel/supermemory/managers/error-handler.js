@@ -8,17 +8,12 @@
  * Supermemory 错误类
  */
 class SupermemoryError extends Error {
-  /**
-   * 创建 Supermemory 错误
-   * @param {string} message - 错误消息
-   * @param {number} [status] - HTTP 状态码
-   * @param {string} [code] - 错误代码
-   */
   constructor(message, status = null, code = null) {
     super(message);
     this.name = 'SupermemoryError';
     this.status = status;
     this.code = code;
+    this.type = 'UnknownError';
   }
 }
 
@@ -29,6 +24,7 @@ class NetworkError extends SupermemoryError {
   constructor(message) {
     super(message, null, 'NETWORK_ERROR');
     this.name = 'NetworkError';
+    this.type = 'NetworkError';
   }
 }
 
@@ -39,6 +35,7 @@ class AuthError extends SupermemoryError {
   constructor(message) {
     super(message, 401, 'AUTH_ERROR');
     this.name = 'AuthError';
+    this.type = 'AuthError';
   }
 }
 
@@ -49,6 +46,7 @@ class RateLimitError extends SupermemoryError {
   constructor(message) {
     super(message, 429, 'RATE_LIMIT_ERROR');
     this.name = 'RateLimitError';
+    this.type = 'RateLimitError';
   }
 }
 
@@ -59,20 +57,14 @@ class ServerError extends SupermemoryError {
   constructor(message) {
     super(message, 500, 'SERVER_ERROR');
     this.name = 'ServerError';
+    this.type = 'ServerError';
   }
 }
 
 /**
- * 错误处理器类
+ * 错误处理器
  */
 class ErrorHandler {
-  /**
-   * 创建错误处理器实例
-   * @param {Object} config - 重试配置
-   * @param {number} config.maxAttempts - 最大重试次数
-   * @param {number} config.delay - 初始延迟（毫秒）
-   * @param {number} config.backoffMultiplier - 退避倍数
-   */
   constructor(config = {}) {
     this.config = {
       maxAttempts: 3,
@@ -81,46 +73,17 @@ class ErrorHandler {
       ...config
     };
     this.offlineMode = false;
-  }
-
-  /**
-   * 处理错误
-   * @param {Error} error - 错误对象
-   * @param {Object} context - 错误上下文
-   * @param {string} context.operation - 操作名称
-   * @param {Object} [context.metadata] - 元数据
-   * @returns {Promise<Object>} 错误处理结果
-   */
-  async handleError(error, context = {}) {
-    // 记录错误日志
-    this.logError(error, context);
-
-    // 分类错误
-    const classifiedError = this.classifyError(error);
-
-    // 根据错误类型处理
-    switch (classifiedError.code) {
-      case 'NETWORK_ERROR':
-        return { handled: true, action: 'retry' };
-
-      case 'AUTH_ERROR':
-        return { handled: true, action: 'abort' };
-
-      case 'RATE_LIMIT_ERROR':
-        return { handled: true, action: 'wait', waitTime: 60000 };
-
-      case 'SERVER_ERROR':
-        return { handled: true, action: 'retry' };
-
-      default:
-        return { handled: false, action: 'fallback' };
-    }
+    // 统计信息
+    this.stats = {
+      totalRetries: 0,
+      failedRetries: 0,
+      successfulRetries: 0,
+      fallbacksUsed: 0,
+    };
   }
 
   /**
    * 分类错误
-   * @param {Error} error - 错误对象
-   * @returns {SupermemoryError} 分类后的错误
    */
   classifyError(error) {
     // 如果已经是 SupermemoryError，直接返回
@@ -128,65 +91,67 @@ class ErrorHandler {
       return error;
     }
 
-    // 网络错误
-    if (this.isNetworkError(error)) {
+    // 优先检查 code 字段（字符串形式）
+    const code = error.code || error.status;
+    if (typeof code === 'string') {
+      if (code === 'ENOTFOUND' || code === 'ETIMEDOUT' || code === 'ECONNREFUSED' ||
+          code === 'ENETUNREACH' || code === 'ECONNRESET' || code === 'NETWORK_ERROR') {
+        return new NetworkError(error.message);
+      }
+      if (code === '401' || code === 'AUTH_ERROR' || code === '403') {
+        return new AuthError(error.message);
+      }
+      if (code === '429' || code === 'RATE_LIMIT_ERROR') {
+        return new RateLimitError(error.message);
+      }
+      if (code === '500' || code === 'SERVER_ERROR') {
+        return new ServerError(error.message);
+      }
+    }
+
+    // 检查 status 字段（数字形式）
+    const status = error.status;
+    if (typeof status === 'number') {
+      if (status === 401 || status === 403) {
+        return new AuthError(error.message);
+      }
+      if (status === 429) {
+        return new RateLimitError(error.message);
+      }
+      if (status >= 500) {
+        return new ServerError(error.message);
+      }
+    }
+
+    // 检查网络错误码
+    if (error.name === 'AbortError' || error.message?.includes('fetch failed')) {
       return new NetworkError(error.message);
     }
 
-    // 认证错误
-    if (error.status === 401 || error.status === 403) {
-      return new AuthError(error.message);
-    }
-
-    // 速率限制错误
-    if (error.status === 429) {
-      return new RateLimitError(error.message);
-    }
-
-    // 服务器错误
-    if (error.status >= 500) {
-      return new ServerError(error.message);
-    }
-
-    // 默认错误
-    return new SupermemoryError(error.message, error.status);
+    return new SupermemoryError(error.message, error.status, error.code);
   }
 
   /**
-   * 检查是否为网络错误
-   * @param {Error} error - 错误对象
-   * @returns {boolean} 是否为网络错误
+   * 判断错误是否可重试
    */
-  isNetworkError(error) {
-    const networkErrorCodes = [
-      'ECONNREFUSED',
-      'ETIMEDOUT',
-      'ENOTFOUND',
-      'ENETUNREACH',
-      'ECONNRESET'
-    ];
-
-    return (
-      networkErrorCodes.includes(error.code) ||
-      error.name === 'AbortError' ||
-      error.message.includes('fetch failed') ||
-      error.message.includes('network')
-    );
+  isRetryable(classifiedError) {
+    if (classifiedError instanceof AuthError) return false;
+    if (classifiedError instanceof SupermemoryError) {
+      // 4xx 错误（除 429）不可重试
+      if (classifiedError.status >= 400 && classifiedError.status < 500 && classifiedError.status !== 429) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
    * 重试操作
-   * @param {Function} fn - 要重试的函数
-   * @param {Object} [options] - 重试选项
-   * @param {number} [options.maxAttempts] - 最大重试次数
-   * @param {number} [options.delay] - 初始延迟（毫秒）
-   * @param {number} [options.backoffMultiplier] - 退避倍数
-   * @returns {Promise<any>} 操作结果
    */
   async retry(fn, options = {}) {
-    const maxAttempts = options.maxAttempts || this.config.maxAttempts;
-    const delay = options.delay || this.config.delay;
-    const backoffMultiplier = options.backoffMultiplier || this.config.backoffMultiplier;
+    const maxAttempts = options.maxAttempts ?? this.config.maxAttempts;
+    const delay = options.delay ?? this.config.delay;
+    const backoffMultiplier = options.backoffMultiplier ?? this.config.backoffMultiplier;
 
     let lastError;
     let currentDelay = delay;
@@ -197,34 +162,29 @@ class ErrorHandler {
       } catch (error) {
         lastError = error;
 
-        // 离线模式下直接抛出错误
         if (this.offlineMode) {
           throw error;
         }
 
-        // 分类错误
         const classifiedError = this.classifyError(error);
 
-        // 4xx 错误不重试（除了 429）
-        if (error.status >= 400 && error.status < 500 && error.status !== 429) {
+        // 不可重试的错误直接抛出
+        if (!this.isRetryable(classifiedError)) {
+          this.stats.failedRetries++;
           throw error;
         }
 
-        // 最后一次尝试失败
         if (attempt === maxAttempts) {
+          this.stats.failedRetries++;
           throw error;
         }
 
-        // 记录重试日志
         console.warn(
           `[ErrorHandler] 操作失败，${currentDelay}ms 后重试 (${attempt}/${maxAttempts}):`,
           error.message
         );
 
-        // 等待
         await this.sleep(currentDelay);
-
-        // 计算下一次延迟（指数退避）
         currentDelay *= backoffMultiplier;
       }
     }
@@ -234,64 +194,92 @@ class ErrorHandler {
 
   /**
    * 降级操作
-   * @param {Function} primary - 主函数
-   * @param {Function} fallback - 备用函数
-   * @returns {Promise<any>} 操作结果
    */
   async fallback(primary, fallback) {
     try {
       return await primary();
     } catch (error) {
+      this.stats.fallbacksUsed++;
       console.warn('[ErrorHandler] 主操作失败，使用降级策略:', error.message);
       return await fallback();
     }
   }
 
   /**
-   * 启用离线模式
+   * 根据错误类型获取降级策略
    */
+  getFallbackStrategy(error) {
+    const classifiedError = this.classifyError(error);
+
+    if (classifiedError instanceof NetworkError) return 'OFFLINE';
+    if (classifiedError instanceof AuthError) return 'ERROR';
+    if (classifiedError instanceof RateLimitError) return 'RETRY';
+    if (classifiedError instanceof ServerError) return 'CACHE';
+    return 'FALLBACK';
+  }
+
+  /**
+   * 执行带降级的操作
+   */
+  async executeWithFallback(primaryFn, fallbackFn) {
+    try {
+      return await primaryFn();
+    } catch (error) {
+      const strategy = this.getFallbackStrategy(error);
+      if (strategy === 'ERROR') {
+        throw error;
+      }
+      if (strategy === 'FALLBACK' && fallbackFn) {
+        return await fallbackFn();
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * 获取统计信息
+   */
+  getStats() {
+    return { ...this.stats };
+  }
+
+  /**
+   * 重置统计信息
+   */
+  resetStats() {
+    this.stats = {
+      totalRetries: 0,
+      failedRetries: 0,
+      successfulRetries: 0,
+      fallbacksUsed: 0,
+    };
+  }
+
   enableOfflineMode() {
     this.offlineMode = true;
     console.warn('[ErrorHandler] 离线模式已启用');
   }
 
-  /**
-   * 禁用离线模式
-   */
   disableOfflineMode() {
     this.offlineMode = false;
     console.info('[ErrorHandler] 离线模式已禁用');
   }
 
-  /**
-   * 检查是否为离线模式
-   * @returns {boolean} 是否为离线模式
-   */
   isOfflineMode() {
     return this.offlineMode;
   }
 
-  /**
-   * 记录错误日志
-   * @param {Error} error - 错误对象
-   * @param {Object} context - 错误上下文
-   */
-  logError(error, context) {
+  logError(error, context = {}) {
     console.error(`[ErrorHandler] ${context.operation || '操作'} 失败:`, {
       message: error.message,
       code: error.code,
       status: error.status,
       stack: error.stack,
       metadata: context.metadata,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
-  /**
-   * 睡眠指定时间
-   * @param {number} ms - 毫秒数
-   * @returns {Promise<void>}
-   */
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -303,5 +291,5 @@ export {
   NetworkError,
   AuthError,
   RateLimitError,
-  ServerError
+  ServerError,
 };

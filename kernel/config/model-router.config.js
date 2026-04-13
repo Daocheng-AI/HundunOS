@@ -1,127 +1,90 @@
 // hundunos/kernel/config/model-router.config.js
 // 模型路由器配置类
 
-import { Config, Env, Nested } from './decorators.js';
-
-/**
- * 路由策略枚举
- */
-const strategySchema = z.enum(['COST_FIRST', 'SPEED_FIRST', 'QUALITY_FIRST', 'MOCK']);
-
 /**
  * 熔断器配置
  */
-@Config
 export class CircuitBreakerConfig {
-  /** 是否启用熔断器 */
-  @Env('CIRCUIT_BREAKER_ENABLED')
   enabled = true;
-
-  /** 失败阈值 */
-  @Env('CIRCUIT_BREAKER_THRESHOLD')
   threshold = 5;
-
-  /** 超时时间（毫秒） */
-  @Env('CIRCUIT_BREAKER_TIMEOUT')
   timeout = 60000;
+  constructor() {
+    if (process.env.CIRCUIT_BREAKER_ENABLED === 'false') this.enabled = false;
+    const t = parseInt(process.env.CIRCUIT_BREAKER_THRESHOLD, 10);
+    if (!isNaN(t)) this.threshold = t;
+    const to = parseInt(process.env.CIRCUIT_BREAKER_TIMEOUT, 10);
+    if (!isNaN(to)) this.timeout = to;
+  }
 }
 
 /**
  * OpenAI 配置
  */
-@Config
 export class OpenAIConfig {
-  /** API 密钥 */
-  @Env('OPENAI_API_KEY')
   apiKey = '';
-
-  /** API 端点 */
-  @Env('OPENAI_ENDPOINT')
   endpoint = 'https://api.openai.com/v1';
-
-  /** 模型名称 */
-  @Env('OPENAI_MODEL')
   model = 'gpt-4o-mini';
+  constructor() {
+    if (process.env.OPENAI_API_KEY) this.apiKey = process.env.OPENAI_API_KEY;
+    if (process.env.OPENAI_ENDPOINT) this.endpoint = process.env.OPENAI_ENDPOINT;
+    if (process.env.OPENAI_MODEL) this.model = process.env.OPENAI_MODEL;
+  }
 }
 
 /**
  * Anthropic 配置
  */
-@Config
 export class AnthropicConfig {
-  /** API 密钥 */
-  @Env('ANTHROPIC_API_KEY')
   apiKey = '';
-
-  /** API 端点 */
-  @Env('ANTHROPIC_ENDPOINT')
   endpoint = 'https://api.anthropic.com';
-
-  /** 模型名称 */
-  @Env('ANTHROPIC_MODEL')
   model = 'claude-sonnet-4-20250514';
+  constructor() {
+    if (process.env.ANTHROPIC_API_KEY) this.apiKey = process.env.ANTHROPIC_API_KEY;
+    if (process.env.ANTHROPIC_ENDPOINT) this.endpoint = process.env.ANTHROPIC_ENDPOINT;
+    if (process.env.ANTHROPIC_MODEL) this.model = process.env.ANTHROPIC_MODEL;
+  }
 }
 
 /**
  * GLM 配置
  */
-@Config
 export class GLMConfig {
-  /** API 密钥 */
-  @Env('GLM_API_KEY')
   apiKey = '';
-
-  /** 基础 URL */
-  @Env('GLM_BASE_URL')
   baseUrl = 'https://open.bigmodel.cn/api/paas/v4';
-
-  /** 默认模型 */
-  @Env('GLM_DEFAULT_MODEL')
   defaultModel = 'glm-4-flash';
+  constructor() {
+    if (process.env.GLM_API_KEY) this.apiKey = process.env.GLM_API_KEY;
+    if (process.env.GLM_BASE_URL) this.baseUrl = process.env.GLM_BASE_URL;
+    if (process.env.GLM_DEFAULT_MODEL) this.defaultModel = process.env.GLM_DEFAULT_MODEL;
+  }
 }
 
 /**
  * 模型路由器配置类
  */
-@Config
 export class ModelRouterConfig {
-  /** 默认路由策略 */
-  @Env('MODEL_ROUTER_STRATEGY', strategySchema)
   defaultStrategy = 'COST_FIRST';
-
-  /** 是否优先使用本地模型 */
-  @Env('MODEL_ROUTER_LOCAL_FIRST')
   localFirst = true;
-
-  /** 本地模型端点 */
-  @Env('OLLAMA_ENDPOINT')
   endpoint = 'http://127.0.0.1:11434';
-
-  /** 本地模型名称 */
-  @Env('OLLAMA_MODEL')
   localModel = 'qwen2.5:1.5b';
-
-  /** 本地模型最大 token 数 */
-  @Env('OLLAMA_MAX_TOKENS')
   localMaxTokens = 8192;
-
-  /** 请求超时时间（毫秒） */
-  @Env('MODEL_REQUEST_TIMEOUT')
   requestTimeout = 30000;
-
-  /** 熔断器配置 */
-  @Nested
   circuitBreaker = new CircuitBreakerConfig();
-
-  /** OpenAI 配置 */
-  @Nested
   openai = new OpenAIConfig();
-
-  /** Anthropic 配置 */
-  @Nested
   anthropic = new AnthropicConfig();
-
-  /** GLM 配置 */
-  @Nested
   glm = new GLMConfig();
+
+  constructor() {
+    const validStrategies = ['COST_FIRST', 'SPEED_FIRST', 'QUALITY_FIRST', 'MOCK'];
+    if (validStrategies.includes(process.env.MODEL_ROUTER_STRATEGY)) {
+      this.defaultStrategy = process.env.MODEL_ROUTER_STRATEGY;
+    }
+    if (process.env.MODEL_ROUTER_LOCAL_FIRST === 'false') this.localFirst = false;
+    if (process.env.OLLAMA_ENDPOINT) this.endpoint = process.env.OLLAMA_ENDPOINT;
+    if (process.env.OLLAMA_MODEL) this.localModel = process.env.OLLAMA_MODEL;
+    const lmt = parseInt(process.env.OLLAMA_MAX_TOKENS, 10);
+    if (!isNaN(lmt)) this.localMaxTokens = lmt;
+    const rt = parseInt(process.env.MODEL_REQUEST_TIMEOUT, 10);
+    if (!isNaN(rt)) this.requestTimeout = rt;
+  }
 }

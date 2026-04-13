@@ -2,7 +2,7 @@
 // 配置加载器测试
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ConfigLoader, GlobalConfig, Config, Env, Nested } from './config-loader.js';
+import { ConfigLoader, GlobalConfig } from './config-loader.js';
 
 describe('ConfigLoader', () => {
   let originalEnv;
@@ -146,50 +146,5 @@ describe('GlobalConfig', () => {
     expect(config.modelRouter).toBeDefined();
     expect(config.restApi).toBeDefined();
     expect(config.storage).toBeDefined();
-  });
-});
-
-describe('Decorators', () => {
-  it('should apply @Config decorator', () => {
-    @Config
-    class TestConfig {
-      @Env('TEST_VAR')
-      testVar = 'default';
-    }
-
-    expect(TestConfig).toBeDefined();
-  });
-
-  it('should apply @Env decorator', () => {
-    @Config
-    class TestConfig {
-      @Env('TEST_VAR')
-      testVar = 'default';
-    }
-
-    process.env.TEST_VAR = 'custom';
-    const config = TestConfig();
-
-    expect(config.testVar).toBe('custom');
-  });
-
-  it('should apply @Nested decorator', () => {
-    @Config
-    class NestedConfig {
-      @Env('NESTED_VAR')
-      nestedVar = 'default';
-    }
-
-    @Config
-    class ParentConfig {
-      @Nested
-      nested = new NestedConfig();
-    }
-
-    process.env.NESTED_VAR = 'custom';
-    const config = ParentConfig();
-
-    expect(config.nested).toBeDefined();
-    expect(config.nested.nestedVar).toBe('custom');
   });
 });

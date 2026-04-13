@@ -1,7 +1,6 @@
 // hundunos/kernel/config/global.config.js
-// 全局配置类
+// 全局配置类（纯 ESM，无装饰器语法）
 
-import { Config, Env, Nested } from './decorators.js';
 import { KernelConfig } from './kernel.config.js';
 import { ModelRouterConfig } from './model-router.config.js';
 import { RestApiConfig } from './rest-api.config.js';
@@ -10,214 +9,150 @@ import { StorageConfig } from './storage.config.js';
 /**
  * 环境枚举
  */
-const environmentSchema = z.enum(['development', 'testing', 'production']);
+const environmentSchema = ['development', 'testing', 'production'];
+
+/**
+ * 读取环境变量（同步）
+ */
+const readEnv = (envName, defaultVal) => {
+  if (envName in process.env) return process.env[envName];
+  return defaultVal;
+};
 
 /**
  * 平台配置
  */
-@Config
 export class PlatformConfig {
-  /** 操作系统 */
-  @Env('PLATFORM_OS')
   os = 'windows';
-
-  /** 工作空间 */
-  @Env('PLATFORM_WORKSPACE')
   workspace = '.';
-
-  /** Python 路径 */
-  @Env('PLATFORM_PYTHON_PATH')
   pythonPath = 'python';
-
-  /** Node.js 路径 */
-  @Env('PLATFORM_NODE_PATH')
   nodePath = 'node';
+  constructor() {
+    if (process.env.PLATFORM_OS) this.os = process.env.PLATFORM_OS;
+    if (process.env.PLATFORM_WORKSPACE) this.workspace = process.env.PLATFORM_WORKSPACE;
+    if (process.env.PLATFORM_PYTHON_PATH) this.pythonPath = process.env.PLATFORM_PYTHON_PATH;
+    if (process.env.PLATFORM_NODE_PATH) this.nodePath = process.env.PLATFORM_NODE_PATH;
+  }
 }
 
 /**
  * 消息总线配置
  */
-@Config
 export class MessageBusConfig {
-  /** 确认超时时间（毫秒） */
-  @Env('MESSAGE_BUS_ACK_TIMEOUT')
   ackTimeout = 5000;
-
-  /** 最大重试次数 */
-  @Env('MESSAGE_BUS_MAX_RETRIES')
   maxRetries = 3;
-
-  /** 是否启用持久化 */
-  @Env('MESSAGE_BUS_PERSISTENCE_ENABLED')
   persistenceEnabled = false;
+  constructor() {
+    const v = parseInt(process.env.MESSAGE_BUS_ACK_TIMEOUT, 10);
+    if (!isNaN(v)) this.ackTimeout = v;
+    const r = parseInt(process.env.MESSAGE_BUS_MAX_RETRIES, 10);
+    if (!isNaN(r)) this.maxRetries = r;
+    if (process.env.MESSAGE_BUS_PERSISTENCE_ENABLED === 'true') this.persistenceEnabled = true;
+  }
 }
 
 /**
  * 工具桥接配置
  */
-@Config
 export class ToolBridgeConfig {
-  /** 工具目录 */
-  @Env('TOOL_BRIDGE_TOOLS_DIR')
   toolsDir = './scripts/tools';
-
-  /** 超时时间（毫秒） */
-  @Env('TOOL_BRIDGE_TIMEOUT')
   timeout = 30000;
-
-  /** 是否启用沙箱 */
-  @Env('TOOL_BRIDGE_SANDBOX_ENABLED')
   sandboxEnabled = true;
+  constructor() {
+    if (process.env.TOOL_BRIDGE_TOOLS_DIR) this.toolsDir = process.env.TOOL_BRIDGE_TOOLS_DIR;
+    const t = parseInt(process.env.TOOL_BRIDGE_TIMEOUT, 10);
+    if (!isNaN(t)) this.timeout = t;
+    if (process.env.TOOL_BRIDGE_SANDBOX_ENABLED === 'false') this.sandboxEnabled = false;
+  }
 }
 
 /**
  * 技能配置
  */
-@Config
 export class SkillsConfig {
-  /** 是否启用技能系统 */
-  @Env('SKILLS_ENABLED')
   enabled = true;
-
-  /** 技能目录列表 */
-  @Env('SKILLS_DIRS')
   dirs = ['./.claude/skills', './skills'];
-
-  /** 是否启用热重载 */
-  @Env('SKILLS_HOT_RELOAD')
   hotReload = false;
+  constructor() {
+    if (process.env.SKILLS_ENABLED === 'false') this.enabled = false;
+    if (process.env.SKILLS_DIRS) this.dirs = process.env.SKILLS_DIRS.split(',').map(s => s.trim());
+    if (process.env.SKILLS_HOT_RELOAD === 'true') this.hotReload = true;
+  }
 }
 
 /**
  * 日志配置
  */
-@Config
 export class LoggingConfig {
-  /** 日志级别 */
-  @Env('LOGGING_LEVEL')
   level = 'info';
-
-  /** 日志格式 */
-  @Env('LOGGING_FORMAT')
   format = 'pretty';
-
-  /** 是否启用彩色输出 */
-  @Env('LOGGING_COLORS')
   colors = true;
-
-  /** 日志文件路径 */
-  @Env('LOGGING_FILE_PATH')
   filePath = './logs/hundunos.log';
-
-  /** 是否启用结构化日志 */
-  @Env('LOGGING_STRUCTURED')
   structured = false;
+  constructor() {
+    if (process.env.LOGGING_LEVEL) this.level = process.env.LOGGING_LEVEL;
+    if (process.env.LOGGING_FORMAT) this.format = process.env.LOGGING_FORMAT;
+    if (process.env.LOGGING_COLORS === 'false') this.colors = false;
+    if (process.env.LOGGING_FILE_PATH) this.filePath = process.env.LOGGING_FILE_PATH;
+    if (process.env.LOGGING_STRUCTURED === 'true') this.structured = true;
+  }
 }
 
 /**
  * Rust 模块配置
  */
-@Config
 export class RustModulesConfig {
-  /** 是否启用 Rust 模块 */
-  @Env('RUST_MODULES_ENABLED')
   enabled = true;
-
-  /** 运行模式 */
-  @Env('RUST_MODULES_MODE')
   mode = 'auto';
-
-  /** TCP 端口 */
-  @Env('RUST_MODULES_TCP_PORT')
   tcpPort = 38082;
-
-  /** Socket 路径 */
-  @Env('RUST_MODULES_SOCKET_PATH')
   socketPath = '\\\\.\\pipe\\hundunos';
-
-  /** 是否回退到 JS */
-  @Env('RUST_MODULES_FALLBACK_TO_JS')
   fallbackToJS = true;
-
-  /** 健康检查间隔（毫秒） */
-  @Env('RUST_MODULES_HEALTH_CHECK_INTERVAL')
   healthCheckInterval = 30000;
+  constructor() {
+    if (process.env.RUST_MODULES_ENABLED === 'false') this.enabled = false;
+    if (process.env.RUST_MODULES_MODE) this.mode = process.env.RUST_MODULES_MODE;
+    const p = parseInt(process.env.RUST_MODULES_TCP_PORT, 10);
+    if (!isNaN(p)) this.tcpPort = p;
+    if (process.env.RUST_MODULES_SOCKET_PATH) this.socketPath = process.env.RUST_MODULES_SOCKET_PATH;
+    if (process.env.RUST_MODULES_FALLBACK_TO_JS === 'false') this.fallbackToJS = false;
+    const h = parseInt(process.env.RUST_MODULES_HEALTH_CHECK_INTERVAL, 10);
+    if (!isNaN(h)) this.healthCheckInterval = h;
+  }
 }
 
 /**
  * 全局配置类
  */
-@Config
 export class GlobalConfig {
-  /** 版本号 */
-  @Env('HUNDUNOS_VERSION')
   version = '3.6.0';
-
-  /** 系统名称 */
-  @Env('HUNDUNOS_NAME')
   name = 'HundunOS';
-
-  /** 运行环境 */
-  @Env('NODE_ENV', environmentSchema)
   environment = 'development';
-
-  /** 内核配置 */
-  @Nested
   kernel = new KernelConfig();
-
-  /** 模型路由器配置 */
-  @Nested
   modelRouter = new ModelRouterConfig();
-
-  /** REST API 配置 */
-  @Nested
   restApi = new RestApiConfig();
-
-  /** 存储配置 */
-  @Nested
   storage = new StorageConfig();
-
-  /** 平台配置 */
-  @Nested
   platform = new PlatformConfig();
-
-  /** 消息总线配置 */
-  @Nested
   messageBus = new MessageBusConfig();
-
-  /** 工具桥接配置 */
-  @Nested
   toolBridge = new ToolBridgeConfig();
-
-  /** 技能配置 */
-  @Nested
   skills = new SkillsConfig();
-
-  /** 日志配置 */
-  @Nested
   logging = new LoggingConfig();
-
-  /** Rust 模块配置 */
-  @Nested
   rustModules = new RustModulesConfig();
-
-  /** 是否启用健康监控 */
-  @Env('HEALTH_MONITOR_ENABLED')
   healthMonitorEnabled = true;
-
-  /** 权限模式 */
-  @Env('PERMISSION_MODE')
   permissionMode = 'default';
-
-  /** 是否启用审计日志 */
-  @Env('AUDIT_LOGGING_ENABLED')
   auditLoggingEnabled = true;
-
-  /** 是否启用权限门控 */
-  @Env('PERMISSION_GATING_ENABLED')
   permissionGatingEnabled = true;
-
-  /** 是否启用隐私保护 */
-  @Env('PRIVACY_SHIELD_ENABLED')
   privacyShieldEnabled = true;
+
+  constructor() {
+    if (process.env.HUNDUNOS_VERSION) this.version = process.env.HUNDUNOS_VERSION;
+    if (process.env.HUNDUNOS_NAME) this.name = process.env.HUNDUNOS_NAME;
+    if (environmentSchema.includes(process.env.NODE_ENV)) {
+      this.environment = process.env.NODE_ENV;
+    }
+    if (process.env.HEALTH_MONITOR_ENABLED === 'false') this.healthMonitorEnabled = false;
+    if (process.env.PERMISSION_MODE) this.permissionMode = process.env.PERMISSION_MODE;
+    if (process.env.AUDIT_LOGGING_ENABLED === 'false') this.auditLoggingEnabled = false;
+    if (process.env.PERMISSION_GATING_ENABLED === 'false') this.permissionGatingEnabled = false;
+    if (process.env.PRIVACY_SHIELD_ENABLED === 'false') this.privacyShieldEnabled = false;
+  }
 }
