@@ -7,7 +7,7 @@
 /**
  * Supermemory API 客户端类
  */
-class SupermemoryApiClient {
+export class SupermemoryApiClient {
   /**
    * 创建 API 客户端实例
    * @param {Object} config - Supermemory 配置
@@ -241,5 +241,3 @@ class SupermemoryApiClient {
     return sanitized;
   }
 }
-
-module.exports = { SupermemoryApiClient };

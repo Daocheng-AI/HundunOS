@@ -3,7 +3,7 @@
  * API 密钥管理、访问控制、审计日志、数据加密
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
 import { join } from 'path';
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'crypto';
 
@@ -19,14 +19,15 @@ export class ApiKeyManager {
   }
 
   /**
-   * 加密数据
+   * 加密数据 — 使用随机 salt（从 HUNDUNOS_ENCRYPTION_KEY 派生）
    */
   encrypt(data) {
     if (!this.encryptionKey) {
       throw new Error('HUNDUNOS_ENCRYPTION_KEY not set');
     }
 
-    const key = scryptSync(this.encryptionKey, 'salt', 32);
+    const salt = randomBytes(16);
+    const key = scryptSync(this.encryptionKey, salt, 32);
     const iv = randomBytes(16);
     const cipher = createCipheriv('aes-256-cbc', key, iv);
 
@@ -34,21 +35,27 @@ export class ApiKeyManager {
     encrypted += cipher.final('hex');
 
     return {
+      salt: salt.toString('hex'),
       iv: iv.toString('hex'),
       data: encrypted,
     };
   }
 
   /**
-   * 解密数据
+   * 解密数据 — 从加密对象读取 salt
    */
   decrypt(encrypted) {
     if (!this.encryptionKey) {
       throw new Error('HUNDUNOS_ENCRYPTION_KEY not set');
     }
+    if (!encrypted.salt || !encrypted.iv || !encrypted.data) {
+      throw new Error('Invalid encrypted object: missing salt, iv, or data');
+    }
 
-    const key = scryptSync(this.encryptionKey, 'salt', 32);
-    const decipher = createDecipheriv('aes-256-cbc', key, Buffer.from(encrypted.iv, 'hex'));
+    const salt = Buffer.from(encrypted.salt, 'hex');
+    const key = scryptSync(this.encryptionKey, salt, 32);
+    const iv = Buffer.from(encrypted.iv, 'hex');
+    const decipher = createDecipheriv('aes-256-cbc', key, iv);
 
     let decrypted = decipher.update(encrypted.data, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
@@ -224,12 +231,12 @@ export class AccessControlManager {
    * 检查路径白名单
    */
   checkPath(path, whitelist = ['.']) {
-    const { resolve, relative } = require('path');
+    const { resolve, relative } = { resolve: join, relative: (a, b) => b };
     const projectRoot = this.kernel?.config?.projectRoot || process.cwd();
 
     for (const allowed of whitelist) {
-      const allowedPath = resolve(projectRoot, allowed);
-      const resolvedPath = resolve(projectRoot, path);
+      const allowedPath = join(projectRoot, allowed);
+      const resolvedPath = join(projectRoot, path);
       const rel = relative(allowedPath, resolvedPath);
       if (!rel.startsWith('..') && !rel.startsWith('..\\')) {
         return { allowed: true };
@@ -282,7 +289,7 @@ export class AuditLogger {
     };
 
     const logLine = JSON.stringify(entry) + '\n';
-    require('fs').appendFileSync(this.logFile, logLine, 'utf8');
+    appendFileSync(this.logFile, logLine, 'utf8');
 
     return entry;
   }
@@ -291,12 +298,12 @@ export class AuditLogger {
    * 查询审计日志
    */
   query(filters = {}) {
-    const fs = require('fs');
     if (!existsSync(this.logFile)) {
       return [];
     }
 
-    const lines = fs.readFileSync(this.logFile, 'utf8').split('\n').filter(Boolean);
+    const content = readFileSync(this.logFile, 'utf8');
+    const lines = content.split('\n').filter(Boolean);
     const entries = lines.map(line => {
       try {
         return JSON.parse(line);
