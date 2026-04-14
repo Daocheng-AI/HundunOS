@@ -39,7 +39,7 @@ export class PermissionGating {
             this.rules = { ...this.rules, ...customRules };
         }
         
-        // review: removed // review: removed console.log(`[Permission] Initialized: mode=${this.permissionMode}, rules=${Object.keys(this.rules).length}`);
+        // console.log(`[Permission] Initialized: mode=${this.permissionMode}, rules=${Object.keys(this.rules).length}`);
     }
 
     _initPolicies() {
@@ -232,7 +232,7 @@ export class PermissionGating {
      */
     setPermissionMode(mode) {
         this.permissionMode = mode;
-        // review: removed // review: removed console.log(`[Permission] Mode changed to: ${mode}`);
+        // console.log(`[Permission] Mode changed to: ${mode}`);
     }
 
     /**
@@ -240,7 +240,7 @@ export class PermissionGating {
      */
     updateRules(newRules) {
         this.rules = { ...this.rules, ...newRules };
-        // review: removed // review: removed console.log('[Permission] Rules updated');
+        // console.log('[Permission] Rules updated');
     }
 
     getStats() { 

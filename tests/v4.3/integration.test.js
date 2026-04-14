@@ -53,7 +53,146 @@ describe('HundunOS v4.3 Integration Tests', () => {
       }),
     };
 
+    // Stub missing modules / kernel properties
+    kernel.compactor = {
+      compact: vi.fn().mockResolvedValue({
+        summary: { role: 'user', content: 'Summary of conversation' },
+        preservedMessages: [],
+        recent: [],
+        stats: { originalCount: 4, compressedCount: 1 },
+      }),
+    };
+
+    kernel.agentTeams = {
+      messageBus: {
+        send: vi.fn().mockReturnValue('Sent message to lead'),
+        broadcast: vi.fn().mockReturnValue('Broadcast to 3 teammates'),
+        readInbox: vi.fn().mockReturnValue([]),
+      },
+      planApprovalManager: {
+        requestApproval: vi.fn().mockResolvedValue('req-1'),
+        respond: vi.fn().mockResolvedValue({ status: 'approved', decision: 'approve' }),
+        getPendingRequests: vi.fn().mockReturnValue([]),
+        getStats: vi.fn().mockReturnValue({ total: 0, approved: 0, rejected: 0 }),
+      },
+      worktreeTaskBinding: {
+        bindTaskToWorktree: vi.fn().mockResolvedValue(undefined),
+        getBindingStatus: vi.fn().mockResolvedValue({ task: { id: 1 }, worktree: 'team-abc/worker-executor', binding: { status: 'bound' } }),
+        worktreeCloseout: vi.fn().mockResolvedValue(undefined),
+      },
+    };
+
+    kernel.autonomousAgentManager = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      registerAgent: vi.fn().mockReturnValue('agent-1'),
+      submitTask: vi.fn().mockReturnValue('task-1'),
+      getStats: vi.fn().mockReturnValue({ totalAgents: 0, pendingTasks: 0 }),
+    };
+
+    kernel.todoManager = {
+      update: vi.fn().mockReturnValue({}),
+      getStats: vi.fn().mockReturnValue({ total: 3, completed: 1 }),
+      noteRoundWithoutUpdate: vi.fn(),
+      reminder: vi.fn().mockReturnValue('<reminder>Refresh your current plan before continuing.</reminder>'),
+    };
+
+    kernel.recovery = {
+      handle: vi.fn().mockResolvedValue({ ok: true, message: 'Recovered' }),
+    };
+
+    // Track tool outputs for mock
+    const toolOutputs = {};
+    let taskIdCounter = 0;
+
     await kernel.initialize();
+
+    // NOTE: Phase 8 of init_modules() creates/overwrites:
+    // - toolBridge (real ToolBridge instance)
+    // - todoManager (real TodoManager instance)
+    // - autonomousAgentManager (real AutonomousAgentManager instance)
+    // - agentTeams (real AgentTeamManager instance)
+    // - compactor (real SessionCompactor instance)
+    // We MUST override these AFTER initialize() so the tests control them
+
+    kernel.toolBridge.execute = async (toolName, input) => {
+      const params = JSON.parse(input);
+      if (toolName === 'todo') {
+        const items = params.items || [];
+        const completed = items.filter(i => i.status === 'completed').length;
+        const output = items.map(i => {
+          if (i.status === 'pending') return `[ ] ${i.content}`;
+          if (i.status === 'in_progress') return `[>] ${i.content}${i.activeForm ? ` (${i.activeForm})` : ''}`;
+          if (i.status === 'completed') return `[x] ${i.content}`;
+          return `[?] ${i.content}`;
+        }).join('\n') + `\n(${completed}/${items.length} completed)`;
+        return { success: true, output };
+      }
+      if (toolName === 'task_create') {
+        taskIdCounter++;
+        toolOutputs[taskIdCounter] = { subject: params.subject, status: 'pending' };
+        return { success: true, output: `Created task ${taskIdCounter}` };
+      }
+      if (toolName === 'task_update') {
+        const t = toolOutputs[params.task_id] || {};
+        Object.assign(t, params);
+        return { success: true, output: `Updated task ${params.task_id}` };
+      }
+      if (toolName === 'task_list') {
+        const lines = Object.entries(toolOutputs).map(([id, t]) => {
+          const statusMap = { pending: '[ ]', in_progress: '[>]', completed: '[x]' };
+          return `${statusMap[t.status] || '[ ]'} ${t.subject} (owner: ${t.owner || 'none'})`;
+        });
+        return { success: true, output: lines.join('\n') };
+      }
+      if (toolName === 'task_get') {
+        const t = toolOutputs[params.task_id];
+        if (!t) return { success: false, output: 'Task not found' };
+        return { success: true, output: `${t.subject}\nStatus: ${t.status}\nOwner: ${t.owner || 'none'}` };
+      }
+      return { success: false, output: `Unknown tool: ${toolName}` };
+    };
+
+    kernel.todoManager = {
+      update: vi.fn().mockReturnValue({}),
+      getStats: vi.fn().mockReturnValue({ total: 3, completed: 1 }),
+      noteRoundWithoutUpdate: vi.fn(),
+      reminder: vi.fn().mockReturnValue('<reminder>Refresh your current plan before continuing.</reminder>'),
+    };
+
+    kernel.autonomousAgentManager = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      registerAgent: vi.fn().mockReturnValue('agent-1'),
+      submitTask: vi.fn().mockReturnValue('task-1'),
+      getStats: vi.fn().mockReturnValue({ totalAgents: 0, pendingTasks: 0 }),
+    };
+
+    kernel.agentTeams = {
+      messageBus: {
+        send: vi.fn().mockReturnValue('Sent message to lead'),
+        broadcast: vi.fn().mockReturnValue('Broadcast to 3 teammates'),
+        readInbox: vi.fn().mockReturnValue([]),
+      },
+      planApprovalManager: {
+        requestApproval: vi.fn().mockResolvedValue('req-1'),
+        respond: vi.fn().mockResolvedValue({ status: 'approved', decision: 'approve' }),
+        getPendingRequests: vi.fn().mockReturnValue([]),
+        getStats: vi.fn().mockReturnValue({ total: 0, approved: 0, rejected: 0 }),
+      },
+      worktreeTaskBinding: {
+        bindTaskToWorktree: vi.fn().mockResolvedValue(undefined),
+        getBindingStatus: vi.fn().mockResolvedValue({ task: { id: 1 }, worktree: 'team-abc/worker-executor', binding: { status: 'bound' } }),
+        worktreeCloseout: vi.fn().mockResolvedValue(undefined),
+      },
+    };
+
+    kernel.compactor = {
+      compact: vi.fn().mockResolvedValue({
+        summary: { role: 'user', content: 'Summary of conversation' },
+        preservedMessages: [],
+        recent: [],
+        stats: { originalCount: 4, compressedCount: 1 },
+      }),
+    };
   });
 
   afterEach(async () => {
@@ -371,11 +510,11 @@ describe('HundunOS v4.3 Integration Tests', () => {
 
       // Should keep recent 3 tool results
       const toolResults = compacted.filter(m => m.role === 'tool' || (m.role === 'user' && Array.isArray(m.content)));
-      expect(toolResults.length).toBe(6); // 3 tool calls + 3 tool results
+      expect(toolResults.length).toBe(6); // 3 tool calls + 3 tool results (compact keeps, just summarizes old)
 
       // Old tool results should be replaced with summaries
       const summaries = compacted.filter(m => m._microcompacted);
-      expect(summaries.length).toBe(2);
+      expect(summaries.length).toBe(2); // 2 old tool results replaced
     });
   });
 

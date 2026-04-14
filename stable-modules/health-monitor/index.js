@@ -90,7 +90,7 @@ export class HealthMonitor extends EventEmitter {
         this._checkers = new Map();      // dimension -> checker function
         this._interval = null;
         
-        // review: removed // review: removed console.log('[HealthMonitor] Initialized with 10 dimensions');
+        // console.log('[HealthMonitor] Initialized with 10 dimensions');
     }
 
     // ========================================================================
@@ -105,7 +105,7 @@ export class HealthMonitor extends EventEmitter {
             throw new Error(`Invalid dimension: ${dimension}`);
         }
         this._checkers.set(dimension, checker);
-        // review: removed // review: removed console.log(`[HealthMonitor] Registered checker: ${dimension}`);
+        // console.log(`[HealthMonitor] Registered checker: ${dimension}`);
     }
 
     /**
@@ -275,7 +275,7 @@ export class HealthMonitor extends EventEmitter {
             });
         }, this.config.checkInterval);
 
-        // review: removed // review: removed console.log(`[HealthMonitor] Started, interval: ${this.config.checkInterval}ms`);
+        // console.log(`[HealthMonitor] Started, interval: ${this.config.checkInterval}ms`);
         this.emit('started');
     }
 
@@ -287,7 +287,7 @@ export class HealthMonitor extends EventEmitter {
             clearInterval(this._interval);
             this._interval = null;
         }
-        // review: removed // review: removed console.log('[HealthMonitor] Stopped');
+        // console.log('[HealthMonitor] Stopped');
         this.emit('stopped');
     }
 

@@ -155,7 +155,7 @@ export class MultiRoleReviewer extends EventEmitter {
             byRole: {}
         };
 
-        // review: removed // review: removed console.log('[MultiRoleReview] Initialized with', this.config.enabledRoles.length, 'roles');
+        // console.log('[MultiRoleReview] Initialized with', this.config.enabledRoles.length, 'roles');
     }
 
     // ========================================================================

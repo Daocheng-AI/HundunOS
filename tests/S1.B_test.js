@@ -22,11 +22,11 @@ function test(name, fn) {
         fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`✅ ${name}`);
+        // console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
+        // console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
@@ -36,18 +36,18 @@ async function asyncTest(name, fn) {
         await fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`✅ ${name}`);
+        // console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
+        // console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
 // ========================================
 // 文件结构测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 文件结构测试 ===\n');
+// console.log('\n=== 文件结构测试 ===\n');
 
 test('S1.B.3.1 strategies/index.js 存在', () => {
     const p = path.join(ROUTER_ROOT, 'strategies/index.js');
@@ -72,7 +72,7 @@ test('S1.B.3.2 main.js 统一导出存在', () => {
 // ========================================
 // 代码量测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 代码量测试 ===\n');
+// console.log('\n=== 代码量测试 ===\n');
 
 test('S1.B.3.3 strategies 文件大小', () => {
     const p = path.join(ROUTER_ROOT, 'strategies/index.js');
@@ -95,7 +95,7 @@ test('S1.B.5.2 circuit-breaker 文件大小', () => {
 // ========================================
 // 模块加载测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 模块加载测试 ===\n');
+// console.log('\n=== 模块加载测试 ===\n');
 
 await asyncTest('S1.B.3.4 strategies 模块可导入', async () => {
     const mod = await import('../kernel/model-router/strategies/index.js');
@@ -116,7 +116,7 @@ await asyncTest('S1.B.5.3 circuit-breaker 模块可导入', async () => {
 // ========================================
 // 功能测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 功能测试 ===\n');
+// console.log('\n=== 功能测试 ===\n');
 
 await asyncTest('S1.B.3.5 createStrategy 正常工作', async () => {
     const { createStrategy, StrategyType } = await import('../kernel/model-router/strategies/index.js');
@@ -199,11 +199,11 @@ await asyncTest('S1.B.5.5 CircuitBreaker 恢复正常', async () => {
 // ========================================
 // 输出结果
 // ========================================
-// review: removed // review: removed console.log('\n========================================');
-// review: removed // review: removed console.log('S1.B.3-5 ModelRouter 扩展验收测试结果');
-// review: removed // review: removed console.log('========================================');
-// review: removed // review: removed console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
-// review: removed // review: removed console.log('========================================\n');
+// console.log('\n========================================');
+// console.log('S1.B.3-5 ModelRouter 扩展验收测试结果');
+// console.log('========================================');
+// console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
+// console.log('========================================\n');
 
 // 保存结果
 const report = {

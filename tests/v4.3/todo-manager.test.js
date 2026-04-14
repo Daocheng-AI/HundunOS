@@ -51,7 +51,7 @@ describe('TodoManager', () => {
     it('should throw error if item has invalid status', () => {
       expect(() => todoManager.update([
         { content: 'Task 1', status: 'invalid' },
-      ])).toThrow("Invalid status 'invalid'");
+      ])).toThrow("Item 0: invalid status 'invalid'");
     });
 
     it('should throw error if item has no content', () => {

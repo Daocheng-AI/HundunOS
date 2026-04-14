@@ -105,9 +105,12 @@ export class SkillService extends CRUDBase {
 
   /**
    * 验证Skill签名
+   * TODO: 实现签名验证逻辑（当前返回true用于开发环境）
+   * Issue: https://github.com/hundunos/hundunos/issues/xxx
    */
   async verifySignature(skillData) {
-    // TODO: tracked
+    // 开发环境暂时跳过签名验证
+    // 生产环境应实现完整的签名验证
     return true;
   }
 

@@ -53,7 +53,7 @@ export class LearningHub {
         // 加载数据
         await this._loadData();
         
-        // review: removed // review: removed console.log('[LearningHub] Initialized');
+        // console.log('[LearningHub] Initialized');
     }
 
     /**
@@ -101,7 +101,7 @@ export class LearningHub {
         
         this._saveActivity(activity);
         
-        // review: removed // review: removed console.log(`[LearningHub] Created activity: ${activity.title}`);
+        // console.log(`[LearningHub] Created activity: ${activity.title}`);
         
         return { success: true, activityId };
     }
@@ -261,7 +261,7 @@ export class LearningHub {
             if (!hasIt && achievement.condition()) {
                 userAchievements.badges.push(achievement.id);
                 this.stats.achievementsEarned++;
-                // review: removed // review: removed console.log(`[LearningHub] Achievement unlocked: ${achievement.id} for ${userId}`);
+                // console.log(`[LearningHub] Achievement unlocked: ${achievement.id} for ${userId}`);
             }
         }
         

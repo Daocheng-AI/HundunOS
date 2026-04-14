@@ -61,7 +61,7 @@ export class FeedbackSystem {
         // 加载历史反馈
         await this._loadFeedback();
         
-        // review: removed // review: removed console.log('[Feedback] Initialized with', this.feedbackList.size, 'feedbacks');
+        // console.log('[Feedback] Initialized with', this.feedbackList.size, 'feedbacks');
     }
 
     /**
@@ -114,7 +114,7 @@ export class FeedbackSystem {
         this.stats.submitted++;
         this._updateAnonymousStats(feedback);
         
-        // review: removed // review: removed console.log(`[Feedback] Submitted: ${feedbackId} (${feedback.type})`);
+        // console.log(`[Feedback] Submitted: ${feedbackId} (${feedback.type})`);
         
         return {
             success: true,
@@ -349,7 +349,7 @@ export class FeedbackSystem {
                 }
             }
         } catch (e) {
-            // review: removed // review: removed console.log('[Feedback] No existing feedback');
+            // console.log('[Feedback] No existing feedback');
         }
     }
 

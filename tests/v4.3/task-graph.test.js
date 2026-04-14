@@ -205,25 +205,21 @@ describe('TaskGraph', () => {
       const task1 = await taskGraph.create('Task 1');
       const task2 = await taskGraph.create('Task 2');
       const task3 = await taskGraph.create('Task 3');
-      
+
       await taskGraph.update(task1.id, null, null, null, [task2.id]);
-      await taskGraph.update(task2.id, null, null, [task3.id]);
-      
+      await taskGraph.update(task2.id, null, null, null, [task3.id]);
+
       const graph = await taskGraph.getDependencyGraph();
-      
+
       expect(graph.nodes).toHaveLength(3);
+      // 2 edges: task1→task2 (blocks), task2→task3 (blocks)
+      // 修复后：只使用 blocks 数组构建边，避免双向依赖导致的重复边
       expect(graph.edges).toHaveLength(2);
-      
-      expect(graph.edges[0]).toMatchObject({
-        from: task1.id,
-        to: task2.id,
-        type: 'blocks',
-      });
-      expect(graph.edges[1]).toMatchObject({
-        from: task2.id,
-        to: task3.id,
-        type: 'blocks',
-      });
+
+      // 验证核心依赖关系存在
+      const edgeSet = new Set(graph.edges.map(e => `${e.from}->${e.to}:${e.type}`));
+      expect(edgeSet.has(`${task1.id}->${task2.id}:blocks`)).toBe(true);
+      expect(edgeSet.has(`${task2.id}->${task3.id}:blocks`)).toBe(true);
     });
   });
 });

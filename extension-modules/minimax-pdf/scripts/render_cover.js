@@ -97,7 +97,7 @@ function loadPlaywright() {
       process.exit(3);
     }
 
-    // review: removed // review: removed console.log(JSON.stringify({
+    // console.log(JSON.stringify({
       status: "ok",
       out:    outFile,
       size_kb: Math.round(stat.size / 1024),

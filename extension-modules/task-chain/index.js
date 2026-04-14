@@ -35,7 +35,7 @@ export class TaskChain {
     }
 
     async initialize() {
-        // review: removed // review: removed console.log('[TaskChain] Initialized');
+        // console.log('[TaskChain] Initialized');
     }
 
     /**
@@ -69,7 +69,7 @@ export class TaskChain {
         this.chains.set(chainId, chain);
         this.stats.chainsCreated++;
         
-        // review: removed // review: removed console.log(`[TaskChain] Created chain: ${chainId} (${chain.name})`);
+        // console.log(`[TaskChain] Created chain: ${chainId} (${chain.name})`);
         return chainId;
     }
 
@@ -104,7 +104,7 @@ export class TaskChain {
         chain.status = TaskStatus.RUNNING;
         chain.results = [];
         
-        // review: removed // review: removed console.log(`[TaskChain] Executing chain: ${chainId}`);
+        // console.log(`[TaskChain] Executing chain: ${chainId}`);
         
         try {
             const results = await this._executeChain(chain, context);
@@ -195,7 +195,7 @@ export class TaskChain {
         task.status = TaskStatus.RUNNING;
         const startTime = Date.now();
         
-        // review: removed // review: removed console.log(`[TaskChain] Executing task: ${task.id} (${task.name})`);
+        // console.log(`[TaskChain] Executing task: ${task.id} (${task.name})`);
         
         let attempt = 0;
         let lastError = null;
@@ -220,7 +220,7 @@ export class TaskChain {
                 attempt++;
                 
                 if (attempt <= task.retry) {
-                    // review: removed // review: removed console.log(`[TaskChain] Retrying task ${task.id} (${attempt}/${task.retry})`);
+                    // console.log(`[TaskChain] Retrying task ${task.id} (${attempt}/${task.retry})`);
                     await this._sleep(1000 * attempt);  // 指数退避
                 }
             }

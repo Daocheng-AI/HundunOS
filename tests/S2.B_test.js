@@ -16,17 +16,17 @@ const results = [];
 
 function test(name, fn) {
     const start = Date.now();
-    try { fn(); passed++; results.push({ name, status: 'PASS', elapsed: Date.now() - start }); // review: removed // review: removed console.log(`✅ ${name}`); }
-    catch (e) { failed++; results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start }); // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`); }
+    try { fn(); passed++; results.push({ name, status: 'PASS', elapsed: Date.now() - start }); // console.log(`✅ ${name}`); }
+    catch (e) { failed++; results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start }); // console.log(`❌ ${name}: ${e.message}`); }
 }
 
 async function asyncTest(name, fn) {
     const start = Date.now();
-    try { await fn(); passed++; results.push({ name, status: 'PASS', elapsed: Date.now() - start }); // review: removed // review: removed console.log(`✅ ${name}`); }
-    catch (e) { failed++; results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start }); // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`); }
+    try { await fn(); passed++; results.push({ name, status: 'PASS', elapsed: Date.now() - start }); // console.log(`✅ ${name}`); }
+    catch (e) { failed++; results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start }); // console.log(`❌ ${name}: ${e.message}`); }
 }
 
-// review: removed // review: removed console.log('\n=== S2.B HealthMonitor 测试 ===\n');
+// console.log('\n=== S2.B HealthMonitor 测试 ===\n');
 
 await asyncTest('S2.B.1.1 health-monitor 目录存在', async () => {
     assert.ok(fs.existsSync(path.join(HUNDUNOS_ROOT, 'kernel/health-monitor/index.js')));
@@ -65,7 +65,7 @@ await asyncTest('S2.B.1.5 checkAll 返回正确结构', async () => {
     assert.equal(Object.keys(report.dimensions).length, 10, '应有10个维度');
 });
 
-// review: removed // review: removed console.log('\n=== S2.B.2 CronTrigger 测试 ===\n');
+// console.log('\n=== S2.B.2 CronTrigger 测试 ===\n');
 
 await asyncTest('S2.B.2.1 cron-trigger.js 存在', async () => {
     assert.ok(fs.existsSync(path.join(HUNDUNOS_ROOT, 'kernel/aware-system/cron-trigger.js')));
@@ -112,7 +112,7 @@ await asyncTest('S2.B.2.6 getStats 返回统计', async () => {
     assert.ok(stats.enabled !== undefined, '应有 enabled');
 });
 
-// review: removed // review: removed console.log('\n=== S2.B.3 AutoRecovery 测试 ===\n');
+// console.log('\n=== S2.B.3 AutoRecovery 测试 ===\n');
 
 await asyncTest('S2.B.3.1 recovery/index.js 存在', async () => {
     assert.ok(fs.existsSync(path.join(HUNDUNOS_ROOT, 'kernel/recovery/index.js')));
@@ -155,11 +155,11 @@ await asyncTest('S2.B.3.6 getStats 返回统计', async () => {
     assert.ok(stats.recovered !== undefined, '应有 recovered');
 });
 
-// review: removed // review: removed console.log('\n========================================');
-// review: removed // review: removed console.log('S2.B HealthMonitor/CronTrigger/AutoRecovery 测试结果');
-// review: removed // review: removed console.log('========================================');
-// review: removed // review: removed console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
-// review: removed // review: removed console.log('========================================\n');
+// console.log('\n========================================');
+// console.log('S2.B HealthMonitor/CronTrigger/AutoRecovery 测试结果');
+// console.log('========================================');
+// console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
+// console.log('========================================\n');
 
 fs.writeFileSync(path.join(__dirname, 'S2.B_results.json'), JSON.stringify({ task: 'S2.B', timestamp: new Date().toISOString(), total: passed + failed, passed, failed, results }, null, 2));
 process.exit(failed > 0 ? 1 : 0);

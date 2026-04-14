@@ -1,0 +1,132 @@
+# hundunos/kernel/skills/skills/api-tester.yaml
+# HundunOS v3.8 — API Tester Skill
+# 触发：api 测试, http 测试, endpoint 测试, 接口测试, curl, rest client
+# 功能：HTTP 端点测试 / 批量测试 / 报告生成
+
+name: api-tester
+version: 1.0.0
+description: REST/HTTP API 端点测试套件，支持单接口、批量、回归测试
+
+trigger:
+  patterns:
+    - api 测试
+    - http 测试
+    - endpoint
+    - 接口测试
+    - curl
+    - rest client
+    - http request
+    - api endpoint
+    - 压力测试
+    - load test
+  semantic: true
+
+tools:
+  - id: api_test_single
+    type: function
+    description: 单个 API 端点测试
+    fn: |
+      async (params) => {
+        const http = await import('node:http');
+        const https = await import('node:https');
+        const { url, method = 'GET', headers = {}, body } = params;
+        const lib = url.startsWith('https') ? https : http;
+        const parsed = new URL(url);
+
+        return new Promise((resolve) => {
+          const start = Date.now();
+          const req = lib.request({
+            hostname: parsed.hostname,
+            port: parsed.port || (url.startsWith('https') ? 443 : 80),
+            path: parsed.pathname + parsed.search,
+            method,
+            headers,
+            timeout: 10000,
+          }, (res) => {
+            let data = '';
+            res.on('data', c => data += c);
+            res.on('end', () => {
+              const elapsed = Date.now() - start;
+              let parsedBody = data;
+              try { parsedBody = JSON.parse(data); } catch {}
+              resolve({
+                status: res.statusCode,
+                headers: res.headers,
+                body: parsedBody,
+                elapsed_ms: elapsed,
+                pass: res.statusCode >= 200 && res.statusCode < 300,
+              });
+            });
+          });
+          req.on('error', (e) => resolve({ error: e.message, pass: false, elapsed_ms: Date.now() - start }));
+          req.on('timeout', () => { req.destroy(); resolve({ error: 'TIMEOUT', pass: false }); });
+          if (body && ['POST', 'PUT', 'PATCH'].includes(method)) req.write(typeof body === 'string' ? body : JSON.stringify(body));
+          req.end();
+        });
+      }
+
+  - id: api_test_batch
+    type: function
+    description: 批量 API 测试
+    fn: |
+      async (params) => {
+        const { tests = [] } = params;
+        const http = await import('node:http');
+        const https = await import('node:https');
+        const results = [];
+        for (const t of tests) {
+          const lib = t.url.startsWith('https') ? https : http;
+          const p = new URL(t.url);
+          const req = lib.request({ hostname: p.hostname, port: p.port, path: p.pathname, method: t.method || 'GET', headers: t.headers }, (res) => {
+            let data = '';
+            res.on('data', c => data += c);
+            res.on('end', () => {
+              results.push({ name: t.name, status: res.statusCode, pass: res.statusCode >= 200 && res.statusCode < 300, body: data.slice(0, 200) });
+            });
+          });
+          req.on('error', (e) => results.push({ name: t.name, error: e.message, pass: false }));
+          if (t.body) req.write(typeof t.body === 'string' ? t.body : JSON.stringify(t.body));
+          req.end();
+        }
+        return { results, total: tests.length, passed: results.filter(r => r.pass).length };
+      }
+
+  - id: api_generate_report
+    type: function
+    description: 生成测试报告
+    fn: |
+      async (params) => {
+        const { results = [], title = 'API Test Report', timestamp = new Date().toISOString() } = params;
+        const passed = results.filter(r => r.pass).length;
+        const failed = results.filter(r => !r.pass).length;
+        const rate = results.length ? ((passed / results.length) * 100).toFixed(1) : 0;
+        const lines = [
+          `# ${title}`,
+          `> ${timestamp}  |  通过率: ${rate}%  |  ✅ ${passed}  ❌ ${failed}`,
+          '',
+          '## 详细结果',
+          ...results.map(r => `- **${r.name}**: HTTP ${r.status || 'ERR'} ${r.pass ? '✅' : '❌'} ${r.error ? `| 错误: ${r.error}` : ''}`),
+        ];
+        return { report: lines.join('\n'), summary: { total: results.length, passed, failed, rate } };
+      }
+
+system_prompt: |
+  你是一个专业的 API 测试工程师。当用户提到 API 测试、endpoint 测试等任务时：
+  - 优先测试 Happy Path（正常响应）
+  - 依次测试边界条件：空参数、超长参数、错误参数类型
+  - 记录每个请求的 status code、响应时间、body 大小
+  - 生成 Markdown 格式的测试报告
+  - 敏感信息（API Key、Token）使用环境变量，不硬编码
+
+execution:
+  isolation: process
+  timeout: 60000
+  retry: 2
+
+examples:
+  - input: "测试 /api/users 端点"
+    output: 调用 api_test_single，method=GET
+  - input: "批量测试用户模块的所有接口"
+    output: 调用 api_test_batch，传入多个 endpoint 配置
+  - input: "生成测试报告"
+    output: 调用 api_generate_report，输出 Markdown 格式

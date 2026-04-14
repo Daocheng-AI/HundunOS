@@ -27,7 +27,7 @@ const result = await kernel.toolBridge.execute('todo', JSON.stringify({
   ],
 }));
 
-console.log(result.output);
+// console.log(result.output);
 ```
 
 ### 2. Task 工具
@@ -54,7 +54,7 @@ await kernel.toolBridge.execute('task_update', JSON.stringify({
 
 // 列出所有任务
 const listResult = await kernel.toolBridge.execute('task_list', '{}');
-console.log(listResult.output);
+// console.log(listResult.output);
 ```
 
 ### 3. Autonomous Agents
@@ -80,7 +80,7 @@ const taskId = agentManager.submitTask({
 
 // 查看统计
 const stats = agentManager.getStats();
-console.log(stats);
+// console.log(stats);
 // {
 //   totalAgents: 1,
 //   idleAgents: 0,
@@ -102,7 +102,7 @@ await binding.bindTaskToWorktree('task_1', 'team-abc/worker-executor');
 
 // 查看绑定状态
 const status = await binding.getBindingStatus('team-abc/worker-executor');
-console.log(status);
+// console.log(status);
 
 // 关闭 Worktree
 await binding.worktreeCloseout(
@@ -134,7 +134,7 @@ await approvalManager.respond(requestId, 'approve', 'Plan looks good, proceed');
 
 // Worker 查看审批结果
 const messages = kernel.agentTeams.messageBus.readInbox('worker-executor');
-console.log(messages[0]);
+// console.log(messages[0]);
 // {
 //   type: 'plan_approval_response',
 //   from: 'lead',
@@ -161,7 +161,7 @@ messageBus.broadcast('lead', 'Team meeting at 3 PM', [
 
 // 读取收件箱
 const messages = messageBus.readInbox('lead');
-console.log(messages);
+// console.log(messages);
 ```
 
 ### 7. Compact 三层压缩
@@ -263,7 +263,7 @@ const compressedPrompt = buildSystemPrompt({
 ```javascript
 // 使用 MCP 工具
 const mcpTools = kernel.mcpManager.listTools();
-console.log(mcpTools);
+// console.log(mcpTools);
 // [
 //   { name: 'filesystem/read_file', description: '...' },
 //   { name: 'brave-search/search', description: '...' },
@@ -287,7 +287,7 @@ kernel.errorHandler.logError(new Error('Something went wrong'), {
 
 // 查看错误统计
 const errorStats = kernel.errorHandler.getErrorStats();
-console.log(errorStats);
+// console.log(errorStats);
 
 // 执行降级策略
 const fallback = await kernel.fallbackManager.execute('worktree-git-unavailable', {
@@ -321,7 +321,7 @@ kernel.metrics.updateQueueDepth('taskQueue', 25);
 
 // 健康检查
 const health = await kernel.healthChecker.checkAll();
-console.log(health);
+// console.log(health);
 // {
 //   status: 'healthy',
 //   timestamp: '2025-01-15T10:30:00Z',
@@ -340,7 +340,7 @@ kernel.tracer.endSpan(spanId, 'completed', { tokens: 1500 });
 
 // 获取 span 树
 const spanTree = kernel.tracer.getSpanTree(spanId);
-console.log(spanTree);
+// console.log(spanTree);
 ```
 
 ## 完整示例
@@ -426,11 +426,11 @@ async function main() {
   const agentStats = kernel.autonomousAgentManager.getStats();
   const health = await kernel.healthChecker.checkAll();
 
-  console.log('\n=== Statistics ===');
-  console.log('Todo:', todoStats);
-  console.log('Tasks:', taskStats);
-  console.log('Agents:', agentStats);
-  console.log('Health:', health.status);
+  // console.log('\n=== Statistics ===');
+  // console.log('Todo:', todoStats);
+  // console.log('Tasks:', taskStats);
+  // console.log('Agents:', agentStats);
+  // console.log('Health:', health.status);
 
   await kernel.shutdown();
 }

@@ -55,7 +55,7 @@ class Logger {
     const colored = `${prefix} ${msg}`;
     const plain = `[${ts}] [${level.toUpperCase()}] [${this.prefix}] ${tag}: ${msg}`;
 
-    // review: removed // review: removed console.log(colored);
+    // console.log(colored);
 
     // 写入文件
     try {
@@ -77,9 +77,9 @@ class Logger {
   divider(title = '') {
     const line = '─'.repeat(50);
     if (title) {
-      // review: removed // review: removed console.log(`\n${COLORS.bold}${line}\n  ${title}\n${line}${COLORS.reset}\n`);
+      // console.log(`\n${COLORS.bold}${line}\n  ${title}\n${line}${COLORS.reset}\n`);
     } else {
-      // review: removed // review: removed console.log(`\n${line}\n`);
+      // console.log(`\n${line}\n`);
     }
   }
 
@@ -89,7 +89,7 @@ class Logger {
       const color = val === 'running' || val === 'active' ? 'success'
         : val === 'stopped' || val === 'error' ? 'error'
         : 'info';
-      // review: removed // review: removed console.log(`  ${COLORS.bold}${key.padEnd(20)}${COLORS.reset} ${COLORS[color]}${val}${COLORS.reset}`);
+      // console.log(`  ${COLORS.bold}${key.padEnd(20)}${COLORS.reset} ${COLORS[color]}${val}${COLORS.reset}`);
     }
   }
 }

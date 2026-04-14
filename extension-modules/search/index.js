@@ -58,7 +58,7 @@ export class SearchExtension extends EventEmitter {
         this.cache = new Map();
         this.index = new Map();
 
-        // review: removed // review: removed console.log('[Search] Extension initialized');
+        // console.log('[Search] Extension initialized');
     }
 
     // ========================================================================
@@ -72,7 +72,7 @@ export class SearchExtension extends EventEmitter {
         const type = options.type || SearchType.FILE_NAME;
         const startTime = Date.now();
 
-        // review: removed // review: removed console.log(`[Search] Searching: ${query} (type: ${type})`);
+        // console.log(`[Search] Searching: ${query} (type: ${type})`);
         this.emit('search_start', { query, type });
 
         let results;
@@ -91,7 +91,7 @@ export class SearchExtension extends EventEmitter {
 
         const elapsed = Date.now() - startTime;
 
-        // review: removed // review: removed console.log(`[Search] Found ${results.length} results in ${elapsed}ms`);
+        // console.log(`[Search] Found ${results.length} results in ${elapsed}ms`);
         this.emit('search_complete', { query, type, count: results.length, elapsed });
 
         return {
@@ -269,7 +269,7 @@ export class SearchExtension extends EventEmitter {
      * 建立索引
      */
     async buildIndex(targetPath) {
-        // review: removed // review: removed console.log(`[Search] Building index for ${targetPath}`);
+        // console.log(`[Search] Building index for ${targetPath}`);
         const index = new Map();
         const rootPath = path.resolve(targetPath);
 
@@ -305,7 +305,7 @@ export class SearchExtension extends EventEmitter {
 
         walk(rootPath);
         this.index = index;
-        // review: removed // review: removed console.log(`[Search] Index built: ${index.size} items`);
+        // console.log(`[Search] Index built: ${index.size} items`);
 
         return { indexed: index.size };
     }

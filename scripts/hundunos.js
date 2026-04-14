@@ -89,18 +89,18 @@ function parseArgs(args) {
 }
 
 function logJson(obj) {
-    // review: removed // review: removed console.log(JSON.stringify(obj, null, 2));
+    // console.log(JSON.stringify(obj, null, 2));
 }
 
 function logTable(rows, columns) {
-    if (!rows || rows.length === 0) { // review: removed // review: removed console.log('(empty)'); return; }
+    if (!rows || rows.length === 0) { // console.log('(empty)'); return; }
     const cols = columns || Object.keys(rows[0]);
     const widths = cols.map(c => Math.max(c.length, ...rows.map(r => String(r[c] ?? '').length)));
     const header = cols.map((c, i) => c.padEnd(widths[i])).join('  ');
-    // review: removed // review: removed console.log(header);
-    // review: removed // review: removed console.log(cols.map((_, i) => '─'.repeat(widths[i])).join('  '));
+    // console.log(header);
+    // console.log(cols.map((_, i) => '─'.repeat(widths[i])).join('  '));
     for (const row of rows) {
-        // review: removed // review: removed console.log(cols.map((c, i) => String(row[c] ?? '').padEnd(widths[i])).join('  '));
+        // console.log(cols.map((c, i) => String(row[c] ?? '').padEnd(widths[i])).join('  '));
     }
 }
 
@@ -117,9 +117,9 @@ async function cmdTask(subcmd, args) {
             const query = args.positional.join(' ') || args.named.query || args.named.q || '';
             if (!query) { logger.error('Usage: hundunos task analyze "任务描述"'); return; }
             const result = await apiOrFail('POST', '/api/tasks/analyze', { task: query });
-            // review: removed // review: removed console.log(`\n 适合 BFTS: ${result.suitable ? '✅ YES' : '❌ NO'}  (confidence: ${((result.confidence || 0) * 100).toFixed(0)}%)`);
-            // review: removed // review: removed console.log(` 推荐引擎: ${result.engine || 'unknown'}  |  ${result.recommendation || ''}`);
-            if (result.reasons?.length) // review: removed // review: removed console.log(` 匹配信号: ${result.reasons.join(', ')}`);
+            // console.log(`\n 适合 BFTS: ${result.suitable ? '✅ YES' : '❌ NO'}  (confidence: ${((result.confidence || 0) * 100).toFixed(0)}%)`);
+            // console.log(` 推荐引擎: ${result.engine || 'unknown'}  |  ${result.recommendation || ''}`);
+            if (result.reasons?.length) // console.log(` 匹配信号: ${result.reasons.join(', ')}`);
             break;
         }
         case 'create': {
@@ -128,21 +128,21 @@ async function cmdTask(subcmd, args) {
             const context = { initialCode: args.named.code || '' };
             if (args.named.stages) context.stages = args.named.stages.split(',');
             const result = await apiOrFail('POST', '/api/tasks', { task, context });
-            // review: removed // review: removed console.log(`✅ Task created: ${result.taskId} (engine: ${result.engine}, stage: ${result.stage})`);
+            // console.log(`✅ Task created: ${result.taskId} (engine: ${result.engine}, stage: ${result.stage})`);
             break;
         }
         case 'run': {
             const taskId = args.positional[0] || args.named.task_id;
             if (!taskId) { logger.error('Usage: hundunos task run <taskId>'); return; }
-            // review: removed // review: removed console.log(`Running BFTS for task ${taskId}...`);
+            // console.log(`Running BFTS for task ${taskId}...`);
             const result = await apiOrFail('POST', `/api/tasks/run/${taskId}`);
-            // review: removed // review: removed console.log(`✅ BFTS complete: ${result.iterations} iterations, best score: ${result.bestNode?.metric?.value?.toFixed(3) || '?'}`);
+            // console.log(`✅ BFTS complete: ${result.iterations} iterations, best score: ${result.bestNode?.metric?.value?.toFixed(3) || '?'}`);
             break;
         }
         case 'list': {
             const result = await apiOrFail('GET', '/api/tasks');
             const tasks = result.tasks || [];
-            if (!tasks.length) { // review: removed // review: removed console.log('No active tasks'); return; }
+            if (!tasks.length) { // console.log('No active tasks'); return; }
             logTable(tasks, ['taskId', 'engine', 'created', 'status']);
             break;
         }
@@ -157,8 +157,8 @@ async function cmdTask(subcmd, args) {
             const taskId = args.positional[0];
             if (!taskId) { logger.error('Usage: hundunos task journal <taskId>'); return; }
             const journal = await apiOrFail('GET', `/api/tasks/${taskId}/journal`);
-            // review: removed // review: removed console.log(`Journal for ${taskId}:`);
-            // review: removed // review: removed console.log(`  Nodes: ${Object.keys(journal.nodes || {}).length} | Stage: ${journal.current_stage} | Best: ${journal.best_node}`);
+            // console.log(`Journal for ${taskId}:`);
+            // console.log(`  Nodes: ${Object.keys(journal.nodes || {}).length} | Stage: ${journal.current_stage} | Best: ${journal.best_node}`);
             break;
         }
         case 'stats': {
@@ -170,16 +170,16 @@ async function cmdTask(subcmd, args) {
             const taskId = args.positional[0];
             if (!taskId) { logger.error('Usage: hundunos task delete <taskId>'); return; }
             await apiOrFail('DELETE', `/api/tasks/${taskId}`);
-            // review: removed // review: removed console.log(`Deleted: ${taskId}`);
+            // console.log(`Deleted: ${taskId}`);
             break;
         }
         default: {
-            // review: removed // review: removed console.log(`Usage: hundunos task <analyze|create|run|list|get|journal|stats|delete>`);
-            // review: removed // review: removed console.log('Examples:');
-            // review: removed // review: removed console.log('  hundunos task analyze "实现 REST API"');
-            // review: removed // review: removed console.log('  hundunos task create "重构认证" --stages=分析,实现,测试');
-            // review: removed // review: removed console.log('  hundunos task list');
-            // review: removed // review: removed console.log('  hundunos task run <taskId>');
+            // console.log(`Usage: hundunos task <analyze|create|run|list|get|journal|stats|delete>`);
+            // console.log('Examples:');
+            // console.log('  hundunos task analyze "实现 REST API"');
+            // console.log('  hundunos task create "重构认证" --stages=分析,实现,测试');
+            // console.log('  hundunos task list');
+            // console.log('  hundunos task run <taskId>');
         }
     }
 }
@@ -189,7 +189,7 @@ async function cmdSkill(subcmd, args) {
         case 'list': {
             const result = await apiOrFail('GET', '/api/skills');
             const skills = Array.isArray(result) ? result : result.skills || [];
-            if (!skills.length) { // review: removed // review: removed console.log('No skills loaded'); return; }
+            if (!skills.length) { // console.log('No skills loaded'); return; }
             logTable(skills, ['name', 'version', 'description']);
             break;
         }
@@ -205,10 +205,10 @@ async function cmdSkill(subcmd, args) {
             if (!query) { logger.error('Usage: hundunos skill match "query"'); return; }
             const result = await apiOrFail('POST', '/api/skills/match', { query });
             const matches = result.matches || [];
-            if (!matches.length) { // review: removed // review: removed console.log('No matching skills'); return; }
-            // review: removed // review: removed console.log(`\nMatched skills for "${query}":`);
+            if (!matches.length) { // console.log('No matching skills'); return; }
+            // console.log(`\nMatched skills for "${query}":`);
             for (const m of matches) {
-                // review: removed // review: removed console.log(`  [${(m.score * 100).toFixed(0)}%] ${m.name} (${m.version}) — ${m.description || ''}`);
+                // console.log(`  [${(m.score * 100).toFixed(0)}%] ${m.name} (${m.version}) — ${m.description || ''}`);
             }
             break;
         }
@@ -230,9 +230,9 @@ async function cmdSkill(subcmd, args) {
         case 'market': {
             const result = await apiOrFail('GET', '/api/skills/market');
             const official = result.official || result || [];
-            // review: removed // review: removed console.log(`\nOfficial Skills (${official.length}):`);
+            // console.log(`\nOfficial Skills (${official.length}):`);
             for (const s of official) {
-                // review: removed // review: removed console.log(`  [${s.installed ? '✅' : '○'}] ${s.name} ${s.version} — ${s.description || ''}`);
+                // console.log(`  [${s.installed ? '✅' : '○'}] ${s.name} ${s.version} — ${s.description || ''}`);
             }
             break;
         }
@@ -245,13 +245,13 @@ async function cmdSkill(subcmd, args) {
             break;
         }
         default: {
-            // review: removed // review: removed console.log(`Usage: hundunos skill <list|info|match|installOfficial|install|market|run>`);
-            // review: removed // review: removed console.log('Examples:');
-            // review: removed // review: removed console.log('  hundunos skill list');
-            // review: removed // review: removed console.log('  hundunos skill match "发送 GitHub issue"');
-            // review: removed // review: removed console.log('  hundunos skill installOfficial slack');
-            // review: removed // review: removed console.log('  hundunos skill install https://raw.githubusercontent.com/.../my-skill.yaml');
-            // review: removed // review: removed console.log('  hundunos skill market');
+            // console.log(`Usage: hundunos skill <list|info|match|installOfficial|install|market|run>`);
+            // console.log('Examples:');
+            // console.log('  hundunos skill list');
+            // console.log('  hundunos skill match "发送 GitHub issue"');
+            // console.log('  hundunos skill installOfficial slack');
+            // console.log('  hundunos skill install https://raw.githubusercontent.com/.../my-skill.yaml');
+            // console.log('  hundunos skill market');
         }
     }
 }
@@ -261,10 +261,10 @@ async function cmdHook(subcmd, args) {
         case 'list': {
             const result = await apiOrFail('GET', '/api/hooks');
             const events = result.events || [];
-            // review: removed // review: removed console.log(`\nRegistered Hook events (${events.length}):`);
+            // console.log(`\nRegistered Hook events (${events.length}):`);
             for (const event of events) {
                 const hooks = result.registered?.[event] || [];
-                // review: removed // review: removed console.log(`  ${event} (${hooks.length} hook group(s))`);
+                // console.log(`  ${event} (${hooks.length} hook group(s))`);
             }
             break;
         }
@@ -297,11 +297,11 @@ async function cmdHook(subcmd, args) {
             break;
         }
         default: {
-            // review: removed // review: removed console.log(`Usage: hundunos hook <list|trigger|register>`);
-            // review: removed // review: removed console.log('Examples:');
-            // review: removed // review: removed console.log('  hundunos hook list');
-            // review: removed // review: removed console.log('  hundunos hook trigger PreToolUse \'{"tool":"Write"}\'');
-            // review: removed // review: removed console.log('  hundunos hook register --file=config/hooks/my-hook.yaml');
+            // console.log(`Usage: hundunos hook <list|trigger|register>`);
+            // console.log('Examples:');
+            // console.log('  hundunos hook list');
+            // console.log('  hundunos hook trigger PreToolUse \'{"tool":"Write"}\'');
+            // console.log('  hundunos hook register --file=config/hooks/my-hook.yaml');
         }
     }
 }
@@ -320,27 +320,27 @@ async function cmdMemory(subcmd, args) {
             const result = await apiOrFail('POST', '/api/memory/search', { query });
             const recent = result.recent || [];
             const semantic = result.semantic || [];
-            if (!recent.length && !semantic.length) { // review: removed // review: removed console.log('No results found'); return; }
-            // review: removed // review: removed console.log(`\nMemory results for "${query}":`);
+            if (!recent.length && !semantic.length) { // console.log('No results found'); return; }
+            // console.log(`\nMemory results for "${query}":`);
             if (recent.length) {
-                // review: removed // review: removed console.log('  Recent:');
+                // console.log('  Recent:');
                 for (const r of recent.slice(0, 5)) {
-                    // review: removed // review: removed console.log(`    - ${r.message?.slice(0, 80) || '(no message)'}`);
+                    // console.log(`    - ${r.message?.slice(0, 80) || '(no message)'}`);
                 }
             }
             if (semantic.length) {
-                // review: removed // review: removed console.log('  Semantic:');
+                // console.log('  Semantic:');
                 for (const s of semantic.slice(0, 3)) {
-                    // review: removed // review: removed console.log(`    - ${s.key}: ${s.description || ''}`);
+                    // console.log(`    - ${s.key}: ${s.description || ''}`);
                 }
             }
             break;
         }
         default: {
-            // review: removed // review: removed console.log(`Usage: hundunos memory <stats|search>`);
-            // review: removed // review: removed console.log('Examples:');
-            // review: removed // review: removed console.log('  hundunos memory stats');
-            // review: removed // review: removed console.log('  hundunos memory search "上次重构"');
+            // console.log(`Usage: hundunos memory <stats|search>`);
+            // console.log('Examples:');
+            // console.log('  hundunos memory stats');
+            // console.log('  hundunos memory search "上次重构"');
         }
     }
 }
@@ -361,7 +361,7 @@ async function cmdFeature(subcmd, args) {
             break;
         }
         default: {
-            // review: removed // review: removed console.log(`Usage: hundunos feature <list|get>`);
+            // console.log(`Usage: hundunos feature <list|get>`);
         }
     }
 }
@@ -369,15 +369,15 @@ async function cmdFeature(subcmd, args) {
 // ── REPL 模式 ────────────────────────────────────────────────────────────────
 
 async function cmdRepl() {
-    // review: removed // review: removed console.log(`\n  ██╗  ██╗ █████╗ ██╗   ██╗██╗  ████████╗`);
-    // review: removed // review: removed console.log(`  ██║ ██╔╝██╔══██╗██║   ██║██║  ╚══██╔══╝`);
-    // review: removed // review: removed console.log(`  █████╔╝ ███████║██║   ██║██║     ██║`);
-    // review: removed // review: removed console.log(`  ██╔═██╗ ██╔══██║██║   ██║██║     ██║`);
-    // review: removed // review: removed console.log(`  ██║  ██╗██║  ██║╚██████╔╝███████╗██║`);
-    // review: removed // review: removed console.log(`  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝`);
-    // review: removed // review: removed console.log(`\n  HundunOS v3.8 Phase 7 REPL`);
-    // review: removed // review: removed console.log(`  REST API: http://${HOST}:${PORT}`);
-    // review: removed // review: removed console.log(`  Type 'help' for commands, 'exit' to quit\n`);
+    // console.log(`\n  ██╗  ██╗ █████╗ ██╗   ██╗██╗  ████████╗`);
+    // console.log(`  ██║ ██╔╝██╔══██╗██║   ██║██║  ╚══██╔══╝`);
+    // console.log(`  █████╔╝ ███████║██║   ██║██║     ██║`);
+    // console.log(`  ██╔═██╗ ██╔══██║██║   ██║██║     ██║`);
+    // console.log(`  ██║  ██╗██║  ██║╚██████╔╝███████╗██║`);
+    // console.log(`  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝`);
+    // console.log(`\n  HundunOS v3.8 Phase 7 REPL`);
+    // console.log(`  REST API: http://${HOST}:${PORT}`);
+    // console.log(`  Type 'help' for commands, 'exit' to quit\n`);
 
     const rl = readline.createInterface({
         input: process.stdin,
@@ -397,7 +397,7 @@ async function cmdRepl() {
     };
 
     function printHelp() {
-        // review: removed // review: removed console.log(`
+        // console.log(`
   Commands:
     status               System status
     task analyze "..."   Analyze if task is BFTS-suitable
@@ -446,7 +446,7 @@ async function cmdRepl() {
             else if (c === 'hook') { await cmdHook(sc, { positional: rArgs, named: {} }); }
             else if (c === 'memory') { await cmdMemory(sc, { positional: rArgs, named: {} }); }
             else if (c === 'feature') { await cmdFeature(sc, { positional: rArgs, named: {} }); }
-            else { // review: removed // review: removed console.log(`Unknown command: ${c}. Type 'help' for available commands.`); }
+            else { // console.log(`Unknown command: ${c}. Type 'help' for available commands.`); }
         } catch (e) {
             logger.error(`[ERROR] ${e.message}`);
         }
@@ -455,7 +455,7 @@ async function cmdRepl() {
     });
 
     rl.on('close', () => {
-        // review: removed // review: removed console.log('\nGoodbye!');
+        // console.log('\nGoodbye!');
         process.exit(0);
     });
 }
@@ -465,7 +465,7 @@ async function cmdRepl() {
 async function main() {
     // 无参数：显示帮助
     if (!cmd) {
-        // review: removed // review: removed console.log(`
+        // console.log(`
   HundunOS v3.8 Phase 7 — Unified CLI
 
   Usage: hundunos <command> [subcommand] [options]

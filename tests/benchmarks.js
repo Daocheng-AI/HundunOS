@@ -36,16 +36,16 @@ async function benchmark(name, fn, runs = 100) {
     const result = { name, runs, mean, median, p95, p99 };
     RESULTS.push(result);
 
-    // review: removed // review: removed console.log(`✅ ${name}`);
-    // review: removed // review: removed console.log(`   Mean: ${mean.toFixed(3)}ms | Median: ${median.toFixed(3)}ms | P95: ${p95.toFixed(3)}ms`);
+    // console.log(`✅ ${name}`);
+    // console.log(`   Mean: ${mean.toFixed(3)}ms | Median: ${median.toFixed(3)}ms | P95: ${p95.toFixed(3)}ms`);
     
     return result;
 }
 
 async function main() {
-    // review: removed // review: removed console.log('\n╔══════════════════════════════════════════════════════╗');
-    // review: removed // review: removed console.log('║        HundunOS v3.0 Performance Benchmarks          ║');
-    // review: removed // review: removed console.log('╚══════════════════════════════════════════════════════╝\n');
+    // console.log('\n╔══════════════════════════════════════════════════════╗');
+    // console.log('║        HundunOS v3.0 Performance Benchmarks          ║');
+    // console.log('╚══════════════════════════════════════════════════════╝\n');
 
     // Intent Engine
     try {
@@ -56,7 +56,7 @@ async function main() {
             e._initIntentPatterns();
         }, 50);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ IntentEngine: Init - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ IntentEngine: Init - Skipped:', e.message.slice(0, 50));
     }
 
     // Circuit Breaker
@@ -68,7 +68,7 @@ async function main() {
             cb.recordSuccess();
         }, 100);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ CircuitBreaker: Check - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ CircuitBreaker: Check - Skipped:', e.message.slice(0, 50));
     }
 
     // Strategy
@@ -78,7 +78,7 @@ async function main() {
             assessComplexity('帮我分析这个复杂的系统架构设计');
         }, 100);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ Strategy: Assess - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ Strategy: Assess - Skipped:', e.message.slice(0, 50));
     }
 
     // RBAC
@@ -90,7 +90,7 @@ async function main() {
             rbac.hasPermission('bench', 'write');
         }, 50);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ RBAC: Permission Check - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ RBAC: Permission Check - Skipped:', e.message.slice(0, 50));
     }
 
     // Health Monitor
@@ -101,7 +101,7 @@ async function main() {
             await monitor.checkAll();
         }, 20);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ HealthMonitor: Check - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ HealthMonitor: Check - Skipped:', e.message.slice(0, 50));
     }
 
     // edict
@@ -112,7 +112,7 @@ async function main() {
             getEdict(edict.id);
         }, 50);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ edict: Create/Get - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ edict: Create/Get - Skipped:', e.message.slice(0, 50));
     }
 
     // Recovery
@@ -123,7 +123,7 @@ async function main() {
             recovery.getStats();
         }, 50);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ Recovery: Manager Init - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ Recovery: Manager Init - Skipped:', e.message.slice(0, 50));
     }
 
     // Message Bus
@@ -136,7 +136,7 @@ async function main() {
             ch.publish('test', { data: 'test' });
         }, 50);
     } catch (e) {
-        // review: removed // review: removed console.log('⚠️ MessageBus: Pub/Sub - Skipped:', e.message.slice(0, 50));
+        // console.log('⚠️ MessageBus: Pub/Sub - Skipped:', e.message.slice(0, 50));
     }
 
     // 保存结果
@@ -176,11 +176,11 @@ async function main() {
 
     fs.writeFileSync(path.join(benchDir, 'report.md'), lines.join('\n'));
 
-    // review: removed // review: removed console.log('\n══════════════════════════════════════════════════════');
-    // review: removed // review: removed console.log(`  ✅ ${RESULTS.length} benchmarks completed`);
-    // review: removed // review: removed console.log(`  📊 Average Mean: ${report.summary.avgMean.toFixed(3)}ms`);
-    // review: removed // review: removed console.log(`  📄 Report: ${benchDir}/report.md`);
-    // review: removed // review: removed console.log('══════════════════════════════════════════════════════\n');
+    // console.log('\n══════════════════════════════════════════════════════');
+    // console.log(`  ✅ ${RESULTS.length} benchmarks completed`);
+    // console.log(`  📊 Average Mean: ${report.summary.avgMean.toFixed(3)}ms`);
+    // console.log(`  📄 Report: ${benchDir}/report.md`);
+    // console.log('══════════════════════════════════════════════════════\n');
 }
 
 main().catch(console.error);

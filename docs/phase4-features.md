@@ -67,7 +67,7 @@ const hooks = new HookExecutor();
 
 // 注册 Pre-hook（可修改参数）
 hooks.register(HookEvent.PRE_TOOL_USE, async (event, payload) => {
-  // review: removed // review: removed console.log(`即将执行: ${payload.tool_name}`);
+  // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`即将执行: ${payload.tool_name}`);
   // 修改参数
   return { 
     blocked: false, 
@@ -79,8 +79,8 @@ hooks.register(HookEvent.PRE_TOOL_USE, async (event, payload) => {
 
 // 注册 Post-hook（只读）
 hooks.register(HookEvent.POST_TOOL_USE, async (event, payload) => {
-  // review: removed // review: removed console.log(`执行完成: ${payload.tool_name}`);
-  // review: removed // review: removed console.log(`结果: ${JSON.stringify(payload.result)}`);
+  // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`执行完成: ${payload.tool_name}`);
+  // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`结果: ${JSON.stringify(payload.result)}`);
 });
 ```
 

@@ -14,7 +14,7 @@ const RESULTS = [];
 
 function test(name, passed, detail = '') {
     const status = passed ? '✅' : '❌';
-    // review: removed // review: removed console.log(`${status} ${name}${detail ? ` - ${detail}` : ''}`);
+    // console.log(`${status} ${name}${detail ? ` - ${detail}` : ''}`);
     RESULTS.push({ name, passed, detail });
 }
 
@@ -22,7 +22,7 @@ function test(name, passed, detail = '') {
 // S2.A 安全模块验收
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== S2.A 安全模块验收 ===\n');
+// console.log('\n=== S2.A 安全模块验收 ===\n');
 
 // S2.A.1-S2.A.4 已在阶段1验收，这里只验证 S2.A.5
 
@@ -38,7 +38,7 @@ if (fs.existsSync(rbacPath)) {
 // S2.B 健康监控验收
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== S2.B 健康监控验收 ===\n');
+// console.log('\n=== S2.B 健康监控验收 ===\n');
 
 const healthMonitorPath = path.join(__dirname, '../stable-modules/health-monitor/index.js');
 test('S2.B.1 HealthMonitor 文件存在', fs.existsSync(healthMonitorPath));
@@ -68,7 +68,7 @@ if (fs.existsSync(recoveryPath)) {
 // 模块导入验证
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 模块导入验证 ===\n');
+// console.log('\n=== 模块导入验证 ===\n');
 
 async function testImports() {
     try {
@@ -133,7 +133,7 @@ await testImports();
 // 代码量统计
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 代码量统计 ===\n');
+// console.log('\n=== 代码量统计 ===\n');
 
 function countCode(dir, ext = '.js') {
     let count = 0;
@@ -166,15 +166,15 @@ test('S2.D.5 代码量达标', stats.count >= 20 && sizeKB >= 100, `${stats.coun
 // 结果汇总
 // ============================================================================
 
-// review: removed // review: removed console.log('\n========================================');
-// review: removed // review: removed console.log('Phase 2 验收测试结果');
-// review: removed // review: removed console.log('========================================');
+// console.log('\n========================================');
+// console.log('Phase 2 验收测试结果');
+// console.log('========================================');
 
 const passed = RESULTS.filter(r => r.passed).length;
 const failed = RESULTS.filter(r => !r.passed).length;
 
-// review: removed // review: removed console.log(`总计: ${RESULTS.length} | 通过: ${passed} | 失败: ${failed}`);
-// review: removed // review: removed console.log('========================================\n');
+// console.log(`总计: ${RESULTS.length} | 通过: ${passed} | 失败: ${failed}`);
+// console.log('========================================\n');
 
 // 写入结果
 const resultPath = path.join(__dirname, 'phase2_results.json');

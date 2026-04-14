@@ -103,13 +103,14 @@ function base64UrlDecode(str) {
  */
 export function createAuthMiddleware(options = {}) {
   const {
-    secret = process.env.HUNDUNOS_ADMIN_JWT_SECRET || (() => {
-      console.warn('[Auth] SECURITY: 使用默认JWT密钥，请设置 HUNDUNOS_ADMIN_JWT_SECRET 环境变量');
-      return 'hundunos-admin-default-key-please-set-env';
-    })(),
+    secret = process.env.HUNDUNOS_ADMIN_JWT_SECRET,
     apiKeyHeader = 'x-api-key',
     authHeader = 'authorization',
   } = options;
+
+  if (!secret) {
+    throw new Error('HUNDUNOS_ADMIN_JWT_SECRET environment variable is required');
+  }
 
   return async function authMiddleware(req, res, next) {
     try {

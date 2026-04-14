@@ -1,0 +1,216 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.4 [39m[90mC:/Users/Lin/.qclaw/workspace/hundunos[39m
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould persist large tool outputs
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould persist large tool outputs
+[22m[39m2026-04-13T11:45:20.691Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould persist large tool outputs
+[22m[39m2026-04-13T11:45:24.118Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould persist large tool outputs
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould not persist small outputs
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould not persist small outputs
+[22m[39m2026-04-13T11:45:24.201Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mPersistedOutputMarker 性能[2m > [22mshould persist large tool outputs[33m 3519[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould not persist small outputs
+[22m[39m2026-04-13T11:45:27.679Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPersistedOutputMarker 性能[2m > [22m[2mshould not persist small outputs
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMicrocompact 性能[2m > [22m[2mshould reduce tool result count
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMicrocompact 性能[2m > [22m[2mshould reduce tool result count
+[22m[39m2026-04-13T11:45:27.744Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mPersistedOutputMarker 性能[2m > [22mshould not persist small outputs[33m 3526[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMicrocompact 性能[2m > [22m[2mshould reduce tool result count
+[22m[39m2026-04-13T11:45:31.093Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMicrocompact 性能[2m > [22m[2mshould reduce tool result count
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mLLM Summarization 性能[2m > [22m[2mshould compress long conversations
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mLLM Summarization 性能[2m > [22m[2mshould compress long conversations
+[22m[39m2026-04-13T11:45:31.150Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mMicrocompact 性能[2m > [22mshould reduce tool result count[33m 3412[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mLLM Summarization 性能[2m > [22m[2mshould compress long conversations
+[22m[39m2026-04-13T11:45:34.593Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mLLM Summarization 性能[2m > [22m[2mshould compress long conversations
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mToken 消耗对比[2m > [22m[2mshould measure token reduction with compact enabled
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mToken 消耗对比[2m > [22m[2mshould measure token reduction with compact enabled
+[22m[39m2026-04-13T11:45:34.645Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mLLM Summarization 性能[2m > [22mshould compress long conversations[33m 3500[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mToken 消耗对比[2m > [22m[2mshould measure token reduction with compact enabled
+[22m[39m2026-04-13T11:45:38.198Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mToken 消耗对比[2m > [22m[2mshould measure token reduction with compact enabled
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mAutonomous Agents 调度性能[2m > [22m[2mshould measure task dispatch latency
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mAutonomous Agents 调度性能[2m > [22m[2mshould measure task dispatch latency
+[22m[39m2026-04-13T11:45:38.268Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mToken 消耗对比[2m > [22mshould measure token reduction with compact enabled[33m 3604[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mAutonomous Agents 调度性能[2m > [22m[2mshould measure task dispatch latency
+[22m[39m2026-04-13T11:45:41.649Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mAutonomous Agents 调度性能[2m > [22m[2mshould measure task dispatch latency
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTodo Manager 性能[2m > [22m[2mshould measure todo update latency
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTodo Manager 性能[2m > [22m[2mshould measure todo update latency
+[22m[39m2026-04-13T11:45:41.712Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mAutonomous Agents 调度性能[2m > [22mshould measure task dispatch latency[33m 3450[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTodo Manager 性能[2m > [22m[2mshould measure todo update latency
+[22m[39m2026-04-13T11:45:45.222Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTodo Manager 性能[2m > [22m[2mshould measure todo update latency
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure task operations latency
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure task operations latency
+[22m[39m2026-04-13T11:45:45.266Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mTodo Manager 性能[2m > [22mshould measure todo update latency[33m 3575[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure task operations latency
+[22m[39m2026-04-13T11:45:48.709Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure task operations latency
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure dependency graph performance
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure dependency graph performance
+[22m[39m2026-04-13T11:45:48.763Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mTaskGraph 性能[2m > [22mshould measure task operations latency[33m 3486[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure dependency graph performance
+[22m[39m2026-04-13T11:45:52.195Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mTaskGraph 性能[2m > [22m[2mshould measure dependency graph performance
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMessageBus 性能[2m > [22m[2mshould measure message throughput
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMessageBus 性能[2m > [22m[2mshould measure message throughput
+[22m[39m2026-04-13T11:45:52.245Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mTaskGraph 性能[2m > [22mshould measure dependency graph performance[33m 3486[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMessageBus 性能[2m > [22m[2mshould measure message throughput
+[22m[39m2026-04-13T11:45:56.302Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mMessageBus 性能[2m > [22m[2mshould measure message throughput
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPlan Approval 性能[2m > [22m[2mshould measure approval cycle latency
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPlan Approval 性能[2m > [22m[2mshould measure approval cycle latency
+[22m[39m2026-04-13T11:45:56.346Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mMessageBus 性能[2m > [22mshould measure message throughput[33m 4107[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPlan Approval 性能[2m > [22m[2mshould measure approval cycle latency
+[22m[39m2026-04-13T11:45:59.739Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2mPlan Approval 性能[2m > [22m[2mshould measure approval cycle latency
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2m综合性能对比[2m > [22m[2mshould compare performance with and without compact
+[22m[39m[Kernel] System config not found: C:\Users\Lin\.qclaw\workspace\hundunos\config\system.test.json
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2m综合性能对比[2m > [22m[2mshould compare performance with and without compact
+[22m[39m2026-04-13T11:45:59.806Z [33m[WARN][0m [HundunOS:Storage] SECURITY WARNING: HUNDUNOS_ENCRYPTION_KEY not set. Encryption is DISABLED for this session. Set the env var before production use.
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mPlan Approval 性能[2m > [22mshould measure approval cycle latency[33m 3437[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2m综合性能对比[2m > [22m[2mshould compare performance with and without compact
+[22m[39m2026-04-13T11:46:03.230Z [33m[WARN][0m [HundunOS:Storage] put error: "[Storage] Encryption required for key 'health_test' but HUNDUNOS_ENCRYPTION_KEY is not set. Refusing to write unencrypted sensitive data."
+
+[90mstderr[2m | tests/v4.3/benchmark.test.js[2m > [22m[2mHundunOS v4.3 Performance Benchmarks[2m > [22m[2m综合性能对比[2m > [22m[2mshould compare performance with and without compact
+[22m[39m[Kernel] Env issues: Ollama 本地推理, OpenClaw CLI, 存储层可用, 内存充足
+
+ [31m×[39m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22m综合性能对比[2m > [22mshould compare performance with and without compact[33m 3490[2mms[22m[39m
+[31m   → Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 12 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mPersistedOutputMarker 性能[2m > [22mshould persist large tool outputs
+[31m[1mError[22m: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Lin/.qclaw/workspace/hundunos/kernel/intent-engine.js[39m:1066:0
+[90m [2m❯[22m TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:[2m30354:39[22m[39m
+[90m [2m❯[22m TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:[2m30351:14[22m[39m
+[90m [2m❯[22m TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:[2m27597:10[22m[39m
+[90m [2m❯[22m EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:[2m30143:14[22m[39m
+[90m [2m❯[22m loadAndTransform node_modules/vite/dist/node/chunks/node.js:[2m24468:26[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mPersistedOutputMarker 性能[2m > [22mshould not persist small outputs
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mMicrocompact 性能[2m > [22mshould reduce tool result count
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mLLM Summarization 性能[2m > [22mshould compress long conversations
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mToken 消耗对比[2m > [22mshould measure token reduction with compact enabled
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mAutonomous Agents 调度性能[2m > [22mshould measure task dispatch latency
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mTodo Manager 性能[2m > [22mshould measure todo update latency
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mTaskGraph 性能[2m > [22mshould measure task operations latency
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mTaskGraph 性能[2m > [22mshould measure dependency graph performance
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mMessageBus 性能[2m > [22mshould measure message throughput
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22mPlan Approval 性能[2m > [22mshould measure approval cycle latency
+[41m[1m FAIL [22m[49m tests/v4.3/benchmark.test.js[2m > [22mHundunOS v4.3 Performance Benchmarks[2m > [22m综合性能对比[2m > [22mshould compare performance with and without compact
+[31m[1mError[22m: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Lin/.qclaw/workspace/hundunos/kernel/intent-engine.js[39m:1066:0
+[90m [2m❯[22m TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:[2m30354:39[22m[39m
+[90m [2m❯[22m TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:[2m30351:14[22m[39m
+[90m [2m❯[22m TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:[2m27597:10[22m[39m
+[90m [2m❯[22m EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:[2m30143:14[22m[39m
+[90m [2m❯[22m loadAndTransform node_modules/vite/dist/node/chunks/node.js:[2m24468:26[22m[39m
+[90m [2m❯[22m fetchModule node_modules/vite/dist/node/chunks/node.js:[2m23059:15[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m12 failed[39m[22m[90m (12)[39m
+[2m   Start at [22m 19:45:19
+[2m   Duration [22m 43.40s[2m (transform 510ms, setup 0ms, import 552ms, tests 42.60s, environment 0ms)[22m
+
+JSON report written to C:/Users/Lin/.qclaw/workspace/hundunos/test-results/results.json

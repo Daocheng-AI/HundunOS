@@ -276,14 +276,14 @@ Supermemory 集成的日志包含以下信息：
 
 ```javascript
 const stats = await kernel._modules.supermemory.getCacheStats();
-console.log('缓存统计:', stats);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log('缓存统计:', stats);
 ```
 
 ### 健康检查
 
 ```javascript
 const health = await kernel._modules.supermemory.checkSupermemoryHealth();
-console.log('健康状态:', health);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log('健康状态:', health);
 ```
 
 ## 🔐 安全建议

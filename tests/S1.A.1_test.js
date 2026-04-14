@@ -22,11 +22,11 @@ function test(name, fn) {
         fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`✅ ${name}`);
+        // console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
+        // console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
@@ -36,18 +36,18 @@ async function asyncTest(name, fn) {
         await fn();
         passed++;
         results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`✅ ${name}`);
+        // console.log(`✅ ${name}`);
     } catch (e) {
         failed++;
         results.push({ name, status: 'FAIL', error: e.message, elapsed: Date.now() - start });
-        // review: removed // review: removed console.log(`❌ ${name}: ${e.message}`);
+        // console.log(`❌ ${name}: ${e.message}`);
     }
 }
 
 // ========================================
 // 文件结构测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 文件结构测试 ===\n');
+// console.log('\n=== 文件结构测试 ===\n');
 
 test('S1.A.1.1 edict目录存在', () => {
     assert.ok(fs.existsSync(EDICT_ROOT), 'edict目录应存在');
@@ -81,7 +81,7 @@ test('S1.A.1.6 whitelist.json存在', () => {
 // ========================================
 // 配置内容测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 配置内容测试 ===\n');
+// console.log('\n=== 配置内容测试 ===\n');
 
 test('S1.A.1.7 edict_config包含必要字段', () => {
     const configPath = path.join(EDICT_ROOT, 'config/edict_config.json');
@@ -102,7 +102,7 @@ test('S1.A.1.8 whitelist格式正确', () => {
 // ========================================
 // 代码量测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 代码量测试 ===\n');
+// console.log('\n=== 代码量测试 ===\n');
 
 test('S1.A.1.9 core/index.js文件大小', () => {
     const corePath = path.join(EDICT_ROOT, 'core/index.js');
@@ -119,7 +119,7 @@ test('S1.A.1.10 router.js文件大小', () => {
 // ========================================
 // 模块加载测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 模块加载测试 ===\n');
+// console.log('\n=== 模块加载测试 ===\n');
 
 await asyncTest('S1.A.1.11 core模块可导入', async () => {
     const core = await import('../stable-modules/edict/core/index.js');
@@ -134,7 +134,7 @@ await asyncTest('S1.A.1.12 router模块可导入', async () => {
 // ========================================
 // 功能测试
 // ========================================
-// review: removed // review: removed console.log('\n=== 功能测试 ===\n');
+// console.log('\n=== 功能测试 ===\n');
 
 await asyncTest('S1.A.1.13 shouldUseEdict正常工作', async () => {
     const { shouldUseEdict } = await import('../stable-modules/edict/router.js');
@@ -159,11 +159,11 @@ await asyncTest('S1.A.1.15 createEdict正常工作', async () => {
 // ========================================
 // 输出结果
 // ========================================
-// review: removed // review: removed console.log('\n========================================');
-// review: removed // review: removed console.log('S1.A.1 edict 迁移验收测试结果');
-// review: removed // review: removed console.log('========================================');
-// review: removed // review: removed console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
-// review: removed // review: removed console.log('========================================\n');
+// console.log('\n========================================');
+// console.log('S1.A.1 edict 迁移验收测试结果');
+// console.log('========================================');
+// console.log(`总计: ${passed + failed} | 通过: ${passed} | 失败: ${failed}`);
+// console.log('========================================\n');
 
 // 保存结果
 const report = {

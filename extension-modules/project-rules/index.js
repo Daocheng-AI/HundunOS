@@ -163,7 +163,7 @@ export class ProjectRules {
     }
 
     async initialize() {
-        // review: removed // review: removed console.log('[ProjectRules] v2.0 Initializing...');
+        // console.log('[ProjectRules] v2.0 Initializing...');
     }
 
     /**
@@ -705,22 +705,22 @@ export class ProjectRules {
      * 生成规则文件
      */
     async generate() {
-        // review: removed // review: removed console.log('[ProjectRules] Detecting tech stack...');
+        // console.log('[ProjectRules] Detecting tech stack...');
         const stack = this.detectTechStack();
 
-        // review: removed // review: removed console.log('[ProjectRules] Detected:', JSON.stringify(stack, null, 2));
+        // console.log('[ProjectRules] Detected:', JSON.stringify(stack, null, 2));
 
         // 生成 CLAUDE.md
         const claudeMdPath = join(this.workspaceRoot, 'CLAUDE.md');
         const claudeContent = this.generateClaudeMd(stack);
         writeFileSync(claudeMdPath, claudeContent, 'utf8');
-        // review: removed // review: removed console.log('[ProjectRules] Generated CLAUDE.md');
+        // console.log('[ProjectRules] Generated CLAUDE.md');
 
         // 生成 .hundunos-rules.json
         const rulesPath = join(this.workspaceRoot, '.hundunos-rules.json');
         const rulesContent = this.generateRulesJson(stack);
         writeFileSync(rulesPath, JSON.stringify(rulesContent, null, 2), 'utf8');
-        // review: removed // review: removed console.log('[ProjectRules] Generated .hundunos-rules.json');
+        // console.log('[ProjectRules] Generated .hundunos-rules.json');
 
         return {
             success: true,

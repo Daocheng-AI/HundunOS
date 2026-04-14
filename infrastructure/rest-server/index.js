@@ -32,9 +32,9 @@ export class RestServer {
         );
         this._authEnabled = this._apiKeys.size > 0;
         if (this._authEnabled) {
-            // review: removed // review: removed console.log(`[RestServer] API Key auth: ENABLED (${this._apiKeys.size} key(s))`);
+            // console.log(`[RestServer] API Key auth: ENABLED (${this._apiKeys.size} key(s))`);
         } else {
-            // review: removed // review: removed console.log('[RestServer] API Key auth: DISABLED (no keys configured)');
+            // console.log('[RestServer] API Key auth: DISABLED (no keys configured)');
         }
 
         // FIX-R2: RateLimiter 引用（由 core.js 注入）
@@ -119,7 +119,7 @@ export class RestServer {
         if (this.server) return;
         this.server = http.createServer((req, res) => this._handle(req, res));
         this.server.listen(this.port, this.host, () => {
-            // review: removed // review: removed console.log(`[RestServer] HTTP API listening on http://${this.host}:${this.port}`);
+            // console.log(`[RestServer] HTTP API listening on http://${this.host}:${this.port}`);
         });
         this.server.on('error', (e) => {
             logger.error('Server error:', e.message);

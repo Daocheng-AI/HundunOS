@@ -80,10 +80,10 @@ export class EverythingSearch {
         try {
             await execAsync(`"${this.esPath}" -n 1 .`, { timeout: 5000 });
             this.available = true;
-            // review: removed // review: removed console.log('[Everything] Available');
+            // console.log('[Everything] Available');
         } catch {
             this.available = false;
-            // review: removed // review: removed console.log('[Everything] Not available');
+            // console.log('[Everything] Not available');
         }
     }
 

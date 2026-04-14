@@ -19,7 +19,7 @@ async function main() {
   logger.system(`IPC 端口: ${config.daemon.ipcPort}`);
   logger.system(`API 端口: ${config.api.enabled ? config.api.port : 'disabled'}`);
   logger.system(`内核端口: ${config.kernel.port}`);
-  // review: removed // review: removed console.log();
+  // console.log();
 
   const daemon = new HundunOSDaemon();
 

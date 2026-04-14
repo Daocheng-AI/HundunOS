@@ -46,7 +46,14 @@ const createMockStorage = () => ({
   
   async create(model, data) {
     const records = await this.loadModelData(model);
-    const record = { ...data, id: data.id || `id-${Date.now()}` };
+    // 应用 UserModel 字段默认值
+    const modelName = model.__name || model;
+    const defaults = {};
+    if (modelName === 'User') {
+      defaults.status = 'active';
+      defaults.roleIds = [];
+    }
+    const record = { ...defaults, ...data, id: data.id || `id-${Date.now()}` };
     records.push(record);
     await this.saveModelData(model, records);
     return record;
@@ -268,4 +275,4 @@ describe('LogService', () => {
   });
 });
 
-// review: removed // review: removed console.log('✅ Service layer tests completed');
+// console.log('✅ Service layer tests completed');

@@ -107,7 +107,7 @@ export class RBACManager extends EventEmitter {
         this.defaultRole = config.defaultRole || Role.GUEST;
         this.superAdmins = config.superAdmins || [];
         
-        // review: removed // review: removed console.log('[RBAC] Initialized with 7 roles');
+        // console.log('[RBAC] Initialized with 7 roles');
     }
 
     // ========================================================================
@@ -132,7 +132,7 @@ export class RBACManager extends EventEmitter {
 
         this.users.set(userId, user);
         this.emit('user_registered', { userId, role });
-        // review: removed // review: removed console.log(`[RBAC] User registered: ${userId} as ${role}`);
+        // console.log(`[RBAC] User registered: ${userId} as ${role}`);
         
         return user;
     }
@@ -164,7 +164,7 @@ export class RBACManager extends EventEmitter {
         user.updatedAt = new Date().toISOString();
 
         this.emit('role_changed', { userId, oldRole, newRole });
-        // review: removed // review: removed console.log(`[RBAC] Role changed: ${userId} ${oldRole} -> ${newRole}`);
+        // console.log(`[RBAC] Role changed: ${userId} ${oldRole} -> ${newRole}`);
         
         return user;
     }

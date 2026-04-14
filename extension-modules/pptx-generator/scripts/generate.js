@@ -96,7 +96,7 @@ async function main() {
 
     // Write output
     await pptx.writeFile({ fileName: outputPath });
-    // review: removed // review: removed console.log(`OK: Generated ${slides.length} slides -> ${outputPath}`);
+    // console.log(`OK: Generated ${slides.length} slides -> ${outputPath}`);
 }
 
 function renderCover(slide, def, theme, idx) {

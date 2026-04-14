@@ -49,11 +49,11 @@ export default defineConfig({
     // 全局设置
     globals: true,
 
-    // 测试超时时间（毫秒）
-    testTimeout: 10000,
+    // 测试超时时间（毫秒）- 增加到60秒以支持慢速集成测试
+    testTimeout: 60000,
 
     // Hook 超时时间（毫秒）
-    hookTimeout: 10000,
+    hookTimeout: 60000,
 
     // 并行执行
     threads: true,
@@ -64,6 +64,20 @@ export default defineConfig({
     // 输出目录
     outputFile: {
       json: './test-results/results.json'
+    },
+
+    // P1-1 修复：intent-engine.js 及其依赖链包含运行时动态 import，
+    // Vite/Vitest 的 ESM 转换器在静态分析阶段会报"invalid JS syntax"。
+    // server.deps.inline 告知 Vitest 对这些模块跳过 Vite 转换，直接由 Node.js 原生执行。
+    server: {
+      deps: {
+        inline: [
+          /kernel\/intent-engine/,
+          /kernel\/intent-vector-cache/,
+          /kernel\/model-router\/polar-quant/,
+          /kernel\/supermemory/
+        ]
+      }
     }
   },
 

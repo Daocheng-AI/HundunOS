@@ -11,7 +11,7 @@ const output = fs.createWriteStream(outputFile);
 const archive = archiver('zip', { zlib: { level: 9 } });
 
 output.on('close', () => {
-    // review: removed // review: removed console.log(`Archive created: ${archive.pointer()} bytes`);
+    // console.log(`Archive created: ${archive.pointer()} bytes`);
 });
 
 archive.pipe(output);

@@ -32,10 +32,20 @@ export class DependencyContainer {
       throw new Error(`Factory for '${name}' must be a function`);
     }
 
+    // 支持 register(name, factory, ['dep1', 'dep2']) 这种简写形式
+    let deps = [];
+    let singleton = true;
+    if (Array.isArray(options)) {
+      deps = options;
+    } else {
+      deps = options.dependencies || [];
+      singleton = options.singleton !== false;
+    }
+
     this.dependencies.set(name, {
       factory,
-      singleton: options.singleton !== false,
-      dependencies: options.dependencies || [],
+      singleton,
+      dependencies: deps,
     });
 
     return this;
@@ -80,6 +90,11 @@ export class DependencyContainer {
    * @returns {Promise<*>} 依赖实例
    */
   async resolve(name) {
+    // 检测循环依赖（必须在添加到 resolving 之前检查，否则移除后无法检测）
+    if (this.resolving.has(name)) {
+      throw new Error(`Circular dependency detected: ${name}`);
+    }
+
     // 检查是否已解析（单例）
     if (this.instances.has(name)) {
       return this.instances.get(name);
@@ -89,11 +104,6 @@ export class DependencyContainer {
     const dep = this.dependencies.get(name);
     if (!dep) {
       throw new Error(`Dependency '${name}' not found`);
-    }
-
-    // 检测循环依赖
-    if (this.resolving.has(name)) {
-      throw new Error(`Circular dependency detected: ${name}`);
     }
 
     // 标记正在解析
