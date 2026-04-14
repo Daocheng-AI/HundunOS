@@ -1,68 +1,111 @@
+# HundunOS v5 - Docker Compose 配置
+
 version: '3.8'
 
 services:
-  hundunos:
-    build: .
-    container_name: hundunos
+  # 主应用服务
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hundunos-app
     restart: unless-stopped
     ports:
-      - "38080:38080"
-      - "9090:9090"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - HUNDUNOS_ENCRYPTION_KEY=${HUNDUNOS_ENCRYPTION_KEY}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=hundunos
+      - DB_USER=hundunos
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
-      - ./data:/app/.hundunos
-      - ./workspace:/app/workspace
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:38080/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 40s
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - hundunos-network
-    depends_on:
-      - redis
-      - postgres
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: hundunos-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=hundunos
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=hundunos
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - hundunos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hundunos -d hundunos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
   redis:
     image: redis:7-alpine
     container_name: hundunos-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis-data:/data
-    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
     networks:
       - hundunos-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
-  postgres:
-    image: postgres:15-alpine
-    container_name: hundunos-postgres
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: hundunos-nginx
     restart: unless-stopped
     ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=hundunos
-      - POSTGRES_USER=hundunos
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - "80:80"
+      - "443:443"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - app
     networks:
       - hundunos-network
 
+  # 监控 - Prometheus
   prometheus:
     image: prom/prometheus:latest
     container_name: hundunos-prometheus
     restart: unless-stopped
     ports:
-      - "9091:9090"
+      - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -74,48 +117,33 @@ services:
     networks:
       - hundunos-network
 
+  # 监控 - Grafana
   grafana:
     image: grafana/grafana:latest
     container_name: hundunos-grafana
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-    networks:
-      - hundunos-network
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
     depends_on:
       - prometheus
-
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: hundunos-jaeger
-    restart: unless-stopped
-    ports:
-      - "5775:5775"
-      - "16686:16686"
-      - "14268:14268"
-      - "14250:14250"
-      - "9411:9411"
-      - "4317:4317"
-      - "18126:18126"
-    environment:
-      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
-      - COLLECTOR_OTLP_HTTP_HOST_PORT=:14268
     networks:
       - hundunos-network
 
 volumes:
-  redis-data:
   postgres-data:
+    driver: local
+  redis-data:
+    driver: local
   prometheus-data:
+    driver: local
   grafana-data:
+    driver: local
 
 networks:
   hundunos-network:

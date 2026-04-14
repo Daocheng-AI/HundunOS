@@ -81,7 +81,7 @@ export class Storage {
 
     async initialize() {
         mkdirSync(this.dir, { recursive: true });
-        // review: removed // review: removed console.log('[Storage] Initialized at:', this.dir);
+        // console.log('[Storage] Initialized at:', this.dir);
         // 清理过期缓存
         setInterval(() => this._cleanCache(), this.maxCacheAge * 2);
     }
@@ -309,7 +309,7 @@ if (this._shouldEncrypt(key)) {
         }
         
         if (keysToDelete.length > 0) {
-            // review: removed // review: removed console.log(`[Storage] Cleaned ${keysToDelete.length} expired cache entries`);
+            // console.log(`[Storage] Cleaned ${keysToDelete.length} expired cache entries`);
         }
     }
 

@@ -63,7 +63,7 @@ export class OpenClawAuditAdapter extends EventEmitter {
         this._ensureLogDir();
         this._startFlushTimer();
 
-        // review: removed // review: removed console.log('[OpenClawAudit] Adapter initialized');
+        // console.log('[OpenClawAudit] Adapter initialized');
     }
 
     // ========================================================================
@@ -254,7 +254,7 @@ export class OpenClawAuditAdapter extends EventEmitter {
                 console.warn(msg, entry.details);
                 break;
             default:
-                // review: removed // review: removed console.log(msg);
+                // console.log(msg);
         }
     }
 

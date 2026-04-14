@@ -16,7 +16,7 @@ export class AuditLogger {
     async initialize() {
         await this.kernel.storage.ensureStorage?.() || Promise.resolve();
         this.startFlush();
-        // review: removed // review: removed console.log('[AuditLogger] Initialized');
+        // console.log('[AuditLogger] Initialized');
     }
 
     async log(eventType, data, context = {}) {

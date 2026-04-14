@@ -51,7 +51,7 @@ export class SubAgentScheduler {
         // 加载已有 Agent 配置
         await this._loadAgents();
         
-        // review: removed // review: removed console.log('[SubAgentScheduler] Initialized,', this.agents.size, 'agents loaded');
+        // console.log('[SubAgentScheduler] Initialized,', this.agents.size, 'agents loaded');
     }
 
     /**
@@ -105,7 +105,7 @@ export class SubAgentScheduler {
         this._saveAgentConfig(agent);
         
         this.stats.created++;
-        // review: removed // review: removed console.log(`[SubAgentScheduler] Created agent: ${agentId} (${agent.name})`);
+        // console.log(`[SubAgentScheduler] Created agent: ${agentId} (${agent.name})`);
         
         return agentId;
     }
@@ -142,7 +142,7 @@ export class SubAgentScheduler {
         this._emit('onSpawn', { agentId, agent, task });
         
         this.stats.spawned++;
-        // review: removed // review: removed console.log(`[SubAgentScheduler] Spawned agent: ${agentId}`);
+        // console.log(`[SubAgentScheduler] Spawned agent: ${agentId}`);
         
         return { success: true, agentId, taskId: agent.currentTask.id };
     }
@@ -163,7 +163,7 @@ export class SubAgentScheduler {
         this._emit('onComplete', { agentId, agent, result });
         
         this.stats.completed++;
-        // review: removed // review: removed console.log(`[SubAgentScheduler] Completed agent: ${agentId}`);
+        // console.log(`[SubAgentScheduler] Completed agent: ${agentId}`);
         
         return agent;
     }
@@ -182,7 +182,7 @@ export class SubAgentScheduler {
         // 触发回调
         this._emit('onError', { agentId, agent, error });
         
-        // review: removed // review: removed console.log(`[SubAgentScheduler] Agent failed: ${agentId} (${error})`);
+        // console.log(`[SubAgentScheduler] Agent failed: ${agentId} (${error})`);
         
         return agent;
     }
@@ -206,7 +206,7 @@ export class SubAgentScheduler {
         this._emit('onTerminate', { agentId, reason });
         
         this.stats.terminated++;
-        // review: removed // review: removed console.log(`[SubAgentScheduler] Terminated agent: ${agentId} (${reason})`);
+        // console.log(`[SubAgentScheduler] Terminated agent: ${agentId} (${reason})`);
         
         return agent;
     }
@@ -317,7 +317,7 @@ export class SubAgentScheduler {
                 }
             }
         } catch (e) {
-            // review: removed // review: removed console.log('[SubAgentScheduler] No existing agents');
+            // console.log('[SubAgentScheduler] No existing agents');
         }
     }
 

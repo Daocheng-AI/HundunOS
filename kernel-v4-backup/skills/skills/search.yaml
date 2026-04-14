@@ -1,0 +1,113 @@
+# hundunos/kernel/skills/skills/search.yaml
+# HundunOS Phase 2 Skill: 网络搜索与研究助手
+
+name: search
+version: 1.0.0
+description: 网页搜索、内容抓取、深度研究、信息聚合助手
+author: hundunos-core
+tags:
+  - search
+  - web
+  - research
+  - fetch
+  - scrape
+  - information
+  - query
+  - browse
+
+# 触发条件
+trigger:
+  patterns:
+    - search the web
+    - find information
+    - look up
+    - web search
+    - browse page
+    - fetch content
+    - research
+    - how to
+    - what is
+    - latest news
+    - documentation
+    - google
+    - 搜索
+    - 查询
+    - 研究
+    - 查找
+  semantic: true
+
+# Skill 工具
+tools:
+  - id: search_web
+    type: http
+    endpoint: "{{provider_url | default 'https://ddg-api.example.com'}}/search"
+    method: GET
+    description: 网页搜索
+
+  - id: fetch_page
+    type: http
+    endpoint: "{{url}}"
+    method: GET
+    description: 获取网页内容
+
+  - id: search_github
+    type: http
+    endpoint: https://api.github.com/search/repositories
+    method: GET
+    auth: env.GITHUB_TOKEN
+    description: GitHub 代码仓库搜索
+
+  - id: search_npm
+    type: http
+    endpoint: https://registry.npmjs.org/-/v1/search
+    method: GET
+    description: NPM 包搜索
+
+  - id: fetch_docs
+    type: http
+    endpoint: "{{base_url | default 'https://devdocs.io'}}/{{doc_path | default ''}}"
+    method: GET
+    description: 开发者文档抓取
+
+  - id: search_stackoverflow
+    type: http
+    endpoint: https://api.stackexchange.com/2.3/search
+    method: GET
+    description: Stack Overflow 问题搜索
+
+# 执行配置
+execution:
+  isolation: sandbox
+  timeout: 15000
+  retry: 2
+
+# System prompt 注入
+system_prompt: |
+  ## 网络搜索与研究助手模式
+
+  你是一个信息检索和研究助手。通过网络搜索、API 查询、网页抓取获取最新信息。
+
+  **常用操作：**
+  - 网页搜索：`search_web`（query, provider_url）
+  - 页面抓取：`fetch_page`（url）
+  - GitHub 搜索：`search_github`（q, sort, order, language）
+  - NPM 包搜索：`search_npm`（text, size）
+  - 文档抓取：`fetch_docs`（base_url, doc_path）
+  - Stack Overflow：`search_stackoverflow`（order, sort, tagged, site）
+
+  **研究工作流：**
+  1. 搜索：先用 `search_web` 找相关资源
+  2. 评估：查看搜索结果的标题和摘要
+  3. 深挖：对有价值的结果用 `fetch_page` 抓取详细内容
+  4. 聚合：将多个来源的信息整合成连贯的答案
+
+  **信息来源优先级：**
+  1. 官方文档 > 权威博客 > 社区讨论
+  2. 英文资源 > 中文资源（技术细节更准确）
+  3. 最新发布 > 历史版本（注明版本号）
+
+  **注意事项：**
+  - 搜索结果可能不完整，重要信息需要验证来源
+  - 抓取网页时遵守 robots.txt
+  - 引用信息时标注来源 URL 和访问时间
+  - 区分事实和观点，不传播未经证实的信息

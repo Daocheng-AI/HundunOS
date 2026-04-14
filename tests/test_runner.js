@@ -31,12 +31,12 @@ function toFileUrl(p) {
 
 async function runTestFile(file) {
     if (!file.endsWith('_test.js')) return;
-    // review: removed // review: removed console.log(`\n=== Running: ${file} ===`);
+    // console.log(`\n=== Running: ${file} ===`);
     
     // 使用 pathToFileURL 确保跨平台兼容
     const filePath = join(__dirname, file);
     const testModule = await import(toFileUrl(filePath)).catch(e => {
-        // review: removed // review: removed console.log(`  [ERROR] Cannot import: ${e.message}`);
+        // console.log(`  [ERROR] Cannot import: ${e.message}`);
         return null;
     });
     
@@ -58,21 +58,21 @@ async function runTestFile(file) {
             const elapsed = Date.now() - start;
             results.passed++;
             results.tests.push({ name, status: 'PASS', elapsed });
-            // review: removed // review: removed console.log(`  [PASS] ${name} (${elapsed}ms)`);
+            // console.log(`  [PASS] ${name} (${elapsed}ms)`);
         } catch (e) {
             const elapsed = Date.now() - start;
             results.failed++;
             results.tests.push({ name, status: 'FAIL', error: e.message, elapsed });
-            // review: removed // review: removed console.log(`  [FAIL] ${name} (${elapsed}ms): ${e.message}`);
+            // console.log(`  [FAIL] ${name} (${elapsed}ms): ${e.message}`);
         }
     }
 }
 
 async function main() {
-    // review: removed // review: removed console.log('╔══════════════════════════════════════════╗');
-    // review: removed // review: removed console.log('║   HundunOS v3.0 Test Suite            ║');
-    // review: removed // review: removed console.log('╚══════════════════════════════════════════╝');
-    // review: removed // review: removed console.log(`Time: ${new Date().toISOString()}`);
+    // console.log('╔══════════════════════════════════════════╗');
+    // console.log('║   HundunOS v3.0 Test Suite            ║');
+    // console.log('╚══════════════════════════════════════════╝');
+    // console.log(`Time: ${new Date().toISOString()}`);
     
     const testFiles = readdirSync(__dirname).filter(f => f.endsWith('_test.js'));
     
@@ -80,12 +80,12 @@ async function main() {
         await runTestFile(file);
     }
     
-    // review: removed // review: removed console.log('\n╔══════════════════════════════════════════╗');
-    // review: removed // review: removed console.log('║   Test Results                          ║');
-    // review: removed // review: removed console.log('╚══════════════════════════════════════════╝');
-    // review: removed // review: removed console.log(`Total:  ${results.total}`);
-    // review: removed // review: removed console.log(`Passed: ${results.passed} ✓`);
-    // review: removed // review: removed console.log(`Failed: ${results.failed} ✗`);
+    // console.log('\n╔══════════════════════════════════════════╗');
+    // console.log('║   Test Results                          ║');
+    // console.log('╚══════════════════════════════════════════╝');
+    // console.log(`Total:  ${results.total}`);
+    // console.log(`Passed: ${results.passed} ✓`);
+    // console.log(`Failed: ${results.failed} ✗`);
     
     // Write results.json
     const { writeFileSync } = await import('fs');
@@ -93,7 +93,7 @@ async function main() {
         join(__dirname, 'results.json'),
         JSON.stringify(results, null, 2)
     );
-    // review: removed // review: removed console.log(`\nResults written to: results.json`);
+    // console.log(`\nResults written to: results.json`);
     
     process.exit(results.failed > 0 ? 1 : 0);
 }

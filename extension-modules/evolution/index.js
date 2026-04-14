@@ -67,7 +67,7 @@ export class EvolutionExtension extends EventEmitter {
         this._loadEvents();
         this._registerDefaultGenes();
 
-        // review: removed // review: removed console.log('[Evolution] Extension initialized');
+        // console.log('[Evolution] Extension initialized');
     }
 
     // ========================================================================
@@ -79,7 +79,7 @@ export class EvolutionExtension extends EventEmitter {
      */
     registerGene(gene) {
         this.genes.set(gene.id, gene);
-        // review: removed // review: removed console.log(`[Evolution] Gene registered: ${gene.id}`);
+        // console.log(`[Evolution] Gene registered: ${gene.id}`);
         return gene;
     }
 
@@ -113,7 +113,7 @@ export class EvolutionExtension extends EventEmitter {
         this.events.push(event);
         this.stats.total++;
 
-        // review: removed // review: removed console.log(`[Evolution] Event triggered: ${type}`);
+        // console.log(`[Evolution] Event triggered: ${type}`);
         this.emit('evolution_start', { event });
 
         // 匹配基因
@@ -133,7 +133,7 @@ export class EvolutionExtension extends EventEmitter {
             event.result = result;
             this.stats.byType[type] = (this.stats.byType[type] || 0) + 1;
 
-            // review: removed // review: removed console.log(`[Evolution] Event completed: ${type}`);
+            // console.log(`[Evolution] Event completed: ${type}`);
             this.emit('evolution_complete', { event, result });
         } catch (error) {
             event.status = 'failed';

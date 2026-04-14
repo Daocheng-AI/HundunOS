@@ -127,7 +127,7 @@ export class RuleGenerator {
         const claudePath = join(projectPath, 'CLAUDE.md');
         writeFileSync(claudePath, rules.claude_md, 'utf-8');
         
-        // review: removed // review: removed console.log(`[RuleGenerator] Rules written to ${projectPath}`);
+        // console.log(`[RuleGenerator] Rules written to ${projectPath}`);
         
         return { rulesPath, claudePath };
     }

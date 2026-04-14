@@ -34,7 +34,7 @@ class BoundaryTestRunner {
       await testFn();
       this.passed++;
       this.results.push({ name, status: 'PASS', elapsed: Date.now() - start });
-      // review: removed // review: removed console.log(`✓ ${name}`);
+      // console.log(`✓ ${name}`);
     } catch (error) {
       this.failed++;
       this.results.push({ name, status: 'FAIL', elapsed: Date.now() - start, error: error.message });
@@ -371,14 +371,14 @@ await import('fs').then(fs => {
   fs.writeFileSync(resultPath, JSON.stringify(summary, null, 2));
 });
 
-// review: removed // review: removed console.log('\n' + '='.repeat(50));
-// review: removed // review: removed console.log('边界条件测试结果');
-// review: removed // review: removed console.log('='.repeat(50));
-// review: removed // review: removed console.log(`总计: ${summary.total}`);
-// review: removed // review: removed console.log(`通过: ${summary.passed}`);
-// review: removed // review: removed console.log(`失败: ${summary.failed}`);
-// review: removed // review: removed console.log(`通过率: ${((summary.passed / summary.total) * 100).toFixed(2)}%`);
-// review: removed // review: removed console.log('='.repeat(50));
+// console.log('\n' + '='.repeat(50));
+// console.log('边界条件测试结果');
+// console.log('='.repeat(50));
+// console.log(`总计: ${summary.total}`);
+// console.log(`通过: ${summary.passed}`);
+// console.log(`失败: ${summary.failed}`);
+// console.log(`通过率: ${((summary.passed / summary.total) * 100).toFixed(2)}%`);
+// console.log('='.repeat(50));
 
 // 清理 (runner is const, cannot reassign)
 // runner = null;

@@ -100,7 +100,7 @@ export class SkillsExtension extends EventEmitter {
 
         this._loadSkills();
 
-        // review: removed // review: removed console.log('[Skills] Extension initialized');
+        // console.log('[Skills] Extension initialized');
     }
 
     // ========================================================================
@@ -127,7 +127,7 @@ export class SkillsExtension extends EventEmitter {
         }
         this.categories.get(category).push(skill.id);
 
-        // review: removed // review: removed console.log(`[Skills] Registered: ${skill.id}`);
+        // console.log(`[Skills] Registered: ${skill.id}`);
         this.emit('skill_registered', { skill });
 
         return skill;
@@ -148,7 +148,7 @@ export class SkillsExtension extends EventEmitter {
             if (idx >= 0) ids.splice(idx, 1);
         }
 
-        // review: removed // review: removed console.log(`[Skills] Unregistered: ${skillId}`);
+        // console.log(`[Skills] Unregistered: ${skillId}`);
         this.emit('skill_unregistered', { skillId });
 
         return true;
@@ -209,13 +209,13 @@ export class SkillsExtension extends EventEmitter {
             throw new Error(`Skill not found: ${skillId}`);
         }
 
-        // review: removed // review: removed console.log(`[Skills] Executing: ${skillId}`);
+        // console.log(`[Skills] Executing: ${skillId}`);
         this.emit('skill_execute_start', { skillId, context });
 
         try {
             const result = await skill.execute(context);
 
-            // review: removed // review: removed console.log(`[Skills] Completed: ${skillId}`);
+            // console.log(`[Skills] Completed: ${skillId}`);
             this.emit('skill_execute_complete', { skillId, result });
 
             return result;

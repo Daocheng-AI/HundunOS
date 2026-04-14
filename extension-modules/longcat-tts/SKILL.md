@@ -41,7 +41,7 @@ const result = await tts.synthesize('你好，世界！', {
     output: './output.wav'
 });
 
-// review: removed // review: removed console.log(`Generated: ${result.outputPath} (${result.duration}s)`);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`Generated: ${result.outputPath} (${result.duration}s)`);
 ```
 
 ### Voice Cloning

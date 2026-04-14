@@ -48,16 +48,16 @@ function getErrorStats() {
 function showErrors() {
   const stats = getErrorStats();
 
-  console.log(`\nError Statistics:`);
-  console.log(`  Total errors: ${stats.total}`);
-  console.log(`  Recent errors: ${stats.recent.length}\n`);
+  // console.log(`\nError Statistics:`);
+  // console.log(`  Total errors: ${stats.total}`);
+  // console.log(`  Recent errors: ${stats.recent.length}\n`);
 
   if (stats.recent.length > 0) {
-    console.log('Recent errors:');
+    // console.log('Recent errors:');
     for (const error of stats.recent) {
-      console.log(`  [${new Date(error.timestamp).toISOString()}] ${error.message}`);
-      console.log(`    Module: ${error.context?.module || 'unknown'}`);
-      console.log();
+      // console.log(`  [${new Date(error.timestamp).toISOString()}] ${error.message}`);
+      // console.log(`    Module: ${error.context?.module || 'unknown'}`);
+      // console.log();
     }
   }
 }
@@ -74,7 +74,7 @@ function clearErrors() {
       const filepath = join(ERRORS_DIR, f);
       fs.unlinkSync(filepath);
     }
-    console.log('Error logs cleared');
+    // console.log('Error logs cleared');
   } catch (e) {
     console.error('Failed to clear errors:', e.message);
   }
@@ -94,7 +94,7 @@ switch (command) {
     break;
 
   default:
-    console.log(`
+    // console.log(`
 HundunOS v4.3 Health CLI
 
 Usage:

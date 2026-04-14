@@ -31,7 +31,7 @@ const MODULES = [];
 
 function test(name, passed, detail = '') {
     const status = passed ? '✅' : '❌';
-    // review: removed // review: removed console.log(`${status} ${name}${detail ? ` - ${detail}` : ''}`);
+    // console.log(`${status} ${name}${detail ? ` - ${detail}` : ''}`);
     RESULTS.push({ name, passed, detail });
 }
 
@@ -68,9 +68,9 @@ function scanModules(dir, base = '') {
 // 测试执行
 // ============================================================================
 
-// review: removed // review: removed console.log('╔══════════════════════════════════════════╗');
-// review: removed // review: removed console.log('║   HundunOS v3.0 Full Integration Test    ║');
-// review: removed // review: removed console.log('╚══════════════════════════════════════════╝\n');
+// console.log('╔══════════════════════════════════════════╗');
+// console.log('║   HundunOS v3.0 Full Integration Test    ║');
+// console.log('╚══════════════════════════════════════════╝\n');
 
 // 扫描模块
 const kernelModules = scanModules(path.join(__dirname, '../kernel'));
@@ -91,13 +91,13 @@ const allModules = [
     ...shellModules
 ];
 
-// review: removed // review: removed console.log(`📦 发现 ${allModules.length} 个模块\n`);
+// console.log(`📦 发现 ${allModules.length} 个模块\n`);
 
 // ============================================================================
 // 模块导入测试
 // ============================================================================
 
-// review: removed // review: removed console.log('=== 模块导入测试 ===\n');
+// console.log('=== 模块导入测试 ===\n');
 
 async function testModuleImports() {
     let imported = 0;
@@ -114,7 +114,7 @@ async function testModuleImports() {
         }
     }
 
-    // review: removed // review: removed console.log(`\n导入统计: ${imported}/${allModules.length} 成功\n`);
+    // console.log(`\n导入统计: ${imported}/${allModules.length} 成功\n`);
     return { imported, failed };
 }
 
@@ -124,7 +124,7 @@ const importStats = await testModuleImports();
 // 核心功能测试
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 核心功能测试 ===\n');
+// console.log('\n=== 核心功能测试 ===\n');
 
 async function testCoreFunctions() {
     // Kernel Core
@@ -224,7 +224,7 @@ await testCoreFunctions();
 // 集成测试
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 集成测试 ===\n');
+// console.log('\n=== 集成测试 ===\n');
 
 async function testIntegration() {
     // edict + RBAC 集成
@@ -270,7 +270,7 @@ await testIntegration();
 // 代码统计
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 代码统计 ===\n');
+// console.log('\n=== 代码统计 ===\n');
 
 function countAll() {
     const root = path.join(__dirname, '..');
@@ -305,17 +305,17 @@ test('代码统计', true, `${codeStats.files} 文件, ${codeStats.size} KB, ${c
 // 结果汇总
 // ============================================================================
 
-// review: removed // review: removed console.log('\n╔══════════════════════════════════════════╗');
-// review: removed // review: removed console.log('║         Full Test Results               ║');
-// review: removed // review: removed console.log('╚══════════════════════════════════════════╝');
+// console.log('\n╔══════════════════════════════════════════╗');
+// console.log('║         Full Test Results               ║');
+// console.log('╚══════════════════════════════════════════╝');
 
 const passed = RESULTS.filter(r => r.passed).length;
 const failed = RESULTS.filter(r => !r.passed).length;
 const rate = Math.round(passed / RESULTS.length * 100);
 
-// review: removed // review: removed console.log(`\n总计: ${RESULTS.length} | 通过: ${passed} | 失败: ${failed} | 通过率: ${rate}%`);
-// review: removed // review: removed console.log(`模块导入: ${importStats.imported}/${allModules.length}`);
-// review: removed // review: removed console.log(`代码规模: ${codeStats.files} 文件, ${codeStats.size} KB, ${codeStats.lines} 行`);
+// console.log(`\n总计: ${RESULTS.length} | 通过: ${passed} | 失败: ${failed} | 通过率: ${rate}%`);
+// console.log(`模块导入: ${importStats.imported}/${allModules.length}`);
+// console.log(`代码规模: ${codeStats.files} 文件, ${codeStats.size} KB, ${codeStats.lines} 行`);
 
 // 写入结果
 fs.writeFileSync(
@@ -332,6 +332,6 @@ fs.writeFileSync(
     }, null, 2)
 );
 
-// review: removed // review: removed console.log('\n✅ 全量测试完成\n');
+// console.log('\n✅ 全量测试完成\n');
 
 process.exit(failed > 0 ? 1 : 0);

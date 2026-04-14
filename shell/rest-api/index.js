@@ -107,7 +107,7 @@ export class RestAPI extends EventEmitter {
         this.use(this._rateLimiter());
         this.use(this._authenticate());
 
-        // review: removed // review: removed console.log('[REST] API initialized');
+        // console.log('[REST] API initialized');
     }
 
     // ========================================================================
@@ -147,7 +147,7 @@ export class RestAPI extends EventEmitter {
 
             this.server.listen(this.config.port, this.config.host, () => {
                 this.state = 'running';
-                // review: removed // review: removed console.log(`[REST] API listening on http://${this.config.host}:${this.config.port}`);
+                // console.log(`[REST] API listening on http://${this.config.host}:${this.config.port}`);
                 this.emit('started');
                 resolve({ started: true, url: `http://${this.config.host}:${this.config.port}` });
             });
@@ -165,7 +165,7 @@ export class RestAPI extends EventEmitter {
         return new Promise((resolve) => {
             this.server.close(() => {
                 this.state = 'stopped';
-                // review: removed // review: removed console.log('[REST] API stopped');
+                // console.log('[REST] API stopped');
                 this.emit('stopped');
                 resolve({ stopped: true });
             });
@@ -220,7 +220,15 @@ export class RestAPI extends EventEmitter {
             if (ctx.path === '/health' || ctx.path === '/api') return;
             
             const apiKey = this.config.apiKey;
-            if (!apiKey) return; // 未配置 API Key 时跳过验证（开发模式）
+            const isProduction = process.env.NODE_ENV === 'production';
+            
+            // 生产环境强制要求 API Key
+            if (isProduction && !apiKey) {
+                throw new Error('Unauthorized: API Key is required in production');
+            }
+            
+            // 开发环境未配置 API Key 时跳过验证
+            if (!apiKey) return;
             
             const provided = ctx.headers['x-api-key'];
             if (!provided) {
@@ -270,7 +278,13 @@ export class RestAPI extends EventEmitter {
 
         // CORS
         if (this.config.cors) {
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            const isProduction = process.env.NODE_ENV === 'production';
+            const corsOrigins = process.env.HUNDUNOS_CORS_ORIGINS || '*';
+            
+            // 在生产环境中使用白名单，开发环境中使用通配符
+            const origin = isProduction ? corsOrigins : '*';
+            
+            res.setHeader('Access-Control-Allow-Origin', origin);
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             // 修复 H3：添加 X-API-Key 到 CORS 允许头，否则浏览器预检失败
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');

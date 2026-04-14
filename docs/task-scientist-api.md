@@ -168,26 +168,26 @@ await ts.initialize();
 
 // 分析任务适合度
 const analysis = ts.analyzeTask('实现 REST API');
-// review: removed // review: removed console.log(analysis.suitable, analysis.confidence);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(analysis.suitable, analysis.confidence);
 
 // 创建任务
 const { taskId } = await ts.createTask('实现 REST API', { stages: ['路由', '控制器'] });
 
 // 运行 BFTS
 const result = await ts.runBFTS(taskId);
-// review: removed // review: removed console.log(result.journal, result.bestNode);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(result.journal, result.bestNode);
 
 // 全自动
 const auto = await ts.runTask('实现认证系统', { stages: ['分析', '实现', '测试'] });
-// review: removed // review: removed console.log(auto.journal, auto.stats);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(auto.journal, auto.stats);
 
 // 编排决策（kernel 调用）
 const decision = ts.shouldUseBFTS('重构登录模块', { type: 'code', subtype: 'refactor' });
-// review: removed // review: removed console.log(decision.use, decision.engine);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(decision.use, decision.engine);
 
 // 事件监听
 ts.on('bfts_complete', ({ taskId, iterations }) => {
-    // review: removed // review: removed console.log(`BFTS 完成: ${iterations} 次迭代`);
+    // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`BFTS 完成: ${iterations} 次迭代`);
 });
 ```
 
@@ -237,11 +237,11 @@ const { taskId } = await orch.createTask('实现计数器', { stages: ['分析',
 
 // 运行 BFTS（JS 模拟）
 const result = await orch.runBFTS(taskId);
-// review: removed // review: removed console.log(result.iterations, result.journal);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(result.iterations, result.journal);
 
 // 获取统计
 const stats = await orch.getStats(taskId);
-// review: removed // review: removed console.log(stats.total_nodes, stats.max_depth);
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(stats.total_nodes, stats.max_depth);
 
 // 列出所有任务
 const tasks = orch.listTasks();

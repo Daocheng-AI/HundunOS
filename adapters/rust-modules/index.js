@@ -103,7 +103,7 @@ export class RustModules {
       this._initialized = true;
 
       if (this._available) {
-        // review: removed // review: removed console.info(`[RustModules] ✅ Initialized (${mode}) — ${Object.keys(health.modules || {}).length} modules healthy`);
+        // console.info(`[RustModules] ✅ Initialized (${mode}) — ${Object.keys(health.modules || {}).length} modules healthy`);
       } else {
         console.warn(`[RustModules] ⚠️  Initialized (${mode}) — Rust unavailable, using JS fallback`);
       }

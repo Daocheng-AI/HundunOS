@@ -65,7 +65,7 @@ const result = await kernel.process({ content: '帮我搜索文件' });
 
 // 通过 messageBus 订阅事件（v4.1 事件总线）
 kernel.messageBus.on('kernel:ready', (info) => {
-    // review: removed // review: removed console.log(`Kernel ready in ${info.elapsed}ms`);
+    // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`Kernel ready in ${info.elapsed}ms`);
 });
 ```
 
@@ -153,7 +153,7 @@ const monitor = new HealthMonitor();
 monitor.registerChecker('cron', async () => ({ score: 100 }));
 
 const health = await monitor.checkAll();
-// review: removed // review: removed console.log(health.overall); // 综合评分
+// review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(health.overall); // 综合评分
 ```
 
 ### REST API
@@ -199,11 +199,11 @@ await api.start();
 ```javascript
 // 通过 messageBus 订阅事件
 kernel.messageBus.on('task_complete', (event) => {
-  // review: removed // review: removed console.log('任务完成:', event.taskId);
+  // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log('任务完成:', event.taskId);
 });
 
 kernel.messageBus.on('kernel:ready', (info) => {
-  // review: removed // review: removed console.log(`Kernel ready: ${info.elapsed}ms, ${info.modules} modules`);
+  // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(`Kernel ready: ${info.elapsed}ms, ${info.modules} modules`);
 });
 
 // 发布事件

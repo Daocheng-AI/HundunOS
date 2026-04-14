@@ -113,7 +113,7 @@ function createTask(subject, description = '') {
   };
 
   saveTask(task);
-  console.log(`Created task ${taskId}: ${subject}`);
+  // console.log(`Created task ${taskId}: ${subject}`);
   return task;
 }
 
@@ -166,7 +166,7 @@ function updateTask(taskId, options = {}) {
 
   task.updatedAt = Date.now();
   saveTask(task);
-  console.log(`Updated task ${taskId}`);
+  // console.log(`Updated task ${taskId}`);
   return task;
 }
 
@@ -193,11 +193,11 @@ function listTasks() {
   }
 
   if (tasks.length === 0) {
-    console.log('No tasks found');
+    // console.log('No tasks found');
     return tasks;
   }
 
-  console.log(`\nTotal: ${tasks.length} tasks\n`);
+  // console.log(`\nTotal: ${tasks.length} tasks\n`);
   for (const task of tasks) {
     const statusIcon = {
       pending: '[ ]',
@@ -206,20 +206,20 @@ function listTasks() {
       deleted: '[!]',
     }[task.status];
 
-    console.log(`${statusIcon} ${task.id}. ${task.subject}`);
+    // console.log(`${statusIcon} ${task.id}. ${task.subject}`);
     if (task.description) {
-      console.log(`    ${task.description}`);
+      // console.log(`    ${task.description}`);
     }
     if (task.owner) {
-      console.log(`    Owner: ${task.owner}`);
+      // console.log(`    Owner: ${task.owner}`);
     }
     if (task.blockedBy?.length > 0) {
-      console.log(`    Blocked by: [${task.blockedBy.join(', ')}]`);
+      // console.log(`    Blocked by: [${task.blockedBy.join(', ')}]`);
     }
     if (task.blocks?.length > 0) {
-      console.log(`    Blocks: [${task.blocks.join(', ')}]`);
+      // console.log(`    Blocks: [${task.blocks.join(', ')}]`);
     }
-    console.log();
+    // console.log();
   }
 
   return tasks;
@@ -235,14 +235,14 @@ function getTask(taskId) {
     return null;
   }
 
-  console.log(`\nTask ${taskId}: ${task.subject}`);
-  console.log(`Status: ${task.status}`);
-  console.log(`Description: ${task.description || 'N/A'}`);
-  console.log(`Owner: ${task.owner || 'N/A'}`);
-  console.log(`Blocked by: [${task.blockedBy?.join(', ') || 'none'}]`);
-  console.log(`Blocks: [${task.blocks?.join(', ') || 'none'}]`);
-  console.log(`Created: ${new Date(task.createdAt).toISOString()}`);
-  console.log(`Updated: ${new Date(task.updatedAt).toISOString()}\n`);
+  // console.log(`\nTask ${taskId}: ${task.subject}`);
+  // console.log(`Status: ${task.status}`);
+  // console.log(`Description: ${task.description || 'N/A'}`);
+  // console.log(`Owner: ${task.owner || 'N/A'}`);
+  // console.log(`Blocked by: [${task.blockedBy?.join(', ') || 'none'}]`);
+  // console.log(`Blocks: [${task.blocks?.join(', ') || 'none'}]`);
+  // console.log(`Created: ${new Date(task.createdAt).toISOString()}`);
+  // console.log(`Updated: ${new Date(task.updatedAt).toISOString()}\n`);
 
   return task;
 }
@@ -260,7 +260,7 @@ function deleteTask(taskId) {
 
   try {
     fs.unlinkSync(filepath);
-    console.log(`Deleted task ${taskId}`);
+    // console.log(`Deleted task ${taskId}`);
     return true;
   } catch (e) {
     console.error(`Failed to delete task ${taskId}:`, e.message);
@@ -283,14 +283,14 @@ function getStats() {
     blocking: tasks.filter(t => t.blocks?.length > 0).length,
   };
 
-  console.log(`\nStatistics:`);
-  console.log(`  Total: ${stats.total}`);
-  console.log(`  Pending: ${stats.pending}`);
-  console.log(`  In Progress: ${stats.inProgress}`);
-  console.log(`  Completed: ${stats.completed}`);
-  console.log(`  Deleted: ${stats.deleted}`);
-  console.log(`  Blocked: ${stats.blocked}`);
-  console.log(`  Blocking: ${stats.blocking}\n`);
+  // console.log(`\nStatistics:`);
+  // console.log(`  Total: ${stats.total}`);
+  // console.log(`  Pending: ${stats.pending}`);
+  // console.log(`  In Progress: ${stats.inProgress}`);
+  // console.log(`  Completed: ${stats.completed}`);
+  // console.log(`  Deleted: ${stats.deleted}`);
+  // console.log(`  Blocked: ${stats.blocked}`);
+  // console.log(`  Blocking: ${stats.blocking}\n`);
 
   return stats;
 }
@@ -329,15 +329,15 @@ function getDependencyGraph() {
     }
   }
 
-  console.log(`\nDependency Graph:`);
-  console.log(`  Nodes: ${graph.nodes.length}`);
-  console.log(`  Edges: ${graph.edges.length}\n`);
+  // console.log(`\nDependency Graph:`);
+  // console.log(`  Nodes: ${graph.nodes.length}`);
+  // console.log(`  Edges: ${graph.edges.length}\n`);
 
   for (const edge of graph.edges) {
-    console.log(`  ${edge.from} -> ${edge.to} (${edge.type})`);
+    // console.log(`  ${edge.from} -> ${edge.to} (${edge.type})`);
   }
 
-  console.log();
+  // console.log();
 
   return graph;
 }
@@ -416,7 +416,7 @@ switch (command) {
     break;
 
   default:
-    console.log(`
+    // console.log(`
 HundunOS v4.3 Task CLI
 
 Usage:

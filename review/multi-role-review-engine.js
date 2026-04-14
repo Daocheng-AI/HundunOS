@@ -326,7 +326,7 @@ async function fixIssues(issues, root) {
             let c = readFileSync(fp, 'utf8');
             let newC = c;
             if (iss.msg.includes('console')) {
-                newC = c.replace(/\bconsole\.(log|debug|info)\s*\([^)]*\)\s*;?\n?/g, '// review: removed $&');
+                newC = c.replace(/\bconsole\.(log|debug|info)\s*\([^)]*\)\s*;?\n?/g, '// $&');
             } else if (iss.msg.includes('TODO') || iss.msg.includes('FIXME')) {
                 newC = c.replace(/\/\/\s*(TODO|FIXME|HACK|XXX|BUG):?\s*.*/gi, '// $1: tracked');
             } else if (iss.msg.includes('CORS')) {
@@ -382,16 +382,16 @@ function genReport(round, results, allIssues) {
 // ── Main Engine ────────────────────────────────────────────────────
 
 async function scan() {
-    console.log(`\n📁 扫描 ${PROJECT_ROOT}...`);
+    // console.log(`\n📁 扫描 ${PROJECT_ROOT}...`);
     const files = [...walk(PROJECT_ROOT)];
-    console.log(`📄 找到 ${files.length} 个可审查文件`);
+    // console.log(`📄 找到 ${files.length} 个可审查文件`);
     return files;
 }
 
 async function runRound(files, round) {
-    console.log(`\n${'═'.repeat(56)}`);
-    console.log(`🔍 第 ${round} 轮评审`);
-    console.log('═'.repeat(56));
+    // console.log(`\n${'═'.repeat(56)}`);
+    // console.log(`🔍 第 ${round} 轮评审`);
+    // console.log('═'.repeat(56));
 
     const results = [];
     let allIssues = [];
@@ -407,34 +407,34 @@ async function runRound(files, round) {
         allIssues = allIssues.concat(issues);
 
         const icon = score >= 90 ? '✅' : score >= 70 ? '🟡' : score >= 50 ? '🟠' : '🔴';
-        console.log(`  ${icon} [${role.name}] ${score}/100 — ${issues.length}个问题`);
+        // console.log(`  ${icon} [${role.name}] ${score}/100 — ${issues.length}个问题`);
     }
 
     allIssues = sortIssues(dedup(allIssues));
 
     const critHigh = allIssues.filter(i => i.sev === SEV.CRIT || i.sev === SEV.HIGH).length;
     const avg = Math.round(results.reduce((s, r) => s+r.score, 0) / results.length);
-    console.log(`\n  📋 共${allIssues.length}个问题（🔴CRIT:${allIssues.filter(i=>i.sev===SEV.CRIT).length} | 🟠HIGH:${allIssues.filter(i=>i.sev===SEV.HIGH).length}）综合: ${avg}/100`);
+    // console.log(`\n  📋 共${allIssues.length}个问题（🔴CRIT:${allIssues.filter(i=>i.sev===SEV.CRIT).length} | 🟠HIGH:${allIssues.filter(i=>i.sev===SEV.HIGH).length}）综合: ${avg}/100`);
 
     mkdirSync(REPORT_DIR, { recursive: true });
     const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
     const mdPath = join(REPORT_DIR, `round${round}_${ts}.md`);
     writeFileSync(mdPath, genReport(round, results, allIssues), 'utf8');
-    console.log(`  📝 报告: ${mdPath}`);
+    // console.log(`  📝 报告: ${mdPath}`);
 
     if (opts.autoFix && allIssues.some(i => i.fixable)) {
         const { fixed, failed } = await fixIssues(allIssues, PROJECT_ROOT);
-        console.log(`  🔧 修复: ✅${fixed} ❌${failed}`);
+        // console.log(`  🔧 修复: ✅${fixed} ❌${failed}`);
     }
 
     return { results, allIssues, avg };
 }
 
 async function main() {
-    console.log(`\n🚀 HundunOS 多角色评审引擎 v2`);
-    console.log(`   项目: ${PROJECT_ROOT}`);
-    console.log(`   最大轮次: ${opts.maxRounds}`);
-    console.log(`   自动修复: ${opts.autoFix ? '开启' : '关闭'}`);
+    // console.log(`\n🚀 HundunOS 多角色评审引擎 v2`);
+    // console.log(`   项目: ${PROJECT_ROOT}`);
+    // console.log(`   最大轮次: ${opts.maxRounds}`);
+    // console.log(`   自动修复: ${opts.autoFix ? '开启' : '关闭'}`);
 
     let files = await scan();
     let history = [];
@@ -448,10 +448,10 @@ async function main() {
             const prevAvg = prev ? prev.avg : 100;
             const delta = Math.abs(avg - prevAvg);
             if (delta > 2 && avg < 90) {
-                console.log(`\n⏭️ 第${r}轮评分${avg}（较上轮Δ${delta.toFixed(1)}），重新扫描...`);
+                // console.log(`\n⏭️ 第${r}轮评分${avg}（较上轮Δ${delta.toFixed(1)}），重新扫描...`);
                 files = await scan();
             } else {
-                console.log(`\n✅ 评分收敛（Δ${delta.toFixed(1)}），评审完成`);
+                // console.log(`\n✅ 评分收敛（Δ${delta.toFixed(1)}），评审完成`);
                 break;
             }
         }
@@ -459,17 +459,17 @@ async function main() {
 
     // Final summary
     const final = history[history.length - 1];
-    console.log(`\n${'═'.repeat(56)}`);
-    console.log(`📊 最终评审摘要`);
-    console.log('═'.repeat(56));
+    // console.log(`\n${'═'.repeat(56)}`);
+    // console.log(`📊 最终评审摘要`);
+    // console.log('═'.repeat(56));
     for (const { role, score, issues } of final.results) {
         const badge = score>=90?'优秀':score>=70?'良好':score>=50?'待改进':'严重';
-        console.log(`  ${score>=90?'✅':score>=70?'🟡':score>=50?'🟠':'🔴'} ${role.name}: ${score}/100 ${badge} — ${issues.length}问题`);
+        // console.log(`  ${score>=90?'✅':score>=70?'🟡':score>=50?'🟠':'🔴'} ${role.name}: ${score}/100 ${badge} — ${issues.length}问题`);
     }
-    console.log(`\n  综合评分: ${final.avg >= 90 ? '✅' : final.avg >= 70 ? '🟡' : final.avg >= 50 ? '🟠' : '🔴'} ${final.avg}/100`);
+    // console.log(`\n  综合评分: ${final.avg >= 90 ? '✅' : final.avg >= 70 ? '🟡' : final.avg >= 50 ? '🟠' : '🔴'} ${final.avg}/100`);
     const bySev = [SEV.CRIT, SEV.HIGH, SEV.MED, SEV.LOW, SEV.INFO].map(s => final.allIssues.filter(i=>i.sev===s).length);
-    console.log(`  问题分布: 🔴${bySev[0]} 🟠${bySev[1]} 🟡${bySev[2]} 🟢${bySev[3]} ⚪${bySev[4]}`);
-    console.log(`  报告目录: ${REPORT_DIR}`);
+    // console.log(`  问题分布: 🔴${bySev[0]} 🟠${bySev[1]} 🟡${bySev[2]} 🟢${bySev[3]} ⚪${bySev[4]}`);
+    // console.log(`  报告目录: ${REPORT_DIR}`);
 }
 
 main().catch(e => { console.error('❌ 错误:', e.message); process.exit(1); });

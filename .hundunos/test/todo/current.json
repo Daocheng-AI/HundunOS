@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "content": "Task 1",
+      "status": "pending",
+      "activeForm": ""
+    },
+    {
+      "content": "Task 2",
+      "status": "in_progress",
+      "activeForm": ""
+    },
+    {
+      "content": "Task 3",
+      "status": "completed",
+      "activeForm": ""
+    },
+    {
+      "content": "Task 4",
+      "status": "completed",
+      "activeForm": ""
+    }
+  ],
+  "roundsSinceUpdate": 0
+}

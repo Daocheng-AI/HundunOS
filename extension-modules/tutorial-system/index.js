@@ -242,7 +242,7 @@ export class TutorialSystem {
     }
 
     async initialize() {
-        // review: removed // review: removed console.log('[TutorialSystem] Initializing...');
+        // console.log('[TutorialSystem] Initializing...');
     }
 
     /**

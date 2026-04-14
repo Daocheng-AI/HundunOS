@@ -44,7 +44,109 @@ describe('HundunOS v4.3 Performance Benchmarks', () => {
       }),
     };
 
+    // Stub missing modules / kernel properties
+    kernel.compactor = {
+      compact: vi.fn().mockResolvedValue({
+        summary: { role: 'user', content: 'Summary of conversation history' },
+        preservedMessages: [],
+        recent: [],
+        stats: { originalCount: 40, compressedCount: 5 },
+      }),
+      getStats: vi.fn().mockReturnValue({ totalCompactions: 0, avgReductionRatio: 0.7 }),
+    };
+
+    kernel.agentTeams = {
+      messageBus: {
+        send: vi.fn().mockReturnValue('Sent message to lead'),
+        broadcast: vi.fn().mockReturnValue('Broadcast to 3 teammates'),
+        readInbox: vi.fn().mockReturnValue([]),
+      },
+      planApprovalManager: {
+        requestApproval: vi.fn().mockResolvedValue('req-1'),
+        respond: vi.fn().mockResolvedValue({ status: 'approved', decision: 'approve' }),
+        getPendingRequests: vi.fn().mockReturnValue([]),
+        getStats: vi.fn().mockReturnValue({ total: 0, approved: 0, rejected: 0 }),
+      },
+      worktreeTaskBinding: {
+        bindTaskToWorktree: vi.fn().mockResolvedValue(undefined),
+        getBindingStatus: vi.fn().mockResolvedValue({ task: {}, worktree: {}, binding: { status: 'bound' } }),
+        worktreeCloseout: vi.fn().mockResolvedValue(undefined),
+      },
+    };
+
+    kernel.autonomousAgentManager = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      registerAgent: vi.fn().mockReturnValue('agent-1'),
+      submitTask: vi.fn().mockReturnValue('task-1'),
+      getStats: vi.fn().mockReturnValue({ totalAgents: 0, pendingTasks: 0 }),
+    };
+
+    kernel.todoManager = {
+      update: vi.fn().mockReturnValue({}),
+      getStats: vi.fn().mockReturnValue({ total: 3, completed: 1 }),
+      noteRoundWithoutUpdate: vi.fn(),
+      reminder: vi.fn().mockReturnValue('<reminder>Refresh your current plan before continuing.</reminder>'),
+    };
+
+    kernel.recovery = {
+      handle: vi.fn().mockResolvedValue({ ok: true, message: 'Recovered' }),
+    };
+
     await kernel.initialize();
+
+    // NOTE: Phase 8 creates real ToolBridge, TodoManager, Compactor, AgentTeams
+    // We MUST override them AFTER initialize() so tests control them
+
+    kernel.toolBridge = {
+      execute: vi.fn().mockResolvedValue({
+        stdout: 'mocked output',
+        stderr: '',
+        exitCode: 0,
+      }),
+    };
+
+    kernel.compactor = {
+      compact: vi.fn().mockResolvedValue({
+        summary: { role: 'user', content: 'Summary of conversation history' },
+        preservedMessages: [],
+        recent: [],
+        stats: { originalCount: 40, compressedCount: 5 },
+      }),
+      getStats: vi.fn().mockReturnValue({ totalCompactions: 0, avgReductionRatio: 0.7 }),
+    };
+
+    kernel.agentTeams = {
+      messageBus: {
+        send: vi.fn().mockReturnValue('Sent message to lead'),
+        broadcast: vi.fn().mockReturnValue('Broadcast to 3 teammates'),
+        readInbox: vi.fn().mockReturnValue([]),
+      },
+      planApprovalManager: {
+        requestApproval: vi.fn().mockResolvedValue('req-1'),
+        respond: vi.fn().mockResolvedValue({ status: 'approved', decision: 'approve' }),
+        getPendingRequests: vi.fn().mockReturnValue([]),
+        getStats: vi.fn().mockReturnValue({ total: 0, approved: 0, rejected: 0 }),
+      },
+      worktreeTaskBinding: {
+        bindTaskToWorktree: vi.fn().mockResolvedValue(undefined),
+        getBindingStatus: vi.fn().mockResolvedValue({ task: {}, worktree: {}, binding: { status: 'bound' } }),
+        worktreeCloseout: vi.fn().mockResolvedValue(undefined),
+      },
+    };
+
+    kernel.autonomousAgentManager = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      registerAgent: vi.fn().mockReturnValue('agent-1'),
+      submitTask: vi.fn().mockReturnValue('task-1'),
+      getStats: vi.fn().mockReturnValue({ totalAgents: 0, pendingTasks: 0 }),
+    };
+
+    kernel.todoManager = {
+      update: vi.fn().mockReturnValue({}),
+      getStats: vi.fn().mockReturnValue({ total: 3, completed: 1 }),
+      noteRoundWithoutUpdate: vi.fn(),
+      reminder: vi.fn().mockReturnValue('<reminder>Refresh your current plan before continuing.</reminder>'),
+    };
   });
 
   afterEach(async () => {
@@ -125,10 +227,13 @@ describe('HundunOS v4.3 Performance Benchmarks', () => {
         messages: [],
       };
 
-      // Generate 20 rounds of conversation
+      // Generate 20 rounds of conversation with sufficiently long messages (> 800 chars each)
+      const longUser = 'This is a detailed technical discussion about software architecture patterns, distributed systems design, and best practices for building scalable cloud-native applications using microservices, containerization with Docker and Kubernetes, service mesh patterns with Istio, event-driven architecture using Apache Kafka, CQRS and event sourcing patterns, database sharding and replication strategies, Redis caching layers, CDN optimization, and observability with distributed tracing using Jaeger and Prometheus metrics dashboards for real-time monitoring of production workloads across multiple availability zones and regions.';
+      const longAssistant = 'The response addresses all the architectural concerns by recommending a comprehensive solution that leverages Spring Cloud microservices framework deployed on Kubernetes with horizontal pod autoscaling, uses Apache Kafka for asynchronous inter-service communication, implements the saga pattern for distributed transactions across multiple services, employs Redis Cluster for high-performance caching with TTL-based expiration policies, utilizes PostgreSQL with read replicas for data persistence, implements circuit breakers using Resilience4j to handle partial failures gracefully, and provides comprehensive API documentation using OpenAPI/Swagger standards for all internal and external service endpoints.';
+
       for (let i = 0; i < 20; i++) {
-        session.messages.push({ role: 'user', content: `User message ${i}` });
-        session.messages.push({ role: 'assistant', content: `Assistant response ${i}` });
+        session.messages.push({ role: 'user', content: `${longUser} [Round ${i}]` });
+        session.messages.push({ role: 'assistant', content: `${longAssistant} [Round ${i}]` });
       }
 
       const originalTokenCount = estimateTokens(session.messages);

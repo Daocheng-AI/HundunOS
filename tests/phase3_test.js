@@ -14,7 +14,7 @@ const RESULTS = [];
 
 function test(name, passed, detail = '') {
     const status = passed ? '✅' : '❌';
-    // review: removed // review: removed console.log(`${status} ${name}${detail ? ` - ${detail}` : ''}`);
+    // console.log(`${status} ${name}${detail ? ` - ${detail}` : ''}`);
     RESULTS.push({ name, passed, detail });
 }
 
@@ -22,7 +22,7 @@ function test(name, passed, detail = '') {
 // S3 Extensions 验收
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== S3 Extensions 验收 ===\n');
+// console.log('\n=== S3 Extensions 验收 ===\n');
 
 const extensions = [
     { name: 'WorkBuddy', path: '../extension-modules/workbuddy/index.js' },
@@ -46,7 +46,7 @@ for (const ext of extensions) {
 // S3.8 REST API 验收
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== S3.8 REST API 验收 ===\n');
+// console.log('\n=== S3.8 REST API 验收 ===\n');
 
 const restPath = path.join(__dirname, '../shell/rest-api/index.js');
 test('S3.8 REST API 文件存在', fs.existsSync(restPath));
@@ -60,7 +60,7 @@ if (fs.existsSync(restPath)) {
 // 模块导入验证
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 模块导入验证 ===\n');
+// console.log('\n=== 模块导入验证 ===\n');
 
 async function testImports() {
     // WorkBuddy
@@ -137,7 +137,7 @@ await testImports();
 // 代码量统计
 // ============================================================================
 
-// review: removed // review: removed console.log('\n=== 代码量统计 ===\n');
+// console.log('\n=== 代码量统计 ===\n');
 
 function countCode(dir, ext = '.js') {
     let count = 0;
@@ -170,15 +170,15 @@ test('S3.D.7 代码量达标', stats.count >= 30 && sizeKB >= 200, `${stats.coun
 // 结果汇总
 // ============================================================================
 
-// review: removed // review: removed console.log('\n========================================');
-// review: removed // review: removed console.log('Phase 3 验收测试结果');
-// review: removed // review: removed console.log('========================================');
+// console.log('\n========================================');
+// console.log('Phase 3 验收测试结果');
+// console.log('========================================');
 
 const passed = RESULTS.filter(r => r.passed).length;
 const failed = RESULTS.filter(r => !r.passed).length;
 
-// review: removed // review: removed console.log(`总计: ${RESULTS.length} | 通过: ${passed} | 失败: ${failed}`);
-// review: removed // review: removed console.log('========================================\n');
+// console.log(`总计: ${RESULTS.length} | 通过: ${passed} | 失败: ${failed}`);
+// console.log('========================================\n');
 
 // 写入结果
 const resultPath = path.join(__dirname, 'phase3_results.json');

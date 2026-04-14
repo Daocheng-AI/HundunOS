@@ -1,0 +1,108 @@
+# HundunOS v5 - 开发环境配置
+
+app:
+  name: HundunOS
+  version: 5.0.0
+  env: development
+
+# 日志配置
+logger:
+  level: debug
+  format: pretty
+  output:
+    - type: console
+
+# API服务器配置
+api:
+  port: 3000
+  host: localhost
+  cors:
+    origins:
+      - '*'
+    credentials: false
+  rateLimit:
+    enabled: false
+
+# 数据库配置
+database:
+  type: sqlite
+  path: ./data/dev.db
+
+# 缓存配置
+cache:
+  defaultTtl: 300
+  l1:
+    type: memory
+    maxSize: 1000
+  cleanupInterval: 60000
+
+# 安全配置
+security:
+  cors:
+    origins:
+      - '*'
+  rateLimit:
+    enabled: false
+
+# AI模型配置
+models:
+  defaultProvider: openai
+  providers:
+    openai:
+      apiKey: ${OPENAI_API_KEY:sk-test-key}
+      timeout: 60000
+
+# Agent配置
+agent:
+  maxIterations: 5
+  defaultModel: gpt-3.5-turbo
+  timeout: 60000
+
+# RAG配置
+rag:
+  vectorStore: memory
+  embeddingModel: text-embedding-ada-002
+  chunkSize: 500
+  chunkOverlap: 100
+
+# 多租户配置
+tenant:
+  isolationMode: row
+
+# 计费配置
+billing:
+  enabled: false
+
+# 监控配置
+monitoring:
+  enabled: false
+
+# 插件配置
+plugins:
+  core:
+    - name: logger
+      enabled: true
+    - name: config
+      enabled: true
+    - name: events
+      enabled: true
+    - name: security
+      enabled: true
+  
+  features:
+    - name: cache
+      enabled: true
+    - name: database
+      enabled: true
+    - name: api
+      enabled: true
+    - name: modelRouter
+      enabled: true
+    - name: agent
+      enabled: true
+    - name: rag
+      enabled: true
+    - name: tenant
+      enabled: true
+    - name: billing
+      enabled: false

@@ -50,7 +50,7 @@ export class AutoOptimizer {
         mkdirSync(this.config.dataDir, { recursive: true });
         await this._loadHistory();
         
-        // review: removed // review: removed console.log('[AutoOptimizer] Initialized');
+        // console.log('[AutoOptimizer] Initialized');
     }
 
     /**
@@ -60,7 +60,7 @@ export class AutoOptimizer {
         this.stats.runs++;
         this.stats.lastRun = Date.now();
         
-        // review: removed // review: removed console.log('[AutoOptimizer] Starting optimization run...');
+        // console.log('[AutoOptimizer] Starting optimization run...');
         
         const results = [];
         
@@ -108,7 +108,7 @@ export class AutoOptimizer {
         
         await this._saveHistory();
         
-        // review: removed // review: removed console.log(`[AutoOptimizer] Run completed. Total improvement: ${totalImprovement.toFixed(2)}%`);
+        // console.log(`[AutoOptimizer] Run completed. Total improvement: ${totalImprovement.toFixed(2)}%`);
         
         return {
             timestamp: runRecord.timestamp,

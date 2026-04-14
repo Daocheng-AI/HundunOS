@@ -168,7 +168,7 @@ class EventBus extends EventEmitter {
             this.outbox = this.outbox.slice(-500);
         }
         this.emit(topic, enrichedEvent);
-        // review: removed // review: removed console.log(`[EventBus] ${topic}: ${enrichedEvent.eventId}`);
+        // console.log(`[EventBus] ${topic}: ${enrichedEvent.eventId}`);
         return enrichedEvent;
     }
 
@@ -925,14 +925,14 @@ function startStalledDetection() {
     stalledCheckTimer = setInterval(() => {
         checkStalledTasks();
     }, STALLED_CONFIG.checkIntervalMs);
-    // review: removed // review: removed console.log('[StalledDetection] Started');
+    // console.log('[StalledDetection] Started');
 }
 
 function stopStalledDetection() {
     if (stalledCheckTimer) {
         clearInterval(stalledCheckTimer);
         stalledCheckTimer = null;
-        // review: removed // review: removed console.log('[StalledDetection] Stopped');
+        // console.log('[StalledDetection] Stopped');
     }
 }
 
@@ -1013,7 +1013,7 @@ export async function processMessage(userId, message) {
     const edict = createEdict(userId, message);
     const edictId = edict.id;
 
-    // review: removed // review: removed console.log(`[Taizi] edict: ${edictId}`);
+    // console.log(`[Taizi] edict: ${edictId}`);
 
     const whitelistMatch = await matchWhitelist(message);
     if (whitelistMatch) {

@@ -234,17 +234,17 @@ export class LongCatTTS {
 export async function initialize(kernel) {
     const tts = new LongCatTTS(kernel);
     
-    // review: removed // review: removed console.log(`[LongCat-TTS] Initialized (available: ${tts.available})`);
+    // console.log(`[LongCat-TTS] Initialized (available: ${tts.available})`);
     
     if (tts.available) {
         try {
             const info = await tts.getModelInfo();
-            // review: removed // review: removed console.log(`[LongCat-TTS] Model: ${info.hidden_size} hidden, ${info.num_layers} layers`);
+            // console.log(`[LongCat-TTS] Model: ${info.hidden_size} hidden, ${info.num_layers} layers`);
         } catch (e) {
-            // review: removed // review: removed console.log(`[LongCat-TTS] Model info unavailable: ${e.message}`);
+            // console.log(`[LongCat-TTS] Model info unavailable: ${e.message}`);
         }
     } else {
-        // review: removed // review: removed console.log(`[LongCat-TTS] Build the Rust module with: cargo build --release -p hundunos-audiodit`);
+        // console.log(`[LongCat-TTS] Build the Rust module with: cargo build --release -p hundunos-audiodit`);
     }
     
     return tts;

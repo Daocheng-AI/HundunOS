@@ -58,7 +58,7 @@ export class WorkBuddyExtension extends EventEmitter {
             startTime: null
         };
 
-        // review: removed // review: removed console.log('[WorkBuddy] Extension initialized');
+        // console.log('[WorkBuddy] Extension initialized');
     }
 
     // ========================================================================
@@ -82,7 +82,7 @@ export class WorkBuddyExtension extends EventEmitter {
             if (running) {
                 this.state = WorkBuddyState.RUNNING;
                 this.stats.startTime = Date.now();
-                // review: removed // review: removed console.log('[WorkBuddy] Already running');
+                // console.log('[WorkBuddy] Already running');
                 return { alreadyRunning: true };
             }
 
@@ -102,7 +102,7 @@ export class WorkBuddyExtension extends EventEmitter {
             this.stats.startTime = Date.now();
             this.restartCount = 0;
 
-            // review: removed // review: removed console.log('[WorkBuddy] Started');
+            // console.log('[WorkBuddy] Started');
             this.emit('started');
 
             return { started: true, pid: this.process?.pid };
@@ -130,7 +130,7 @@ export class WorkBuddyExtension extends EventEmitter {
             }
 
             this.state = WorkBuddyState.STOPPED;
-            // review: removed // review: removed console.log('[WorkBuddy] Stopped');
+            // console.log('[WorkBuddy] Stopped');
             this.emit('stopped');
 
             return { stopped: true };
@@ -192,7 +192,7 @@ export class WorkBuddyExtension extends EventEmitter {
         this.tasks.set(taskId, taskObj);
         this.stats.tasksSubmitted++;
 
-        // review: removed // review: removed console.log(`[WorkBuddy] Task submitted: ${taskId}`);
+        // console.log(`[WorkBuddy] Task submitted: ${taskId}`);
         this.emit('task_submitted', { taskId, task: taskObj });
 
         // 模拟执行（实际通过 MCP 或 IPC）
@@ -290,7 +290,7 @@ export class WorkBuddyExtension extends EventEmitter {
                 });
                 task.status = 'completed';
                 this.stats.tasksCompleted++;
-                // review: removed // review: removed console.log(`[WorkBuddy] Task completed: ${taskId}`);
+                // console.log(`[WorkBuddy] Task completed: ${taskId}`);
                 this.emit('task_completed', { taskId, result });
             } else {
                 throw new Error(result.error || 'Task execution failed');
@@ -304,7 +304,7 @@ export class WorkBuddyExtension extends EventEmitter {
             });
             task.status = 'failed';
             this.stats.tasksFailed++;
-            // review: removed // review: removed console.log(`[WorkBuddy] Task failed: ${taskId} - ${e.message}`);
+            // console.log(`[WorkBuddy] Task failed: ${taskId} - ${e.message}`);
             this.emit('task_failed', { taskId, error: e.message });
         }
 

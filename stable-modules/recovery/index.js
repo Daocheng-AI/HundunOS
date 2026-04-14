@@ -99,7 +99,7 @@ export class AutoRecoveryManager extends EventEmitter {
         // 注册默认处理器
         this._registerDefaultHandlers();
 
-        // review: removed // review: removed console.log('[AutoRecovery] Initialized');
+        // console.log('[AutoRecovery] Initialized');
     }
 
     // ========================================================================
@@ -123,7 +123,7 @@ export class AutoRecoveryManager extends EventEmitter {
      */
     registerHandler(failureType, handler) {
         this.handlers.set(failureType, handler);
-        // review: removed // review: removed console.log(`[AutoRecovery] Registered handler for: ${failureType}`);
+        // console.log(`[AutoRecovery] Registered handler for: ${failureType}`);
     }
 
     _registerDefaultHandlers() {
@@ -172,7 +172,7 @@ export class AutoRecoveryManager extends EventEmitter {
         const record = new RecoveryRecord(failure, this._selectStrategy(failure));
         this.records.set(record.id, record);
 
-        // review: removed // review: removed console.log(`[AutoRecovery] Failure reported: ${failure.type} in ${failure.moduleId}`);
+        // console.log(`[AutoRecovery] Failure reported: ${failure.type} in ${failure.moduleId}`);
         this.emit('failure', { failure, record });
 
         if (this.config.enableAutoRecovery) {
@@ -223,7 +223,7 @@ export class AutoRecoveryManager extends EventEmitter {
                 record.result = result;
                 record.completedAt = new Date().toISOString();
 
-                // review: removed // review: removed console.log(`[AutoRecovery] Recovery succeeded: ${record.id}`);
+                // console.log(`[AutoRecovery] Recovery succeeded: ${record.id}`);
                 this.emit('recovery_success', { record, result });
 
                 return record;
@@ -318,7 +318,7 @@ export class AutoRecoveryManager extends EventEmitter {
         fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2));
 
         this.snapshots.set(moduleId, snapshot);
-        // review: removed // review: removed console.log(`[AutoRecovery] Snapshot saved: ${moduleId}`);
+        // console.log(`[AutoRecovery] Snapshot saved: ${moduleId}`);
 
         return snapshot;
     }

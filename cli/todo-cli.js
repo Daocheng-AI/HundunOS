@@ -114,7 +114,7 @@ function updateTodo(items) {
   };
 
   saveTodo(todo);
-  console.log(renderTodo(todo));
+  // console.log(renderTodo(todo));
 }
 
 /**
@@ -130,12 +130,12 @@ function getStats() {
     roundsSinceUpdate: todo.roundsSinceUpdate,
   };
 
-  console.log('\nTodo Statistics:');
-  console.log(`  Total: ${stats.total}`);
-  console.log(`  Pending: ${stats.pending}`);
-  console.log(`  In Progress: ${stats.inProgress}`);
-  console.log(`  Completed: ${stats.completed}`);
-  console.log(`  Rounds since update: ${stats.roundsSinceUpdate}\n`);
+  // console.log('\nTodo Statistics:');
+  // console.log(`  Total: ${stats.total}`);
+  // console.log(`  Pending: ${stats.pending}`);
+  // console.log(`  In Progress: ${stats.inProgress}`);
+  // console.log(`  Completed: ${stats.completed}`);
+  // console.log(`  Rounds since update: ${stats.roundsSinceUpdate}\n`);
 
   return stats;
 }
@@ -145,7 +145,7 @@ function getStats() {
  */
 function clearTodo() {
   saveTodo({ items: [], roundsSinceUpdate: 0 });
-  console.log('Todo cleared');
+  // console.log('Todo cleared');
 }
 
 // CLI 入口
@@ -171,7 +171,7 @@ switch (command) {
   }
 
   case 'show':
-    console.log(renderTodo(readTodo()));
+    // console.log(renderTodo(readTodo()));
     break;
 
   case 'stats':
@@ -183,7 +183,7 @@ switch (command) {
     break;
 
   default:
-    console.log(`
+    // console.log(`
 HundunOS v4.3 Todo CLI
 
 Usage:

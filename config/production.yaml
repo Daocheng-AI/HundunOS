@@ -1,0 +1,203 @@
+# HundunOS v5 - 生产环境配置
+
+app:
+  name: HundunOS
+  version: 5.0.0
+  env: production
+
+# 日志配置
+logger:
+  level: warn
+  format: json
+  output:
+    - type: console
+    - type: file
+      path: /var/log/hundunos/app.log
+      maxSize: 100MB
+      maxFiles: 10
+
+# API服务器配置
+api:
+  port: 3000
+  host: 0.0.0.0
+  cors:
+    origins:
+      - https://app.hundunos.com
+    credentials: true
+  rateLimit:
+    windowMs: 60000
+    maxRequests: 1000
+  timeout: 30000
+
+# 数据库配置
+database:
+  type: postgresql
+  host: ${DB_HOST}
+  port: ${DB_PORT:5432}
+  database: ${DB_NAME:hundunos}
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
+  ssl: true
+  pool:
+    min: 5
+    max: 50
+    acquireTimeout: 60000
+    idleTimeout: 10000
+
+# 缓存配置
+cache:
+  defaultTtl: 3600
+  l1:
+    type: memory
+    maxSize: 10000
+  l2:
+    type: redis
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD}
+    db: 0
+    keyPrefix: 'hundunos:'
+  cleanupInterval: 60000
+
+# 安全配置
+security:
+  cors:
+    origins:
+      - https://app.hundunos.com
+      - https://api.hundunos.com
+  rateLimit:
+    enabled: true
+    default:
+      windowMs: 60000
+      maxRequests: 100
+  password:
+    minLength: 8
+    requireSpecialChar: true
+
+# AI模型配置
+models:
+  defaultProvider: openai
+  providers:
+    openai:
+      apiKey: ${OPENAI_API_KEY}
+      organization: ${OPENAI_ORG_ID}
+      timeout: 60000
+    anthropic:
+      apiKey: ${ANTHROPIC_API_KEY}
+      timeout: 60000
+  routing:
+    - modelPattern: 'gpt-4.*'
+      provider: openai
+      priority: 1
+    - modelPattern: 'claude.*'
+      provider: anthropic
+      priority: 2
+
+# Agent配置
+agent:
+  maxIterations: 10
+  defaultModel: gpt-3.5-turbo
+  timeout: 120000
+  tools:
+    enabled:
+      - search
+      - calculator
+      - memory
+
+# RAG配置
+rag:
+  vectorStore: pgvector
+  embeddingModel: text-embedding-3-small
+  chunkSize: 1000
+  chunkOverlap: 200
+  maxResults: 5
+
+# 多租户配置
+tenant:
+  isolationMode: schema
+  defaultQuota:
+    maxUsers: 100
+    maxStorage: 1073741824  # 1GB
+    maxRequestsPerDay: 10000
+
+# 计费配置
+billing:
+  currency: USD
+  pricing:
+    chat:
+      unitPrice: 0.002
+      unit: 1k_tokens
+    embedding:
+      unitPrice: 0.0001
+      unit: 1k_tokens
+    storage:
+      unitPrice: 0.02
+      unit: gb_month
+    api_request:
+      unitPrice: 0.0001
+      unit: request
+  invoice:
+    generateDay: 1  # 每月1号生成发票
+    gracePeriod: 7  # 7天宽限期
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics:
+    interval: 60000
+    retention: 2592000000  # 30天
+  healthCheck:
+    interval: 30000
+    timeout: 5000
+  alerts:
+    - name: high_memory
+      condition: memory > 80%
+      channels:
+        - email
+        - slack
+    - name: high_latency
+      condition: p99_latency > 1000
+      channels:
+        - slack
+
+# 插件配置
+plugins:
+  core:
+    - name: logger
+      enabled: true
+      priority: 0
+    - name: config
+      enabled: true
+      priority: 1
+    - name: events
+      enabled: true
+      priority: 2
+    - name: security
+      enabled: true
+      priority: 3
+  
+  features:
+    - name: cache
+      enabled: true
+      lazy: false
+    - name: database
+      enabled: true
+      lazy: false
+    - name: api
+      enabled: true
+      lazy: false
+    - name: modelRouter
+      enabled: true
+      lazy: true
+    - name: agent
+      enabled: true
+      lazy: true
+    - name: rag
+      enabled: true
+      lazy: true
+    - name: tenant
+      enabled: true
+      lazy: true
+    - name: billing
+      enabled: true
+      lazy: true

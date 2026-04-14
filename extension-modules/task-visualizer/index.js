@@ -54,7 +54,7 @@ export class TaskVisualizer {
     async initialize() {
         mkdirSync(this.config.dataDir, { recursive: true });
         await this._loadState();
-        // review: removed // review: removed console.log('[TaskVisualizer] Initialized');
+        // console.log('[TaskVisualizer] Initialized');
     }
 
     /**

@@ -22,6 +22,8 @@ describe('AutonomousAgentManager', () => {
       },
     };
     agentManager = new AutonomousAgentManager(mockKernel);
+    // Mock _tryDispatch so tasks stay pending for synchronous tests
+    vi.spyOn(agentManager, '_tryDispatch').mockResolvedValue();
   });
 
   afterEach(() => {

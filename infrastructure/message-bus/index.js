@@ -15,7 +15,7 @@ export class MessageBus extends EventEmitter {
     }
 
     async initialize() {
-        // review: removed // review: removed console.log('[MessageBus] Initialized v3.0');
+        // console.log('[MessageBus] Initialized v3.0');
     }
 
     // ================================================================
