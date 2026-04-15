@@ -87,9 +87,69 @@ export class AgentPlugin extends BasePlugin {
     });
   }
 
+  // M-05 Fix: 替换 Function() 构造器，使用安全的表达式解析器，防止 ReDoS 和原型污染
   #safeCalculate(expression) {
+    // 白名单：只允许数字、运算符、小数点、空格和圆括号
     const sanitized = expression.replace(/[^0-9+\-*/().\s]/g, '');
-    return Function(`"use strict"; return (${sanitized})`)();
+
+    // 安全解析器（不使用 eval/Function），防止 ReDoS 和 __proto__ 污染
+    let pos = 0;
+
+    const peek = () => sanitized[pos];
+    const consume = () => sanitized[pos++];
+
+    const skip = () => {
+      while (peek() === ' ') consume();
+    };
+
+    const parseExpr = () => parseAddSub();
+
+    const parseAddSub = () => {
+      let left = parseMulDiv();
+      skip();
+      while (peek() === '+' || peek() === '-') {
+        const op = consume();
+        skip();
+        const right = parseMulDiv();
+        left = op === '+' ? left + right : left - right;
+        skip();
+      }
+      return left;
+    };
+
+    const parseMulDiv = () => {
+      let left = parseNumber();
+      skip();
+      while (peek() === '*' || peek() === '/') {
+        const op = consume();
+        skip();
+        const right = parseNumber();
+        if (op === '*') {
+          left = left * right;
+        } else {
+          if (right === 0) throw new Error('Division by zero');
+          left = left / right;
+        }
+        skip();
+      }
+      return left;
+    };
+
+    const parseNumber = () => {
+      skip();
+      let numStr = '';
+      while (/[0-9.]/.test(peek())) {
+        numStr += consume();
+      }
+      if (numStr === '') throw new Error('Expected number');
+      const val = parseFloat(numStr);
+      if (!isFinite(val)) throw new Error('Invalid number');
+      return val;
+    };
+
+    const result = parseExpr();
+    if (pos < sanitized.length) throw new Error('Unexpected character');
+    return result;
   }
 
   createAgent(config = {}) {
@@ -100,11 +160,11 @@ export class AgentPlugin extends BasePlugin {
       model: config.model || 'gpt-3.5-turbo',
       provider: config.provider || 'openai',
       systemPrompt: config.systemPrompt || 'You are a helpful assistant.',
-      tools: config.tools || [],
       maxIterations: config.maxIterations || 10,
       temperature: config.temperature || 0.7,
       kernel: this.kernel,
       models: this.#models,
+      // L-01 Fix: 移除了重复的 tools 属性（config.tools 被 this.#tools 覆盖，属死代码）
       tools: this.#tools,
       cache: this.#cache,
       logger: this.logger
@@ -273,10 +333,20 @@ class Agent {
 
   async #executeToolCalls(toolCalls) {
     const results = [];
+    const MAX_OUTPUT_SIZE = 10_000; // 限制单个工具输出，防止 prompt 注入
 
     for (const call of toolCalls) {
       try {
-        const result = await this.#executeTool(call.name, call.params);
+        let result = await this.#executeTool(call.name, call.params);
+        // 限制输出长度，防止通过工具返回值进行 prompt 注入
+        const serialized = JSON.stringify(result);
+        if (serialized.length > MAX_OUTPUT_SIZE) {
+          result = {
+            _truncated: true,
+            message: `Output exceeded ${MAX_OUTPUT_SIZE} bytes and was truncated`,
+            preview: serialized.slice(0, 200)
+          };
+        }
         results.push({ id: call.id, result });
       } catch (err) {
         results.push({ id: call.id, result: { error: err.message } });

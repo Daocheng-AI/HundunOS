@@ -190,23 +190,37 @@ export class RestAPI extends EventEmitter {
     // 限流器
     _rateLimiter() {
         const requests = new Map();
-        
+        const window = this.config.rateLimit?.windowMs || 60000;
+        const max = this.config.rateLimit?.max || 100;
+
+        // H-02 Fix: 每分钟清理过期条目，防止 Map 内存泄漏
+        const cleanup = () => {
+            const now = Date.now();
+            for (const [key, times] of requests) {
+                const valid = times.filter(t => now - t < window);
+                if (valid.length === 0) {
+                    requests.delete(key);
+                } else {
+                    requests.set(key, valid);
+                }
+            }
+        };
+        const cleanupInterval = setInterval(cleanup, window).unref();
+
         return async (ctx) => {
             if (!this.config.rateLimit) return;
-            
+
             const key = ctx.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress;
             const now = Date.now();
-            const window = this.config.rateLimit.windowMs || 60000;
-            const max = this.config.rateLimit.max || 100;
-            
+
             if (!requests.has(key)) {
                 requests.set(key, []);
             }
-            
+
             const times = requests.get(key).filter(t => now - t < window);
             times.push(now);
             requests.set(key, times);
-            
+
             if (times.length > max) {
                 throw new Error('Rate limit exceeded');
             }
@@ -279,14 +293,18 @@ export class RestAPI extends EventEmitter {
         // CORS
         if (this.config.cors) {
             const isProduction = process.env.NODE_ENV === 'production';
-            const corsOrigins = process.env.HUNDUNOS_CORS_ORIGINS || '*';
-            
-            // 在生产环境中使用白名单，开发环境中使用通配符
-            const origin = isProduction ? corsOrigins : '*';
-            
+            const envOrigins = process.env.HUNDUNOS_CORS_ORIGINS;
+
+            if (isProduction && !envOrigins) {
+                // H-01 Fix: 生产环境必须显式设置 HUNDUNOS_CORS_ORIGINS，禁止通配符 fallback
+                this._sendResponse(res, 500, { error: 'HUNDUNOS_CORS_ORIGINS must be set in production' });
+                return;
+            }
+
+            // 开发环境允许 *，生产环境必须使用白名单（已在上面拦截无配置情况）
+            const origin = isProduction ? envOrigins : '*';
             res.setHeader('Access-Control-Allow-Origin', origin);
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-            // 修复 H3：添加 X-API-Key 到 CORS 允许头，否则浏览器预检失败
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
         }
 
@@ -305,8 +323,15 @@ export class RestAPI extends EventEmitter {
         }
 
         try {
-            // 解析请求体
-            const body = await this._parseBody(req);
+            // 解析请求体（H-03 Fix: 现在会 reject 超大请求）
+            let body = null;
+            try {
+                body = await this._parseBody(req);
+            } catch (bodyError) {
+                this._sendResponse(res, 413, { error: bodyError.message });
+                this.emit('error', { method: req.method, path, error: bodyError });
+                return;
+            }
 
             // 构建请求上下文
             const ctx = {
@@ -330,24 +355,43 @@ export class RestAPI extends EventEmitter {
             this._sendResponse(res, 200, result);
             this.emit('request', { method: req.method, path, elapsed: Date.now() - startTime });
         } catch (error) {
-            console.error(`[REST] Error handling ${req.method} ${path}:`, error.message);
-            this._sendResponse(res, 500, { error: error.message });
+            // M-01 Fix: 不将内部错误详情泄露给客户端，仅记录日志
+            console.error(`[REST] Error handling ${req.method} ${path}:`, error);
+            const status = error.status || 500;
+            this._sendResponse(res, status, { error: 'Internal server error' });
             this.emit('error', { method: req.method, path, error });
         }
     }
 
-    _parseBody(req) {
-        return new Promise((resolve) => {
+    // H-03 Fix: 添加请求体大小限制（默认 1MB），防止内存耗尽 DoS
+    _parseBody(req, limitBytes = 1_048_576) {
+        return new Promise((resolve, reject) => {
             let body = '';
-            req.on('data', chunk => body += chunk);
-            req.on('end', () => {
+            let size = 0;
+
+            const onData = (chunk) => {
+                size += chunk.length;
+                if (size > limitBytes) {
+                    req.removeListener('data', onData);
+                    req.removeListener('end', onEnd);
+                    req.destroy();
+                    reject(new Error('Request body too large'));
+                    return;
+                }
+                body += chunk;
+            };
+
+            const onEnd = () => {
                 if (!body) return resolve(null);
                 try {
                     resolve(JSON.parse(body));
                 } catch {
                     resolve(body);
                 }
-            });
+            };
+
+            req.on('data', onData);
+            req.on('end', onEnd);
         });
     }
 

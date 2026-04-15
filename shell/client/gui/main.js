@@ -10,6 +10,10 @@ import { existsSync } from 'fs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 if (!app.requestSingleInstanceLock()) app.quit();
 
+// H-1 Fix: Allow port override via environment variables
+const KERNEL_TCP_PORT = parseInt(process.env.HUNDUNOS_TCP_PORT || '38082', 10);
+const KERNEL_API_PORT = parseInt(process.env.HUNDUNOS_API_PORT || '38080', 10);
+
 let mainWindow = null, tray = null, isQuitting = false;
 
 function createWindow() {
@@ -19,7 +23,7 @@ function createWindow() {
     webPreferences: { preload: join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false },
   });
   const idx = join(__dirname, 'renderer', 'index.html');
-  existsSync(idx) ? mainWindow.loadFile(idx) : mainWindow.loadURL('http://127.0.0.1:38082');
+  existsSync(idx) ? mainWindow.loadFile(idx) : mainWindow.loadURL(`http://127.0.0.1:${KERNEL_TCP_PORT}`);
   mainWindow.once('ready-to-show', () => mainWindow.show());
   mainWindow.on('close', e => { if (!isQuitting) { e.preventDefault(); mainWindow.hide(); } });
   Menu.setApplicationMenu(Menu.buildFromTemplate([
@@ -49,20 +53,20 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 app.on('activate', () => { if (!BrowserWindow.getAllWindows().length) createWindow(); });
 
 ipcMain.handle('process', async (_, message) => {
-  const res = await fetch('http://127.0.0.1:38080/api/process', {
+  const res = await fetch(`http://127.0.0.1:${KERNEL_API_PORT}/api/process`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(message),
   }).catch(() => null);
   return res?.json() || { error: 'Kernel unreachable' };
 });
 ipcMain.handle('getStatus', async () => {
-  const res = await fetch('http://127.0.0.1:38080/api/status').catch(() => null);
+  const res = await fetch(`http://127.0.0.1:${KERNEL_API_PORT}/api/status`).catch(() => null);
   return res?.json() || {};
 });
 ipcMain.handle('getHealth', async () => {
-  const res = await fetch('http://127.0.0.1:38080/api/health').catch(() => null);
+  const res = await fetch(`http://127.0.0.1:${KERNEL_API_PORT}/api/health`).catch(() => null);
   return res?.json() || {};
 });
 ipcMain.handle('getModules', async () => {
-  const res = await fetch('http://127.0.0.1:38080/api/modules').catch(() => null);
+  const res = await fetch(`http://127.0.0.1:${KERNEL_API_PORT}/api/modules`).catch(() => null);
   return res?.json() || {};
 });

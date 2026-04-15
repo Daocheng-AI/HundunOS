@@ -1,163 +1,309 @@
 /**
- * HundunOS v5 Performance Benchmarks
- * 对比v4和v5架构的性能差异
+ * HundunOS v5 - 性能基准测试框架
+ * 提供核心功能的性能基准测试
  */
 
-import { performance } from 'perf_hooks';
-import { Kernel } from '../core/Kernel.js';
-import { LoggerPlugin } from '../plugins/core/LoggerPlugin.js';
-import { SecurityPlugin } from '../plugins/core/SecurityPlugin.js';
-import { CachePlugin } from '../plugins/features/CachePlugin.js';
+import { Kernel } from './core/Kernel.js';
+import { LoggerPlugin } from './plugins/core/LoggerPlugin.js';
+import { ConfigPlugin } from './plugins/core/ConfigPlugin.js';
+import { EventsPlugin } from './plugins/core/EventsPlugin.js';
+import { SecurityPlugin } from './plugins/core/SecurityPlugin.js';
+import { CachePlugin } from './plugins/features/CachePlugin.js';
+import { UtilsPlugin } from './plugins/utils/UtilsPlugin.js';
+import { PerformanceMonitor } from './performance-monitor.js';
 
-class Benchmark {
-  results = [];
+/**
+ * 基准测试结果
+ */
+class BenchmarkResult {
+  constructor(name) {
+    this.name = name;
+    this.iterations = 0;
+    this.totalTime = 0;
+    this.minTime = Infinity;
+    this.maxTime = 0;
+    this.times = [];
+    this.throughput = 0;
+    this.startTime = null;
+    this.endTime = null;
+  }
 
-  async run(name, fn, iterations = 1000) {
-    // Warmup
-    for (let i = 0; i < 100; i++) {
-      await fn();
-    }
+  addIteration(timeMs) {
+    this.iterations++;
+    this.totalTime += timeMs;
+    this.minTime = Math.min(this.minTime, timeMs);
+    this.maxTime = Math.max(this.maxTime, timeMs);
+    this.times.push(timeMs);
+  }
 
-    const times = [];
-    for (let i = 0; i < iterations; i++) {
-      const start = performance.now();
-      await fn();
-      const end = performance.now();
-      times.push(end - start);
-    }
+  calculate() {
+    this.avgTime = this.totalTime / this.iterations;
+    this.throughput = this.iterations / (this.totalTime / 1000); // ops/sec
+    
+    // 计算标准差
+    const mean = this.avgTime;
+    const variance = this.times.reduce((sum, t) => sum + Math.pow(t - mean, 2), 0) / this.iterations;
+    this.stdDev = Math.sqrt(variance);
+    
+    // 计算百分位数
+    const sorted = [...this.times].sort((a, b) => a - b);
+    this.p50 = sorted[Math.floor(sorted.length * 0.5)];
+    this.p95 = sorted[Math.floor(sorted.length * 0.95)];
+    this.p99 = sorted[Math.floor(sorted.length * 0.99)];
+  }
 
-    const avg = times.reduce((a, b) => a + b, 0) / times.length;
-    const min = Math.min(...times);
-    const max = Math.max(...times);
-    const p95 = times.sort((a, b) => a - b)[Math.floor(times.length * 0.95)];
-    const p99 = times.sort((a, b) => a - b)[Math.floor(times.length * 0.99)];
-
-    const result = {
-      name,
-      iterations,
-      avg: avg.toFixed(3),
-      min: min.toFixed(3),
-      max: max.toFixed(3),
-      p95: p95.toFixed(3),
-      p99: p99.toFixed(3),
-      opsPerSecond: (1000 / avg).toFixed(0)
+  toJSON() {
+    return {
+      name: this.name,
+      iterations: this.iterations,
+      totalTime: Math.round(this.totalTime * 100) / 100,
+      avgTime: Math.round(this.avgTime * 100) / 100,
+      minTime: Math.round(this.minTime * 100) / 100,
+      maxTime: Math.round(this.maxTime * 100) / 100,
+      stdDev: Math.round(this.stdDev * 100) / 100,
+      p50: Math.round(this.p50 * 100) / 100,
+      p95: Math.round(this.p95 * 100) / 100,
+      p99: Math.round(this.p99 * 100) / 100,
+      throughput: Math.round(this.throughput * 100) / 100,
     };
+  }
+}
 
+/**
+ * 基准测试运行器
+ */
+export class BenchmarkRunner {
+  constructor(options = {}) {
+    this.options = {
+      iterations: options.iterations || 100,
+      warmup: options.warmup || 10,
+      timeout: options.timeout || 300000, // 5 分钟
+      ...options,
+    };
+    this.results = [];
+    this.kernel = null;
+  }
+
+  /**
+   * 初始化 Kernel
+   */
+  async setup() {
+    console.log('\n🔧 初始化 Kernel...');
+    this.kernel = new Kernel();
+    
+    await this.kernel.plugins.register(LoggerPlugin);
+    await this.kernel.plugins.register(ConfigPlugin);
+    await this.kernel.plugins.register(EventsPlugin);
+    await this.kernel.plugins.register(SecurityPlugin);
+    await this.kernel.plugins.register(CachePlugin);
+    await this.kernel.plugins.register(UtilsPlugin);
+    
+    await this.kernel.initialize();
+    console.log('✅ Kernel 初始化完成\n');
+  }
+
+  /**
+   * 关闭 Kernel
+   */
+  async teardown() {
+    if (this.kernel) {
+      await this.kernel.shutdown();
+      console.log('\n🔴 Kernel 已关闭');
+    }
+  }
+
+  /**
+   * 运行单个基准测试
+   * @param {string} name - 测试名称
+   * @param {Function} fn - 测试函数
+   * @param {Object} options - 配置选项
+   * @returns {BenchmarkResult} 测试结果
+   */
+  async runBenchmark(name, fn, options = {}) {
+    const {
+      iterations = this.options.iterations,
+      warmup = this.options.warmup,
+    } = options;
+
+    console.log(`\n📊 运行基准测试：${name}`);
+    console.log(`   迭代次数：${iterations}, 预热：${warmup}`);
+
+    const result = new BenchmarkResult(name);
+
+    // 预热
+    if (warmup > 0) {
+      console.log(`   预热中...`);
+      for (let i = 0; i < warmup; i++) {
+        await fn(this.kernel, i);
+      }
+    }
+
+    // 正式测试
+    console.log(`   执行测试...`);
+    for (let i = 0; i < iterations; i++) {
+      const startTime = performance.now();
+      
+      await fn(this.kernel, i);
+      
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      
+      result.addIteration(duration);
+      
+      // 进度显示
+      if ((i + 1) % 10 === 0 || i === iterations - 1) {
+        process.stdout.write(`\r   进度：${i + 1}/${iterations} (${Math.round((i + 1) / iterations * 100)}%)`);
+      }
+    }
+
+    result.calculate();
     this.results.push(result);
+
+    // 打印结果
+    console.log(`\n   ✅ 完成`);
+    console.log(`   平均耗时：${result.avgTime.toFixed(2)}ms`);
+    console.log(`   吞吐量：${result.throughput.toFixed(2)} ops/sec`);
+    console.log(`   P95: ${result.p95.toFixed(2)}ms, P99: ${result.p99.toFixed(2)}ms`);
+
     return result;
   }
 
-  printResults() {
-    console.log('\n=== Benchmark Results ===\n');
-    console.log('Test Name | Iterations | Avg (ms) | Min (ms) | Max (ms) | P95 (ms) | P99 (ms) | Ops/sec');
-    console.log('-'.repeat(100));
-    
-    for (const r of this.results) {
-      console.log(
-        `${r.name.padEnd(20)} | ${r.iterations.toString().padEnd(10)} | ` +
-        `${r.avg.padEnd(8)} | ${r.min.padEnd(8)} | ${r.max.padEnd(8)} | ` +
-        `${r.p95.padEnd(8)} | ${r.p99.padEnd(8)} | ${r.opsPerSecond}`
-      );
+  /**
+   * 运行所有基准测试
+   */
+  async runAll() {
+    const summary = {
+      startTime: new Date().toISOString(),
+      tests: [],
+      totalDuration: 0,
+    };
+
+    const startTime = performance.now();
+
+    try {
+      await this.setup();
+
+      // 运行各项测试
+      summary.tests.push(await this.runBenchmark('密码哈希 (PBKDF2)', this.benchmarkPasswordHashing));
+      summary.tests.push(await this.runBenchmark('缓存操作', this.benchmarkCacheOperations));
+      summary.tests.push(await this.runBenchmark('事件发射', this.benchmarkEventEmission));
+      summary.tests.push(await this.runBenchmark('工具函数', this.benchmarkUtilsFunctions));
+      summary.tests.push(await this.runBenchmark('安全策略检查', this.benchmarkSecurityChecks));
+
+    } finally {
+      await this.teardown();
     }
+
+    const endTime = performance.now();
+    summary.totalDuration = endTime - startTime;
+    summary.endTime = new Date().toISOString();
+
+    this.printSummary(summary);
+    return summary;
+  }
+
+  // ──────────────────────────────────────────────
+  // 基准测试用例
+  // ──────────────────────────────────────────────
+
+  async benchmarkPasswordHashing(kernel) {
+    const security = kernel.plugins.get('security');
+    const password = 'TestPassword123!@#';
+    await security.hashPassword(password);
+  }
+
+  async benchmarkCacheOperations(kernel) {
+    const cache = kernel.plugins.get('cache');
+    const key = `bench:${Date.now()}`;
+    await cache.set(key, { data: 'test' }, 60);
+    await cache.get(key);
+    await cache.del(key);
+  }
+
+  async benchmarkEventEmission(kernel) {
+    const events = kernel.plugins.get('events');
+    events.emit('benchmark:event', { timestamp: Date.now() });
+  }
+
+  async benchmarkUtilsFunctions(kernel) {
+    const utils = kernel.plugins.get('utils');
+    const data = { a: 1, b: { c: 2 }, d: [3, 4, 5] };
+    const override = { b: { c: 3 }, e: 6 };
+    utils.deepMerge(data, override);
+  }
+
+  async benchmarkSecurityChecks(kernel) {
+    const security = kernel.plugins.get('security');
+    const acm = security.accessControl;
+    acm.check('tool', 'read', ['user']);
+  }
+
+  // ──────────────────────────────────────────────
+  // 结果输出
+  // ──────────────────────────────────────────────
+
+  printSummary(summary) {
+    console.log('\n╔════════════════════════════════════════════════════════╗');
+    console.log('║          HundunOS v5 性能基准测试总结                  ║');
+    console.log('╚════════════════════════════════════════════════════════╝');
+    console.log(`\n测试时间：${summary.startTime}`);
+    console.log(`总耗时：${(summary.totalDuration / 1000).toFixed(2)} 秒`);
+    console.log(`\n详细结果:\n`);
+
+    console.log('┌─────────────────────────────┬──────────┬──────────┬──────────┬──────────┐');
+    console.log('│ 测试名称                    │ 迭代次数 │ 平均 (ms) │ P95 (ms) │ 吞吐量   │');
+    console.log('├─────────────────────────────┼──────────┼──────────┼──────────┼──────────┤');
+
+    for (const test of summary.tests) {
+      const name = test.name.padEnd(27);
+      const iterations = String(test.iterations).padStart(8);
+      const avg = test.avgTime.toFixed(2).padStart(8);
+      const p95 = test.p95.toFixed(2).padStart(8);
+      const throughput = test.throughput.toFixed(2).padStart(8);
+      console.log(`│ ${name} │ ${iterations} │ ${avg} │ ${p95} │ ${throughput} │`);
+    }
+
+    console.log('└─────────────────────────────┴──────────┴──────────┴──────────┴──────────┘');
+    console.log('\n✅ 基准测试完成');
   }
 }
 
-async function runBenchmarks() {
-  const benchmark = new Benchmark();
-  const kernel = new Kernel();
-  
-  await kernel.plugins.register(LoggerPlugin);
-  await kernel.plugins.register(SecurityPlugin);
-  await kernel.plugins.register(CachePlugin);
-  await kernel.initialize();
+/**
+ * 运行基准测试
+ */
+async function main() {
+  console.log('\n╔════════════════════════════════════════════════════════╗');
+  console.log('║       HundunOS v5 - 性能基准测试框架                   ║');
+  console.log('╚════════════════════════════════════════════════════════╝');
 
-  console.log('Starting HundunOS v5 Performance Benchmarks...\n');
+  const runner = new BenchmarkRunner({
+    iterations: 100,
+    warmup: 10,
+  });
 
-  // 1. Service Registry Performance
-  console.log('Testing Service Registry...');
-  
-  kernel.services.register('bench.service', () => ({ data: 'test' }), { singleton: true });
-  
-  await benchmark.run('Service Get (singleton)', async () => {
-    await kernel.get('bench.service');
-  }, 10000);
-
-  // 2. Event Bus Performance
-  console.log('Testing Event Bus...');
-  
-  let eventCount = 0;
-  kernel.events.on('bench:event', () => { eventCount++; });
-  
-  await benchmark.run('Event Emit', async () => {
-    await kernel.events.emit('bench:event', { data: 1 });
-  }, 10000);
-
-  // 3. Cache Performance
-  console.log('Testing Cache...');
-  
-  const cache = kernel.get('cache');
-  
-  await benchmark.run('Cache Set', async () => {
-    await cache.set(`key-${Math.random()}`, 'value');
-  }, 5000);
-
-  await cache.set('bench-key', 'bench-value');
-  
-  await benchmark.run('Cache Get', async () => {
-    await cache.get('bench-key');
-  }, 10000);
-
-  // 4. Security Sanitization
-  console.log('Testing Security...');
-  
-  const security = kernel.get('security.sanitize');
-  const testInput = '<script>alert("xss")</script>';
-  
-  await benchmark.run('String Sanitize', async () => {
-    security.sanitize(testInput, 'string');
-  }, 10000);
-
-  // 5. Config Access
-  console.log('Testing Config...');
-  
-  kernel.config.set('bench.key', 'value');
-  
-  await benchmark.run('Config Get', async () => {
-    kernel.config.get('bench.key');
-  }, 10000);
-
-  // 6. Plugin Load Time
-  console.log('Testing Plugin System...');
-  
-  const { BasePlugin } = await import('../core/BasePlugin.js');
-  
-  class BenchPlugin extends BasePlugin {
-    get name() { return `bench-${Math.random()}`; }
-    async onInit() {}
+  try {
+    const summary = await runner.runAll();
+    
+    // 保存结果到文件
+    const fs = await import('fs');
+    const path = await import('path');
+    const resultsPath = path.join(process.cwd(), 'test-results', 'benchmark-results.json');
+    
+    fs.mkdirSync(path.dirname(resultsPath), { recursive: true });
+    fs.writeFileSync(resultsPath, JSON.stringify(summary, null, 2));
+    
+    console.log(`\n📁 结果已保存到：${resultsPath}`);
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('\n❌ 基准测试失败:', error);
+    process.exit(1);
   }
-  
-  await benchmark.run('Plugin Register', async () => {
-    const testKernel = new Kernel();
-    await testKernel.plugins.register(BenchPlugin);
-  }, 100);
-
-  // Print results
-  benchmark.printResults();
-
-  // Memory usage
-  const memUsage = process.memoryUsage();
-  console.log('\n=== Memory Usage ===');
-  console.log(`RSS: ${(memUsage.rss / 1024 / 1024).toFixed(2)} MB`);
-  console.log(`Heap Used: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`);
-  console.log(`Heap Total: ${(memUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`);
-  console.log(`External: ${(memUsage.external / 1024 / 1024).toFixed(2)} MB`);
-
-  await kernel.shutdown();
 }
 
-// Run if called directly
+// 如果直接运行此文件
 if (import.meta.url === `file://${process.argv[1]}`) {
-  runBenchmarks().catch(console.error);
+  main();
 }
 
-export { runBenchmarks, Benchmark };
+export default BenchmarkRunner;

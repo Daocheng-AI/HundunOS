@@ -8,6 +8,9 @@
  * - 本地/外部路径区分
  */
 
+// D-02 Note: This v4 module lives in kernel/ root alongside path-validation.js.
+// Direct import is intentional — v4 modules are not part of the v5 plugin system
+// and cannot access UtilsPlugin's service registry.
 import { validatePath } from './path-validation.js';
 import { PermissionMode, READ_ONLY_TOOLS, WRITE_TOOLS, normalizeMode } from './permission-mode.js';
 

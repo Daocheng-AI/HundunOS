@@ -65,6 +65,11 @@ export class CachePlugin extends BasePlugin {
         }
       }
     }, interval);
+    
+    // Prevent interval from blocking process exit
+    if (this.#cleanupInterval.unref) {
+      this.#cleanupInterval.unref();
+    }
   }
 
   store(name = null) {

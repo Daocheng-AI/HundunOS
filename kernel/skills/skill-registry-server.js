@@ -344,17 +344,28 @@ export class SkillRegistryServer {
             }
             
             if (req.method === 'GET' && path.startsWith('/package/')) {
-                // Get package info
+                // H-4 Fix: 验证包名格式，防止路径遍历（只允许字母、数字、连字符、点、@）
                 const name = path.slice(9);
+                if (!/^[a-zA-Z0-9._@-]+$/.test(name) || name.includes('..') || /[\\/]/.test(name)) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Invalid package name' }));
+                    return;
+                }
                 const result = await this.info(name);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(result));
                 return;
             }
-            
+
             if (req.method === 'GET' && path.startsWith('/install/')) {
-                // Install package
-                const [name, version] = path.slice(9).split('@');
+                // H-4 Fix: 同样验证安装路径包名
+                const raw = path.slice(9);
+                if (!/^[a-zA-Z0-9._@-]+$/.test(raw) || raw.includes('..') || /[\\/]/.test(raw)) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Invalid package name' }));
+                    return;
+                }
+                const [name, version] = raw.split('@');
                 const result = await this.install(name, version || 'latest');
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(result));

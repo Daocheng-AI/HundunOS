@@ -3,6 +3,9 @@
 
 import { randomUUID } from 'crypto';
 import { checkPermission, createDefaultRules } from '../../kernel/permission-pipeline.js';
+// D-02 Note: This stable-module lives outside the v5 plugin system.
+// Direct import from kernel/ is intentional — stable-modules cannot access
+// UtilsPlugin's service registry at runtime.
 import { validatePath, PROTECTED_PATHS } from '../../kernel/path-validation.js';
 import { PermissionMode } from '../../kernel/permission-mode.js';
 import { createLogger } from '../../kernel/logger.js';

@@ -18,7 +18,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=hundunos
       - DB_USER=hundunos
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD must be set}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -53,7 +53,8 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      # M-04 Fix: 仅绑定本机回环，开发/调试时按需注释；生产环境应移除此行
+      - "127.0.0.1:5432:5432"
     networks:
       - hundunos-network
     healthcheck:
@@ -71,7 +72,8 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - "6379:6379"
+      # M-04 Fix: Redis 仅绑定本机回环
+      - "127.0.0.1:6379:6379"
     networks:
       - hundunos-network
     healthcheck:
@@ -103,7 +105,8 @@ services:
     container_name: hundunos-prometheus
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      # M-04 Fix: Prometheus 仅绑定本机回环
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -123,9 +126,12 @@ services:
     container_name: hundunos-grafana
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      # M-04 Fix: Grafana 仅绑定本机回环
+      - "127.0.0.1:3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      # L-02 Fix: 移除默认密码，缺失时 Grafana 会交互式引导设置，不允许无密码启动
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:?GRAFANA_PASSWORD must be set}
+      - GF_SECURITY_ADMIN_USER=admin
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro

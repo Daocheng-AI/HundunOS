@@ -22,7 +22,8 @@ hooks:
             ];
             for (const d of dangerous) {
               if (d.pattern.test(cmd)) {
-                // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(JSON.stringify({ block: true, reason: `危险命令: ${d.reason}`, cmd: cmd.slice(0, 50) }));
+                // M-06 Fix: 恢复被注释阻断的安全拦截逻辑
+                process.stdout.write(JSON.stringify({ block: true, reason: `危险命令: ${d.reason}`, cmd: cmd.slice(0, 50) }));
                 process.exit(2);
               }
             }
@@ -48,9 +49,10 @@ hooks:
             ];
             for (const l of leaks) {
               if (l.pattern.test(content)) {
-                // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed // review: removed console.log(JSON.stringify({
+                // M-06 Fix: 恢复被注释阻断的密钥泄露告警逻辑
+                process.stdout.write(JSON.stringify({
                   hookSpecificOutput: {
-                    additionalContext: `⚠️ Security: potential ${l.label} detected in written content`
+                    additionalContext: `Security: potential ${l.label} detected in written content`
                   }
                 }));
                 break;

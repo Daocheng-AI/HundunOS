@@ -48,19 +48,29 @@ export class MobileAPIManager {
       return await this.kernel.createSession(body);
     });
 
+    // H-3 Fix: 验证 sessionId 格式，防止路径遍历和会话劫持
     this.registerRoute('GET', '/api/mobile/sessions/:sessionId', async (body, headers) => {
       const sessionId = headers.path.split('/').pop();
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        throw new Error('Invalid sessionId format');
+      }
       return await this.kernel.getSession(sessionId);
     });
 
     this.registerRoute('DELETE', '/api/mobile/sessions/:sessionId', async (body, headers) => {
       const sessionId = headers.path.split('/').pop();
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        throw new Error('Invalid sessionId format');
+      }
       return await this.kernel.deleteSession(sessionId);
     });
 
     // 消息处理
     this.registerRoute('POST', '/api/mobile/sessions/:sessionId/messages', async (body, headers) => {
       const sessionId = headers.path.split('/').pop();
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        throw new Error('Invalid sessionId format');
+      }
       return await this.kernel.process({
         type: 'text',
         content: body.message,

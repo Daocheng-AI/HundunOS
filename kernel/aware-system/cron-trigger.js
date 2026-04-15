@@ -188,6 +188,8 @@ export class CronTrigger {
         this.running = true;
         this._scheduleAll();
         this._timer = setInterval(() => this._tick(), this.intervalMs);
+        // kernel M-3 Fix: unref() so the timer does not prevent Node.js process exit
+        if (this._timer.unref) this._timer.unref();
         // console.log(`[CronTrigger] 已启动，${this.tasks.size} 个任务`);
     }
 

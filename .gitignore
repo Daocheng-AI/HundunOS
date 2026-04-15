@@ -119,3 +119,10 @@ simple-assessment.js
 test-tradingagents-optimizations.js
 test-simple-verification.js
 final-integration-test.js
+
+# === 审核后清理 (2026-04-14) ===
+# v4 历史备份（已被 v5 取代）
+kernel-v4-backup/
+
+# shell/client 运行时日志
+shell/client/logs/

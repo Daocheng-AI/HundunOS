@@ -1,5 +1,6 @@
 import { BasePlugin } from '../../core/BasePlugin.js';
-import { createHash, randomBytes, timingSafeEqual } from 'crypto';
+import { createHash, randomBytes, timingSafeEqual, pbkdf2, pbkdf2Sync } from 'crypto';
+import { promisify } from 'util';
 
 export class SecurityPlugin extends BasePlugin {
   #config = null;
@@ -152,9 +153,17 @@ export class SecurityPlugin extends BasePlugin {
 
   #validateCorsOrigin(origin) {
     const allowedOrigins = this.#config.get('security.cors.origins', []);
+    const env = this.#config.get('environment', 'development');
     
+    // Production environment: strictly prohibit wildcard
+    if (env === 'production' && allowedOrigins.includes('*')) {
+      this.logger.error('SECURITY: CORS wildcard is not allowed in production environment');
+      return false;
+    }
+    
+    // Development/Testing environment: allow wildcard with warning
     if (allowedOrigins.includes('*')) {
-      this.logger.warn('CORS wildcard detected - not recommended for production');
+      this.logger.warn('SECURITY: CORS wildcard detected - not recommended for production');
       return true;
     }
 
@@ -171,17 +180,26 @@ export class SecurityPlugin extends BasePlugin {
 
   #getCorsHeaders(origin) {
     const isAllowed = this.#validateCorsOrigin(origin);
+    const env = this.#config.get('environment', 'development');
     
     if (!isAllowed) {
       return {};
     }
 
+    // Production: credentials=true requires specific origin, not wildcard
+    const allowOrigin = origin || (env === 'production' ? '' : '*');
+    
+    if (!allowOrigin) {
+      return {};
+    }
+
     return {
-      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Origin': allowOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Request-ID',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Request-ID, X-API-Key',
       'Access-Control-Allow-Credentials': 'true',
-      'Access-Control-Max-Age': '86400'
+      'Access-Control-Max-Age': '86400',
+      'Vary': 'Origin'
     };
   }
 
@@ -189,23 +207,65 @@ export class SecurityPlugin extends BasePlugin {
     return randomBytes(length).toString('hex');
   }
 
-  hashPassword(password, salt) {
+  /**
+   * Hash password using PBKDF2 (Secure alternative to SHA-256)
+   * @param {string} password - Plain text password
+   * @param {string} salt - Optional salt (auto-generated if not provided)
+   * @returns {Promise<{hash: string, salt: string}>} - Hashed password and salt
+   */
+  async hashPassword(password, salt) {
     if (!salt) {
-      salt = randomBytes(16).toString('hex');
+      salt = randomBytes(32).toString('hex');
     }
-    const hash = createHash('sha256')
-      .update(password + salt)
-      .digest('hex');
-    return { hash, salt };
+    const pbkdf2Async = promisify(pbkdf2);
+    const hash = await pbkdf2Async(password, salt, 100000, 64, 'sha512');
+    return { hash: hash.toString('hex'), salt };
   }
 
-  verifyPassword(password, hash, salt) {
-    const computed = createHash('sha256')
-      .update(password + salt)
-      .digest('hex');
+  /**
+   * Verify password against hash using PBKDF2
+   * @param {string} password - Plain text password
+   * @param {string} hash - Stored hash
+   * @param {string} salt - Stored salt
+   * @returns {Promise<boolean>} - True if password matches
+   */
+  async verifyPassword(password, hash, salt) {
+    const pbkdf2Async = promisify(pbkdf2);
+    const computed = await pbkdf2Async(password, salt, 100000, 64, 'sha512');
+    const computedHash = computed.toString('hex');
     
     const hashBuf = Buffer.from(hash, 'hex');
-    const computedBuf = Buffer.from(computed, 'hex');
+    const computedBuf = Buffer.from(computedHash, 'hex');
+    
+    if (hashBuf.length !== computedBuf.length) {
+      return false;
+    }
+    
+    return timingSafeEqual(hashBuf, computedBuf);
+  }
+
+  /**
+   * Synchronous version of hashPassword (for backwards compatibility)
+   * @deprecated Use async hashPassword() instead
+   */
+  hashPasswordSync(password, salt) {
+    if (!salt) {
+      salt = randomBytes(32).toString('hex');
+    }
+    const hash = pbkdf2Sync(password, salt, 100000, 64, 'sha512');
+    return { hash: hash.toString('hex'), salt };
+  }
+
+  /**
+   * Synchronous version of verifyPassword (for backwards compatibility)
+   * @deprecated Use async verifyPassword() instead
+   */
+  verifyPasswordSync(password, hash, salt) {
+    const computed = pbkdf2Sync(password, salt, 100000, 64, 'sha512');
+    const computedHash = computed.toString('hex');
+    
+    const hashBuf = Buffer.from(hash, 'hex');
+    const computedBuf = Buffer.from(computedHash, 'hex');
     
     if (hashBuf.length !== computedBuf.length) {
       return false;

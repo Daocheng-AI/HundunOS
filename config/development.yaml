@@ -49,7 +49,8 @@ models:
   defaultProvider: openai
   providers:
     openai:
-      apiKey: ${OPENAI_API_KEY:sk-test-key}
+      # M-02 Fix: 移除默认值，缺失时启动失败而非使用假密钥运行
+      apiKey: ${OPENAI_API_KEY}
       timeout: 60000
 
 # Agent配置

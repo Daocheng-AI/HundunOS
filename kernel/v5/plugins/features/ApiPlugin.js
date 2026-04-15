@@ -8,6 +8,7 @@ export class ApiPlugin extends BasePlugin {
   #middlewares = [];
   #config = null;
   #isRunning = false;
+  #apiKeys = new Map(); // In-memory API key store
 
   get name() {
     return 'api';
@@ -31,6 +32,9 @@ export class ApiPlugin extends BasePlugin {
 
     this.#server = createServer(this.#handleRequest.bind(this));
 
+    // Register default security middleware
+    this.#setupDefaultMiddlewares();
+
     this.kernel.services.register('api', () => ({
       get: this.get.bind(this),
       post: this.post.bind(this),
@@ -39,10 +43,152 @@ export class ApiPlugin extends BasePlugin {
       use: this.use.bind(this),
       start: this.start.bind(this),
       stop: this.stop.bind(this),
-      router: this.createRouter.bind(this)
+      router: this.createRouter.bind(this),
+      authenticate: this.authenticate.bind(this),
+      registerApiKey: this.registerApiKey.bind(this),
+      revokeApiKey: this.revokeApiKey.bind(this)
     }), { singleton: true });
 
     this.logger.info(`API Plugin initialized on ${host}:${port}`);
+  }
+
+  /**
+   * Setup default security middlewares
+   */
+  #setupDefaultMiddlewares() {
+    const authEnabled = this.#config.get('api.auth.enabled', true);
+    
+    if (authEnabled) {
+      // Add authentication middleware
+      this.use(this.#authMiddleware.bind(this));
+    }
+  }
+
+  /**
+   * Authentication middleware
+   */
+  async #authMiddleware(context) {
+    const { req, res } = context;
+    
+    // Skip authentication for public paths
+    const publicPaths = this.#config.get('api.auth.publicPaths', ['/health', '/status']);
+    const url = req.url || '';
+    
+    if (publicPaths.some(path => url.startsWith(path))) {
+      return;
+    }
+
+    // Extract API key from header or query
+    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+    
+    if (!apiKey) {
+      res.statusCode = 401;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ 
+        error: 'Unauthorized', 
+        code: 'MISSING_API_KEY',
+        message: 'API key is required. Provide it via X-API-Key header or Authorization: Bearer <key>'
+      }));
+      throw new Error('Authentication required');
+    }
+
+    // Validate API key
+    const isValid = await this.#validateApiKey(apiKey);
+    
+    if (!isValid) {
+      res.statusCode = 401;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ 
+        error: 'Unauthorized', 
+        code: 'INVALID_API_KEY',
+        message: 'Invalid or revoked API key'
+      }));
+      throw new Error('Invalid API key');
+    }
+
+    // Attach auth info to context
+    context.auth = { apiKey };
+  }
+
+  /**
+   * Validate API key
+   */
+  async #validateApiKey(key) {
+    // Check in-memory store
+    if (this.#apiKeys.has(key)) {
+      const keyData = this.#apiKeys.get(key);
+      
+      // Check expiration
+      if (keyData.expiresAt && keyData.expiresAt < Date.now()) {
+        this.#apiKeys.delete(key);
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Check config-based keys (for development/simple deployments)
+    const configKeys = this.#config.get('api.auth.keys', []);
+    if (configKeys.includes(key)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Register a new API key
+   * @param {string} key - The API key to register
+   * @param {Object} metadata - Key metadata (name, expiresAt, permissions)
+   */
+  registerApiKey(key, metadata = {}) {
+    this.#apiKeys.set(key, {
+      name: metadata.name || 'unnamed',
+      permissions: metadata.permissions || ['read'],
+      createdAt: Date.now(),
+      expiresAt: metadata.expiresAt || null,
+      lastUsed: null,
+      useCount: 0
+    });
+    this.logger.info(`API key registered: ${metadata.name || 'unnamed'}`);
+    return true;
+  }
+
+  /**
+   * Revoke an API key
+   * @param {string} key - The API key to revoke
+   */
+  revokeApiKey(key) {
+    const deleted = this.#apiKeys.delete(key);
+    if (deleted) {
+      this.logger.info('API key revoked');
+    }
+    return deleted;
+  }
+
+  /**
+   * Middleware factory for route-specific authentication
+   * @param {string[]} requiredPermissions - Required permissions for the route
+   */
+  authenticate(requiredPermissions = []) {
+    return async (context) => {
+      if (!context.auth) {
+        context.res.statusCode = 401;
+        context.res.end(JSON.stringify({ error: 'Unauthorized' }));
+        throw new Error('Authentication required');
+      }
+
+      if (requiredPermissions.length > 0) {
+        const apiKey = context.auth.apiKey;
+        const keyData = this.#apiKeys.get(apiKey);
+        
+        if (!keyData || !requiredPermissions.every(p => keyData.permissions.includes(p))) {
+          context.res.statusCode = 403;
+          context.res.end(JSON.stringify({ error: 'Forbidden', code: 'INSUFFICIENT_PERMISSIONS' }));
+          throw new Error('Insufficient permissions');
+        }
+      }
+    };
   }
 
   #handleRequest(req, res) {
@@ -133,15 +279,62 @@ export class ApiPlugin extends BasePlugin {
 
   #handleError(err, context) {
     const { res } = context;
-    this.logger.error('API Error:', err.message);
+    const env = this.#config.get('environment', 'development');
+    
+    // Log full error details internally
+    this.logger.error('API Error:', {
+      message: err.message,
+      stack: err.stack,
+      code: err.code,
+      statusCode: err.statusCode,
+      path: context.req?.url
+    });
 
     if (!res.headersSent) {
-      res.statusCode = err.statusCode || 500;
+      // Determine status code
+      let statusCode = 500;
+      let errorMessage = 'Internal Server Error';
+      let errorCode = 'INTERNAL_ERROR';
+      let errorDetails = null;
+
+      // Client errors (4xx)
+      if (err.statusCode >= 400 && err.statusCode < 500) {
+        statusCode = err.statusCode;
+        errorMessage = err.message || 'Bad Request';
+        errorCode = err.code || 'CLIENT_ERROR';
+      } 
+      // Client errors without statusCode but with specific codes
+      else if (err.code === 'MISSING_API_KEY' || err.code === 'INVALID_API_KEY') {
+        statusCode = 401;
+        errorMessage = 'Unauthorized';
+        errorCode = err.code;
+      }
+      // Authentication middleware error
+      else if (err.message === 'Authentication required' || err.message === 'Invalid API key') {
+        // Already handled by auth middleware
+        return;
+      }
+
+      // Development mode: include stack trace and details
+      if (env === 'development') {
+        errorDetails = {
+          stack: err.stack,
+          originalMessage: err.message
+        };
+      }
+
+      res.statusCode = statusCode;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({
-        error: err.message || 'Internal Server Error',
-        code: err.code || 'INTERNAL_ERROR'
-      }));
+      
+      const response = {
+        success: false,
+        error: errorMessage,
+        code: errorCode,
+        timestamp: new Date().toISOString(),
+        ...(errorDetails && { details: errorDetails })
+      };
+      
+      res.end(JSON.stringify(response));
     }
 
     this.events.emit('api:error', { error: err, context });

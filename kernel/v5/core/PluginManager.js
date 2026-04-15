@@ -152,6 +152,13 @@ export class PluginManager extends EventEmitter {
   }
 
   /**
+   * 检查插件是否已注册
+   */
+  isRegistered(name) {
+    return this.plugins.has(name);
+  }
+
+  /**
    * 获取状态
    */
   getStatus() {
@@ -187,13 +194,23 @@ export class PluginManager extends EventEmitter {
    * @private
    */
   _setupLazyLoading(name) {
-    // 当第一次访问时自动加载
+    // L-03 Fix: 返回立即可用的 Promise，避免调用方拿到 undefined 后空引用崩溃。
+    // 调用方应 await this.kernel.<name> 以等待插件加载完成。
+    let loadingPromise = null;
+
     Object.defineProperty(this.kernel, name, {
       get: () => {
-        if (!this.loaded.has(name)) {
-          this.load(name).catch(console.error);
+        if (this.loaded.has(name)) {
+          return this.loaded.get(name);
         }
-        return this.loaded.get(name);
+        if (!loadingPromise) {
+          loadingPromise = this.load(name).catch((err) => {
+            console.error(`[PluginManager] Lazy load failed for "${name}":`, err);
+            loadingPromise = null; // 重置以便下次重试
+            return null;
+          });
+        }
+        return loadingPromise; // 返回 Promise，调用方需 await
       },
       configurable: true,
     });

@@ -163,8 +163,9 @@ describe('CachePlugin', () => {
 describe('EventBus', () => {
   let eventBus;
 
-  beforeEach(() => {
-    eventBus = new (await import('../core/EventBus.js')).EventBus();
+  beforeEach(async () => {
+    const { EventBus } = await import('../core/EventBus.js');
+    eventBus = new EventBus();
   });
 
   it('should support basic pub/sub', async () => {
@@ -214,8 +215,9 @@ describe('EventBus', () => {
 describe('ServiceRegistry', () => {
   let registry;
 
-  beforeEach(() => {
-    registry = new (await import('../core/ServiceRegistry.js')).ServiceRegistry();
+  beforeEach(async () => {
+    const { ServiceRegistry } = await import('../core/ServiceRegistry.js');
+    registry = new ServiceRegistry();
   });
 
   it('should register and retrieve services', async () => {

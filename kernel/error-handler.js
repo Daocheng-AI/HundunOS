@@ -30,9 +30,16 @@ export class ErrorHandler {
 
     const filename = `error_${Date.now()}.json`;
     const filepath = join(this.errorLogDir, filename);
-    writeFileSync(filepath, JSON.stringify(errorLog, null, 2), 'utf8');
 
-    console.error(`[ErrorHandler] Error logged: ${filename}`);
+    // M-4 Fix: 用 try-catch 包裹写入，磁盘满或权限不足时降级到 console.error
+    try {
+      writeFileSync(filepath, JSON.stringify(errorLog, null, 2), 'utf8');
+      console.error(`[ErrorHandler] Error logged: ${filename}`);
+    } catch (writeErr) {
+      console.error(`[ErrorHandler] Failed to write error log (disk/permission issue):`, writeErr.message);
+      // 降级：将错误信息输出到 stderr，不丢失
+      console.error(`[ErrorHandler] Fallback error dump:`, JSON.stringify(errorLog, null, 2));
+    }
   }
 
   /**

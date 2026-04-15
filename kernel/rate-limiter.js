@@ -32,7 +32,8 @@ export class RateLimiter {
         };
 
         // 每分钟清理一次过期桶
-        this._cleanupInterval = setInterval(() => this._cleanup(), this.windowMs);
+        // H-2 Fix: 添加 unref()，使定时器不阻止进程退出，防止实例被放弃时的内存泄漏
+        this._cleanupInterval = setInterval(() => this._cleanup(), this.windowMs).unref();
     }
 
     /** 从请求中提取限流 key */

@@ -35,17 +35,24 @@ export function deepMerge(base = {}, override = {}) {
  */
 export function resolveProjectPath(targetPath, baseDir) {
     if (!targetPath) return baseDir;
-    
-    // SEC-02: 路径遍历防护
-    const resolved = isAbsolute(targetPath) ? targetPath : join(baseDir, targetPath);
-    const normalized = normalize(resolved);
-    
-    // SEC-02: 检查路径遍历攻击（检查是否包含 .. 序列）
-    // 注意：normalize() 会解析 ..，所以我们需要检查原始路径
-    if (targetPath.includes('..') || targetPath.includes('~')) {
-        throw new Error(`SEC-02: Path traversal detected. Path contains forbidden sequences: "${targetPath}"`);
+
+    // SEC-02 / kernel-audit L-5 Fix: 先解码 URL 编码，防止 %2e%2e 绕过 .. 检测
+    let decoded;
+    try {
+        decoded = decodeURIComponent(targetPath);
+    } catch {
+        decoded = targetPath;
     }
-    
+
+    // SEC-02: 路径遍历防护
+    const resolved = isAbsolute(decoded) ? decoded : join(baseDir, decoded);
+    const normalized = normalize(resolved);
+
+    // 在解码后的路径上检查 forbidden 序列
+    if (decoded.includes('..') || decoded.includes('~')) {
+        throw new Error(`SEC-02: Path traversal detected. Path contains forbidden sequences: "${decoded}"`);
+    }
+
     return normalized;
 }
 

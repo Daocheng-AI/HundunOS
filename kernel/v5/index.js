@@ -27,6 +27,9 @@ export { RagPlugin } from './plugins/features/RagPlugin.js';
 export { TenantPlugin } from './plugins/features/TenantPlugin.js';
 export { BillingPlugin } from './plugins/features/BillingPlugin.js';
 
+// Utility Plugins
+export { UtilsPlugin } from './plugins/utils/UtilsPlugin.js';
+
 // Compatibility
 export { V4Adapter, createV4Adapter } from './compat/v4-adapter.js';
 
